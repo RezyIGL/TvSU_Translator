@@ -8,8 +8,8 @@ The analyzer takes a source code file as input and produces a sequence of tokens
 To use the lexical analyzer, clone this repository and run the analyzer with the source code file as an argument.
 
 ```bash
-git clone <https://github.com/RezyIGL/LexerTvSU>
-cd LexerTvSU
+git clone <https://github.com/RezyIGL/TvSU-Translator>
+cd TvSU-Translator
 ```
 
 Then build this project with CMake.
