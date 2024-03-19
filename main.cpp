@@ -8,13 +8,13 @@ int main() {
 	std::stringstream stream { input };
 	ShuntingYard shYard(stream);
 
-	Lexem lexem;
+	Token Token;
 
 	while (true) {
-		lexem = shYard.getNextLexem();
-		std::cout << "[\"" << lexem.first << "\", \"" << lexem.second << "\"]" << std::endl;
+		Token = shYard.getNextToken();
+		std::cout << "[\"" << Token.first << "\", \"" << Token.second << "\"]" << std::endl;
 
-		if (lexem.first == "eof" || lexem.first == "error") {
+		if (Token.first == "eof" || Token.first == "error") {
 			break;
 		}
 	}
