@@ -3,24 +3,24 @@
 
 ShuntingYard::ShuntingYard(std::istream &stream) : lexer { stream } {}
 
-void ShuntingYard::lexemOperand(const Lexem &lexem) {
+void ShuntingYard::TokenOperand(const Token &Token) {
 	if (expectOperand) {
-		output.push(lexem);
+		output.push(Token);
 		expectOperand = !expectOperand;
 	} else {
 		output.emplace("error", "");
 	}
 }
 
-void ShuntingYard::lexemLeftParentheses(const Lexem &lexem) {
+void ShuntingYard::TokenLeftParentheses(const Token &Token) {
 	if (expectOperand) {
-		myStack.emplace(lexem);
+		myStack.emplace(Token);
 	} else {
 		output.emplace("error", "");
 	}
 }
 
-void ShuntingYard::lexemRightParentheses() {
+void ShuntingYard::TokenRightParentheses() {
 	if (expectOperand) {
 		output.emplace("error", "");
 	} else {
@@ -40,13 +40,13 @@ void ShuntingYard::lexemRightParentheses() {
 	}
 }
 
-void ShuntingYard::similarSign(const Lexem &lexem) {
+void ShuntingYard::similarSign(const Token &Token) {
 	output.push(myStack.top());
 	myStack.pop();
-	myStack.emplace(lexem);
+	myStack.emplace(Token);
 }
 
-void ShuntingYard::higherPriority(const Lexem &lexem) {
+void ShuntingYard::higherPriority(const Token &Token) {
 	while (!myStack.empty()) {
 		if (myStack.top().first == "lpar") {
 			break;
@@ -56,17 +56,17 @@ void ShuntingYard::higherPriority(const Lexem &lexem) {
 		myStack.pop();
 	}
 
-	myStack.emplace(lexem);
+	myStack.emplace(Token);
 }
 
-void ShuntingYard::lexemPlusOrMinus(const Lexem &lexem) {
+void ShuntingYard::TokenPlusOrMinus(const Token &Token) {
 	if (!expectOperand) {
 		if (myStack.empty() || myStack.top().first == "lpar") {
-			myStack.emplace(lexem);
+			myStack.emplace(Token);
 		} else if (myStack.top().first == "opplus" || myStack.top().first == "opminus") {
-			similarSign(lexem);
+			similarSign(Token);
 		} else if (myStack.top().first == "opmul") {
-			higherPriority(lexem);
+			higherPriority(Token);
 		}
 		expectOperand = !expectOperand;
 	} else {
@@ -74,15 +74,15 @@ void ShuntingYard::lexemPlusOrMinus(const Lexem &lexem) {
 	}
 }
 
-void ShuntingYard::lexemMultiply(const Lexem &lexem) {
+void ShuntingYard::TokenMultiply(const Token &Token) {
 	if (!expectOperand) {
 		if (myStack.empty() ||
 		    myStack.top().first == "opplus" ||
 		    myStack.top().first == "opminus" ||
 		    myStack.top().first == "lpar") {
-			myStack.emplace(lexem);
+			myStack.emplace(Token);
 		} else if (myStack.top().first == "opmul") {
-			similarSign(lexem);
+			similarSign(Token);
 		}
 		expectOperand = !expectOperand;
 	} else {
@@ -90,7 +90,7 @@ void ShuntingYard::lexemMultiply(const Lexem &lexem) {
 	}
 }
 
-void ShuntingYard::lexemEOFOrError(const Lexem &lexem) {
+void ShuntingYard::TokenEOFOrError(const Token &Token) {
 	if (expectOperand) {
 		output.emplace("error", "");
 	} else {
@@ -103,36 +103,36 @@ void ShuntingYard::lexemEOFOrError(const Lexem &lexem) {
 			myStack.pop();
 		}
 
-		output.push(lexem);
+		output.push(Token);
 	}
 }
 
-void ShuntingYard::processLexemInput(const Lexem &lexem) {
-	if (lexem.first == "num" || lexem.first == "id") {
-		lexemOperand(lexem);
-	} else if (lexem.first == "lpar") {
-		lexemLeftParentheses(lexem);
-	} else if (lexem.first == "rpar") {
-		lexemRightParentheses();
-	} else if (lexem.first == "opplus" ||
-			   lexem.first == "opminus")
+void ShuntingYard::processTokenInput(const Token &Token) {
+	if (Token.first == "num" || Token.first == "id") {
+		TokenOperand(Token);
+	} else if (Token.first == "lpar") {
+		TokenLeftParentheses(Token);
+	} else if (Token.first == "rpar") {
+		TokenRightParentheses();
+	} else if (Token.first == "opplus" ||
+			   Token.first == "opminus")
 	{
-		lexemPlusOrMinus(lexem);
-	} else if (lexem.first == "opmul") {
-		lexemMultiply(lexem);
-	} else if (lexem.first == "eof" ||
-			   lexem.first == "error")
+		TokenPlusOrMinus(Token);
+	} else if (Token.first == "opmul") {
+		TokenMultiply(Token);
+	} else if (Token.first == "eof" ||
+			   Token.first == "error")
 	{
-		lexemEOFOrError(lexem);
+		TokenEOFOrError(Token);
 	}
 }
 
 ShuntingYard::~ShuntingYard() = default;
 
-Lexem ShuntingYard::getNextLexem()
+Token ShuntingYard::getNextToken()
 {
 	while (output.empty()) {
-		processLexemInput(lexer.getNextLexem());
+		processTokenInput(lexer.getNextToken());
 	}
 
 	if (output.front().first == "error") {

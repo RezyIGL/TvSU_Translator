@@ -2,7 +2,7 @@
 #include <set>
 #include <iostream>
 
-using Lexem = std::pair<std::string, std::string>;
+using Token = std::pair<std::string, std::string>;
 
 std::set<std::string> keywords = {
 		"int",
@@ -18,14 +18,14 @@ std::set<std::string> keywords = {
 		"return"
 };
 
-Lexem Lexer::getNextLexem() {
-	Lexem lexem;
+Token Lexer::getNextToken() {
+	Token Token;
 
-	while (lexem.first == "") {
-		nextLexem(getGraph()[state], lexem);
+	while (Token.first.empty()) {
+		nextToken(getGraph()[state], Token);
 	}
 
-	return lexem;
+	return Token;
 }
 
 void Lexer::bufferNext() {
@@ -36,7 +36,7 @@ Lexer::Lexer(std::istream &stream) : stream{stream} {
 	buffer = stream.get();
 }
 
-void Lexer::nextLexem(const std::vector<E> &edges, Lexem &lexem) {
+void Lexer::nextToken(const std::vector<E> &edges, Token &Token) {
 	E ruleset = {"", false, false, 0, ""};
 	for (auto &e: edges) {
 		if (e.filter == "LETTER") {
@@ -68,16 +68,16 @@ void Lexer::nextLexem(const std::vector<E> &edges, Lexem &lexem) {
 	if (ruleset.read) bufferNext();
 	if (ruleset.clearBuffer) value.clear();
 
-	if (!ruleset.lexem.empty()) {
+	if (!ruleset.Token.empty()) {
 		if (state == 21 && keywords.contains(value)) {
-			lexem.first = "kw" + value;
-			lexem.second = "";
+			Token.first = "kw" + value;
+			Token.second = "";
 		} else if (state == 21) {
-			lexem.first = "id";
-			lexem.second = value;
+			Token.first = "id";
+			Token.second = value;
 		} else {
-			lexem.first = ruleset.lexem;
-			lexem.second = value;
+			Token.first = ruleset.Token;
+			Token.second = value;
 		}
 		value.clear();
 	}

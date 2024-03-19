@@ -1,6 +1,6 @@
 #include "LexGraph.h"
 
-std::map<int, std::vector<E>> LexemFSM = {
+std::map<int, std::vector<E>> TokenFSM = {
 		{0, {
 				    {"(", false, false, 1, ""},
 				    {")", false, false, 1, ""},
@@ -129,5 +129,5 @@ std::map<int, std::vector<E>> LexemFSM = {
 
 std::map<int, std::vector<E>> getGraph() {
 	// deepcopy
-	return LexemFSM;
+	return TokenFSM;
 }

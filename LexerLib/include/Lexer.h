@@ -3,7 +3,7 @@
 
 #include "LexGraph.h"
 
-using Lexem = std::pair<std::string, std::string>;
+using Token = std::pair<std::string, std::string>;
 
 class Lexer {
 private:
@@ -11,12 +11,12 @@ private:
 	char buffer;
 	std::string value;
 	int state = 0;
-	void nextLexem(const std::vector<E> &edges, Lexem &lexem);
+	void nextToken(const std::vector<E> &edges, Token &Token);
 	void bufferNext();
 
 public:
-	Lexer(std::istream& stream);
-	Lexem getNextLexem();
+	explicit Lexer(std::istream& stream);
+	Token getNextToken();
 
 };
 

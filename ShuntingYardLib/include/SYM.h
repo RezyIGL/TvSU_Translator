@@ -7,24 +7,24 @@
 
 class ShuntingYard {
 public:
-	ShuntingYard(std::istream&);
+	explicit ShuntingYard(std::istream&);
 	virtual ~ShuntingYard();
-	Lexem getNextLexem();
+	Token getNextToken();
 
 private:
 	Lexer lexer;
-	std::stack<Lexem> myStack;
-	std::queue<Lexem> output;
+	std::stack<Token> myStack;
+	std::queue<Token> output;
 	bool expectOperand = true;
-	void lexemOperand(const Lexem&);
-	void lexemLeftParentheses(const Lexem&);
-	void lexemRightParentheses();
-	void similarSign(const Lexem&);
-	void higherPriority(const Lexem&);
-	void lexemPlusOrMinus(const Lexem&);
-	void lexemMultiply(const Lexem&);
-	void lexemEOFOrError(const Lexem&);
-	void processLexemInput(const Lexem&);
+	void TokenOperand(const Token&);
+	void TokenLeftParentheses(const Token&);
+	void TokenRightParentheses();
+	void similarSign(const Token&);
+	void higherPriority(const Token&);
+	void TokenPlusOrMinus(const Token&);
+	void TokenMultiply(const Token&);
+	void TokenEOFOrError(const Token&);
+	void processTokenInput(const Token&);
 };
 
 #endif //LEXER_SYM_H
