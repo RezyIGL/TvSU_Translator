@@ -63,10 +63,10 @@ void foo(std::vector<Token> &LRTokens) {
 		if (!foundKey.empty()) {
 			LRTokens.erase(it, LRTokens.end());
 			LRTokens.insert(it, rules[foundKey]);
-			return;
+			it = LRTokens.begin();
+		} else {
+			it++;
 		}
-
-		it++;
 	}
 }
 
