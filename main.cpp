@@ -3,9 +3,18 @@
 #include "ll.h"
 
 int main() {
-	std::string input = "5 + 5 + 5 - 5 * (a + b) || a - 2";
-	std::stringstream ss(input);
+	std::vector<std::string> inputs = {
+		"5 + 5 -",
+		"5 + 5 - 5 * 5 || (a + (b * c) && 2)",
+		"(a + 2"
+	};
 
-	LL ll = LL(ss);
-	std::cout << ll.validate() << std::endl;
+	for (auto inp : inputs) {
+		std::stringstream ss(inp);
+		LL ll = LL(ss);
+		std::cout << "============================================================================================" << std::endl;
+		std::cout << "Expression: " << inp << std::endl;
+		std::cout << "Result: " << ll.validate() << std::endl;
+		std::cout << "============================================================================================\n" << std::endl;
+	}
 }
