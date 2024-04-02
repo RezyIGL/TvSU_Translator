@@ -14,7 +14,7 @@ std::string LL::validate() {
 	it = tempVec.begin();
 	currentTokenValue = it->first;
 
-	if (Expr()) {
+	if (Expr() && it >= tempVec.end() - 1) {
 		return "Accepted!";
 	}
 
@@ -29,13 +29,13 @@ void LL::nextToken() {
 bool LL::Expr() {
 	if (!Expr7()) return false;
 	return true;
-};
+}
 
 bool LL::Expr7() {
 	if (!Expr6()) return false;
 	if (!Expr7List()) return false;
 	return true;
-};
+}
 
 bool LL::Expr7List() {
 	if (it >= tempVec.end()) return true;
@@ -47,13 +47,13 @@ bool LL::Expr7List() {
 	}
 
 	return true;
-};
+}
 
 bool LL::Expr6() {
 	if (!Expr5()) return false;
 	if (!Expr6List()) return false;
 	return true;
-};
+}
 
 bool LL::Expr6List() {
 	if (it >= tempVec.end()) return true;
@@ -65,13 +65,13 @@ bool LL::Expr6List() {
 	}
 
 	return true;
-};
+}
 
 bool LL::Expr5() {
 	if (!Expr4()) return false;
 	if (!Expr5List()) return false;
 	return true;
-};
+}
 
 bool LL::Expr5List() {
 	if (it >= tempVec.end()) return true;
@@ -88,13 +88,13 @@ bool LL::Expr5List() {
 	}
 
 	return true;
-};
+}
 
 bool LL::Expr4() {
 	if (!Expr3()) return false;
 	if (!Expr4List()) return false;
 	return true;
-};
+}
 
 bool LL::Expr4List() {
 	if (it >= tempVec.end()) return true;
@@ -110,25 +110,25 @@ bool LL::Expr4List() {
 	}
 
 	return true;
-};
+}
 
 bool LL::Expr3() {
 	if (!Expr2()) return false;
 	if (!Expr3List()) return false;
 	return true;
-};
+}
 
 bool LL::Expr3List() {
 	if (it >= tempVec.end()) return true;
 
 	if (currentTokenValue == "opmul") {
 		nextToken();
-		if (!Expr3()) return false;
-		if (!Expr4List()) return false;
+		if (!Expr2()) return false;
+		if (!Expr3List()) return false;
 	}
 
 	return true;
-};
+}
 
 bool LL::Expr2() {
 	if (it >= tempVec.end()) return true;
@@ -140,7 +140,7 @@ bool LL::Expr2() {
 	if (!Expr1()) return false;
 
 	return true;
-};
+}
 
 bool LL::Expr1() {
 	if (it >= tempVec.end()) return false;
@@ -161,8 +161,9 @@ bool LL::Expr1() {
 		return true;
 	} else if (currentTokenValue == "id") {
 		nextToken();
+		if (currentTokenValue == "opinc") nextToken();
 		return true;
 	}
 
 	return false;
-};
+}
