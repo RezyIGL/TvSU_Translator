@@ -7,7 +7,7 @@ Lexem LEX_ERROR = {"error", ""};
 
 namespace shunting_yard_tests {
 
-	TEST(CorrectExpression, OnePlusTwo)
+	TEST(SYM_CorrectExpression, OnePlusTwo)
 	{
 		using namespace std;
 		string expression = "1+2";
@@ -22,11 +22,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(CorrectExpression, TheLongOne)
+	TEST(SYM_CorrectExpression, TheLongOne)
 	{
 		using namespace std;
 		string expression = "11+222*3333- 44444";
@@ -45,11 +45,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(CorrectExpression, TheLongOneWithParentheses)
+	TEST(SYM_CorrectExpression, TheLongOneWithParentheses)
 	{
 		using namespace std;
 		string expression = "55*(11+22)*(66+33*(0- 44))";
@@ -74,11 +74,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(VariablesInExpression, OnePlusA)
+	TEST(SYM_VariablesInExpression, OnePlusA)
 	{
 		using namespace std;
 		string expression = "1+a";
@@ -93,11 +93,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(VariablesInExpression, LongWithVariables)
+	TEST(SYM_VariablesInExpression, LongWithVariables)
 	{
 		using namespace std;
 		string expression = "1+a*(4-b*2)+5";
@@ -120,11 +120,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(BadParentheses, UnClosed)
+	TEST(SYM_BadParentheses, UnClosed)
 	{
 		using namespace std;
 		string expression = "1+(2*a+3";
@@ -142,11 +142,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(BadParentheses, UnOpened)
+	TEST(SYM_BadParentheses, UnOpened)
 	{
 		using namespace std;
 		string expression = "(1+2)*a)+(3";
@@ -163,11 +163,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(TooFewArgumens, StartsFromOp)
+	TEST(SYM_TooFewArgumens, StartsFromOp)
 	{
 		using namespace std;
 		string expression = "+ 1 + 2";
@@ -179,11 +179,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(TooFewArgumens, NoOperand)
+	TEST(SYM_TooFewArgumens, NoOperand)
 	{
 		using namespace std;
 		string expression = "1+2*3*";
@@ -199,11 +199,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(TooMuchArgumens, DoubleExpression)
+	TEST(SYM_TooMuchArgumens, DoubleExpression)
 	{
 		using namespace std;
 		string expression = "1+2 3+4";
@@ -217,11 +217,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(TooMuchArgumens, ExtraArgument)
+	TEST(SYM_TooMuchArgumens, ExtraArgument)
 	{
 		using namespace std;
 		string expression = "1 2 + 3";
@@ -234,11 +234,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(NotAnExpression, NotInfix)
+	TEST(SYM_NotAnExpression, NotInfix)
 	{
 		using namespace std;
 		string expression = "1 2 + * 3";
@@ -251,11 +251,11 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 
-	TEST(NotAnExpression, NotInfixWithPrantheses)
+	TEST(SYM_NotAnExpression, NotInfixWithPrantheses)
 	{
 		using namespace std;
 		string expression = "1 2+(*3)";
@@ -268,7 +268,7 @@ namespace shunting_yard_tests {
 		ShuntingYard shYard(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, shYard.getNextLexem());
+			EXPECT_EQ(lex, shYard.getNextToken());
 		}
 	}
 

@@ -20,11 +20,13 @@ add_executable(
         Google_test
         lexTests.cpp
         sym-tests.cpp
+        ll-tests.cpp
 )
 target_link_libraries(
         Google_test
         LexerLib
         ShuntingYardLib
+        LL
         GTest::gtest_main
 )
 

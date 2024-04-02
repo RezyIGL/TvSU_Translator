@@ -6,7 +6,7 @@ using Lexem = std::pair<std::string, std::string>;
 
 namespace lex_tests {
 
-	TEST(CorrectCode, BasicProgram)
+	TEST(Lex_CorrectCode, BasicProgram)
 	{
 		using namespace std;
 		string prog = R"(
@@ -31,11 +31,11 @@ int main() {
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(CorrectCode, ComplexProgram)
+	TEST(Lex_CorrectCode, ComplexProgram)
 	{
 		using namespace std;
 		string prog = R"(
@@ -212,11 +212,11 @@ int main() {
 		Lexer lexer(stream);
 
 		for (int i = 0; i < correct.size(); ++i) {
-			EXPECT_EQ(correct[i], lexer.getNextLexem()) << "token #" << i;
+			EXPECT_EQ(correct[i], lexer.getNextToken()) << "token #" << i;
 		}
 	}
 
-	TEST(TrickyCode, BasicProgram)
+	TEST(Lex_TrickyCode, BasicProgram)
 	{
 		using namespace std;
 		string prog = "int main(){return 0;}";
@@ -237,11 +237,11 @@ int main() {
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(TrickyCode, MultilineString)
+	TEST(Lex_TrickyCode, MultilineString)
 	{
 		using namespace std;
 		string prog = R"(out "Hello
@@ -263,11 +263,11 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(TrickyCode, Expressions)
+	TEST(Lex_TrickyCode, Expressions)
 	{
 		using namespace std;
 		string prog = "int a=0;int aa=182;out aa+a==-123;";
@@ -301,11 +301,11 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(ErrorCode, BadString)
+	TEST(Lex_ErrorCode, BadString)
 	{
 		using namespace std;
 		string prog = R"(out "incomplete string;)";
@@ -318,11 +318,11 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(ErrorCode, EmptyChar)
+	TEST(Lex_ErrorCode, EmptyChar)
 	{
 		using namespace std;
 		string prog = R"(out '')";
@@ -335,11 +335,11 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(ErrorCode, DoubleChar)
+	TEST(Lex_ErrorCode, DoubleChar)
 	{
 		using namespace std;
 		string prog = R"(out 'xy')";
@@ -352,11 +352,11 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
-	TEST(ErrorCode, SingleOperator)
+	TEST(Lex_ErrorCode, SingleOperator)
 	{
 		using namespace std;
 		string prog = R"(a | b)";
@@ -369,7 +369,7 @@ for everyone!!!
 		Lexer lexer(stream);
 
 		for (auto&& lex : correct) {
-			EXPECT_EQ(lex, lexer.getNextLexem());
+			EXPECT_EQ(lex, lexer.getNextToken());
 		}
 	}
 
