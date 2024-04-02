@@ -16,7 +16,7 @@ int main() {
 		"1+ 2*2"
 	};
 
-	for (auto inp : inputs) {
+	for (const auto &inp : inputs) {
 		std::stringstream ss(inp);
 		LL ll = LL(ss);
 		std::cout << "============================================================================================" << std::endl;
