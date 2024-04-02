@@ -2,8 +2,6 @@
 #include <set>
 #include <iostream>
 
-using Token = std::pair<std::string, std::string>;
-
 std::set<std::string> keywords = {
 		"int",
 		"char",
