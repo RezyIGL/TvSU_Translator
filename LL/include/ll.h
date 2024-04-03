@@ -10,7 +10,9 @@ public:
 	std::string validate();
 private:
 	Lexer lexer;
-	std::vector<Token> tempVec;
+	Token tok;
+	std::string currentTokenValue;
+	void nextToken();
 	bool Expr();
 	bool Expr7();
 	bool Expr7List();
@@ -24,10 +26,6 @@ private:
 	bool Expr3List();
 	bool Expr2();
 	bool Expr1();
-	bool Expr1List();
-	std::vector<Token>::iterator it;
-	std::string currentTokenValue;
-	void nextToken();
 };
 
 

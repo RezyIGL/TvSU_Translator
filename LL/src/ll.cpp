@@ -5,16 +5,9 @@ LL::LL(std::istream &stream) : lexer {stream} {}
 LL::~LL() = default;
 
 std::string LL::validate() {
-	Token token;
-	while (token.first != "eof") {
-		token = lexer.getNextToken();
-		tempVec.emplace_back(token);
-	}
+	nextToken();
 
-	it = tempVec.begin();
-	currentTokenValue = it->first;
-
-	if (Expr() && it >= tempVec.end() - 1) {
+	if (Expr() && tok.first == "eof") {
 		return "Accepted!";
 	}
 
@@ -22,8 +15,8 @@ std::string LL::validate() {
 }
 
 void LL::nextToken() {
-	it++;
-	currentTokenValue = it->first;
+	tok = lexer.getNextToken();
+	currentTokenValue = tok.first;
 }
 
 bool LL::Expr() {
@@ -38,7 +31,7 @@ bool LL::Expr7() {
 }
 
 bool LL::Expr7List() {
-	if (it >= tempVec.end()) return true;
+	if (tok.first == "eof") return true;
 
 	if (currentTokenValue == "opor") {
 		nextToken();
@@ -56,7 +49,7 @@ bool LL::Expr6() {
 }
 
 bool LL::Expr6List() {
-	if (it >= tempVec.end()) return true;
+	if (tok.first == "eof") return true;
 
 	if (currentTokenValue == "opand") {
 		nextToken();
@@ -74,7 +67,7 @@ bool LL::Expr5() {
 }
 
 bool LL::Expr5List() {
-	if (it >= tempVec.end()) return true;
+	if (tok.first == "eof") return true;
 
 	if (currentTokenValue == "opeq") {
 		nextToken();
@@ -97,7 +90,7 @@ bool LL::Expr4() {
 }
 
 bool LL::Expr4List() {
-	if (it >= tempVec.end()) return true;
+	if (tok.first == "eof") return true;
 
 	if (currentTokenValue == "opplus") {
 		nextToken();
@@ -119,7 +112,7 @@ bool LL::Expr3() {
 }
 
 bool LL::Expr3List() {
-	if (it >= tempVec.end()) return true;
+	if (tok.first == "eof") return true;
 
 	if (currentTokenValue == "opmul") {
 		nextToken();
@@ -131,19 +124,16 @@ bool LL::Expr3List() {
 }
 
 bool LL::Expr2() {
-	if (it >= tempVec.end()) return true;
-
 	if (currentTokenValue == "opnot") {
 		nextToken();
 	}
 
 	if (!Expr1()) return false;
-
 	return true;
 }
 
 bool LL::Expr1() {
-	if (it >= tempVec.end()) return false;
+	if (tok.first == "eof") return false;
 
 	if (currentTokenValue == "opinc") {
 		nextToken();
