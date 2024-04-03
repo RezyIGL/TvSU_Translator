@@ -51,40 +51,47 @@ bool LL::Stmt() {
 		rollBackChanges(tempIt);
 	}
 
-//  TODO: Implement underlying function
-//	if (!AssignOrCallOp()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (AssignOrCallOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//  TODO: Implement underlying function
-//	if (!WhileOp()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (WhileOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//  TODO: Implement underlying function
-//	if (!ForOp()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (ForOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//  TODO: Implement underlying function
-//	if (!IfOp()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (IfOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//  TODO: Implement underlying function
-//	if (!DeclareStmt()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (SwitchOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//	TODO: Implement underlying function
-//	if (!DeclareStmt()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (InOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
-//	TODO: Implement underlying function
-//	if (!DeclareStmt()) {
-//		rollBackChanges(tempIt);
-//	}
+	if (OutOp()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
 
 	if (it->first == "semicolon") {
 		nextToken();
@@ -108,6 +115,207 @@ bool LL::Stmt() {
 	}
 
 	return false;
+}
+
+bool LL::SwitchOp() {
+	if (it->first != "kwswitch") return false;
+	nextToken();
+	if (it->first != "lpar") return false;
+	nextToken();
+	if (!Expr()) return false;
+	if (it->first != "rpar") return false;
+	nextToken();
+	if (it->first != "lbrace") return false;
+	nextToken();
+	if (!Cases()) return false;
+	if (it->first != "rbrace") return false;
+	nextToken();
+	return true;
+}
+
+bool LL::Cases() {
+	if (!ACase()) return false;
+	if (!CasesList()) return false;
+	return true;
+}
+
+bool LL::CasesList() {
+	auto tempIt = it;
+	if (ACase()) {
+		if (!CasesList()) return false;
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
+
+	return true;
+}
+
+bool LL::ACase() {
+	if (it->first == "kwcase") {
+		nextToken();
+		if (it->first != "num") return false;
+		nextToken();
+		if (it->first != "colon") return false;
+		nextToken();
+		if (!Stmt()) return false;
+		return true;
+	}
+
+	if (it->first == "kwdefault") {
+		nextToken();
+		if (it->first != "colon") return false;
+		nextToken();
+		if (!Stmt()) return false;
+		return true;
+	}
+
+	return false;
+}
+
+bool LL::ForOp() {
+	if (it->first != "kwfor") return false;
+	nextToken();
+	if (it->first != "lpar") return false;
+	nextToken();
+	if (!ForInit()) return false;
+	if (it->first != "semicolon") return false;
+	nextToken();
+	if (!ForExp()) return false;
+	if (it->first != "semicolon") return false;
+	nextToken();
+	if (!ForLoop()) return false;
+	if (it->first != "rpar") return false;
+	nextToken();
+	if (!Stmt()) return false;
+	return true;
+}
+
+bool LL::ForInit() {
+	auto tempIt = it;
+	if (AssignOrCall()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
+
+	return true;
+}
+
+bool LL::ForExp() {
+	auto tempIt = it;
+
+	if (Expr()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
+
+	return true;
+}
+
+bool LL::ForLoop() {
+	if (it->first == "opinc") {
+		nextToken();
+		if (it->first != "id") return false;
+		nextToken();
+		return true;
+	}
+
+	auto tempIt = it;
+
+	if (AssignOrCall()) {
+		return true;
+	} else {
+		rollBackChanges(tempIt);
+	}
+
+	return true;
+}
+
+bool LL::IfOp() {
+	if (it->first != "kwif") return false;
+	nextToken();
+	if (it->first != "lpar") return false;
+	nextToken();
+	if (!Expr()) return false;
+	if (it->first != "rpar") return false;
+	nextToken();
+	if (!Stmt()) return false;
+	if (!ElsePart()) return false;
+	return true;
+}
+
+bool LL::ElsePart() {
+	if (it->first == "kwelse") {
+		nextToken();
+		if (!Stmt()) return false;
+	}
+
+	return true;
+}
+
+bool LL::AssignOrCallOp() {
+	if (!AssignOrCall()) return false;
+	if (it->first != "semicolon") return false;
+	nextToken();
+	return true;
+}
+
+bool LL::AssignOrCall() {
+	if (it->first != "id") return false;
+	nextToken();
+	if (!AssignOrCallList()) return false;
+	return true;
+}
+
+bool LL::AssignOrCallList() {
+	if (it->first == "opassign") {
+		nextToken();
+		if (!Expr()) return false;
+		return true;
+	}
+
+	if (it->first == "lpar") {
+		nextToken();
+		if (!ParamList()) return false;
+		if (it->first != "rpar") return false;
+		nextToken();
+		return true;
+	}
+
+	return false;
+}
+
+bool LL::WhileOp() {
+	if (it->first != "kwwhile") return false;
+	nextToken();
+	if (it->first != "lpar") return false;
+	nextToken();
+	if (!Expr()) return false;
+	if (it->first != "rpar") return false;
+	nextToken();
+	if (!Stmt()) return false;
+	return true;
+}
+
+bool LL::InOp() {
+	if (it->first != "kwin") return false;
+	nextToken();
+	if (it->first != "id") return false;
+	nextToken();
+	if (it->first != "semicolon") return false;
+	nextToken();
+	return true;
+}
+
+bool LL::OutOp() {
+	if (it->first != "kwout") return false;
+	nextToken();
+	if (!Expr()) return false;
+	if (it->first != "semicolon") return false;
+	nextToken();
+	return true;
 }
 
 bool LL::DeclareStmt() {
@@ -291,6 +499,15 @@ bool LL::Expr5List() {
 		nextToken();
 		if (!Expr4()) return false;
 	} else if (it->first == "ople") {
+		nextToken();
+		if (!Expr4()) return false;
+	} else if (it->first == "opgt") {
+		nextToken();
+		if (!Expr4()) return false;
+	} else if (it->first == "opge") {
+		nextToken();
+		if (!Expr4()) return false;
+	} else if (it->first == "oplt") {
 		nextToken();
 		if (!Expr4()) return false;
 	}
