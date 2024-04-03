@@ -10,9 +10,19 @@ public:
 	std::string validate();
 private:
 	Lexer lexer;
-	Token tok;
-	std::string currentTokenValue;
+	std::vector<Token> myQueue;
+	std::vector<Token>::iterator it;
 	void nextToken();
+	void rollBackChanges(std::vector<Token>::iterator);
+	bool StmtList();
+	bool Stmt();
+	bool DeclareStmt();
+	bool Type();
+	bool DeclareStmtList();
+	bool DeclareVarList();
+	bool InitVar();
+	bool ParamList();
+	bool ParamListList();
 	bool Expr();
 	bool Expr7();
 	bool Expr7List();
