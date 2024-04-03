@@ -13,7 +13,7 @@ int main() {
 		"int a, b = 4, c;",
 		"int a, b, c = 5;",
 		"char a = '5', b, c = '5';",
-		"int a = 5;\nchar c = '5';",s
+		"int a = 5;\nchar c = '5';",
 	};
 
 	for (const auto &inp : inputs) {
