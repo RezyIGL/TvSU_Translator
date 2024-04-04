@@ -19,8 +19,8 @@ private:
 	bool AssignOrCallList();
 	bool WhileOp();
 	bool ForOp();
-	bool ForInit();
-	bool ForExp();
+	void ForInit();
+	void ForExp();
 	bool ForLoop();
 	bool IfOp();
 	bool ElsePart();

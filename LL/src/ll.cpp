@@ -36,6 +36,8 @@ bool LL::StmtList() {
 	auto tempIt = it;
 	if (Stmt()) {
 		if (!StmtList()) return false;
+	} else {
+		rollBackChanges(tempIt);
 	}
 
 	return true;
@@ -178,10 +180,10 @@ bool LL::ForOp() {
 	nextToken();
 	if (it->first != "lpar") return false;
 	nextToken();
-	if (!ForInit()) return false;
+	ForInit();
 	if (it->first != "semicolon") return false;
 	nextToken();
-	if (!ForExp()) return false;
+	ForExp();
 	if (it->first != "semicolon") return false;
 	nextToken();
 	if (!ForLoop()) return false;
@@ -191,27 +193,24 @@ bool LL::ForOp() {
 	return true;
 }
 
-bool LL::ForInit() {
+void LL::ForInit() {
 	auto tempIt = it;
 	if (AssignOrCall()) {
-		return true;
+		return;
 	} else {
 		rollBackChanges(tempIt);
 	}
-
-	return true;
 }
 
-bool LL::ForExp() {
+void LL::ForExp() {
 	auto tempIt = it;
 
 	if (Expr()) {
-		return true;
+		return;
 	} else {
 		rollBackChanges(tempIt);
 	}
 
-	return true;
 }
 
 bool LL::ForLoop() {
