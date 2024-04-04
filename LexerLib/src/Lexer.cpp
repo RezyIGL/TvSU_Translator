@@ -13,7 +13,8 @@ std::set<std::string> keywords = {
 		"in",
 		"switch",
 		"case",
-		"return"
+		"return",
+		"default"
 };
 
 Token Lexer::getNextToken() {

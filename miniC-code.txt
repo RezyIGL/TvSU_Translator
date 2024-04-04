@@ -1,0 +1,17 @@
+int main() {
+    int a, b = 1000, d;
+    char c = 'd';
+
+    in a;
+    in b;
+
+    a = a + b;
+    out a;
+
+    for (i = 0; i > 1000; i = i + 1) {}
+    while (1000 - 7) {}
+    if (something) {} else {}
+    switch (1 > 2) {default: {}}
+
+    return 12 + 3 || 4 * a;
+}
