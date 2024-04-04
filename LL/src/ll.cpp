@@ -160,7 +160,7 @@ bool LL::ACase() {
 		nextToken();
 		if (it->first != "colon") return false;
 		nextToken();
-		if (!Stmt()) return false;
+		if (!StmtList()) return false;
 		return true;
 	}
 
@@ -168,7 +168,7 @@ bool LL::ACase() {
 		nextToken();
 		if (it->first != "colon") return false;
 		nextToken();
-		if (!Stmt()) return false;
+		if (!StmtList()) return false;
 		return true;
 	}
 
@@ -582,9 +582,22 @@ bool LL::Expr1() {
 		return true;
 	} else if (it->first == "id") {
 		nextToken();
-		if (it->first == "opinc") nextToken();
+		if (!Expr1List()) return false;
 		return true;
 	}
 
 	return false;
+}
+
+bool LL::Expr1List() {
+	if (it->first == "lpar") {
+		nextToken();
+		if (!ParamList()) return false;
+		if (it->first != "rpar") return false;
+		nextToken();
+	} else if (it->first == "opinc") {
+		nextToken();
+	}
+
+	return true;
 }

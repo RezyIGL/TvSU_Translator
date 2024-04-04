@@ -13,5 +13,5 @@ int main() {
     if (something) if (something_else) {} else {}
     switch (1 > 2) {default: {}}
 
-    return 12 + 3 || 4 * a;
+    return 12 + 3 || 4 * a(int a, int b);
 }
