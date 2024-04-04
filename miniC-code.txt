@@ -8,6 +8,7 @@ int main() {
     a = a + b;
     out a;
 
+    for (int j = 0; j < 100; ++j) {}
     for (i = 0; i > 1000; i = i + 1) {}
     while (1000 - 7) {}
     if (something) if (something_else) {} else {}

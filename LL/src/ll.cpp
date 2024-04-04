@@ -195,6 +195,7 @@ bool LL::ForOp() {
 
 void LL::ForInit() {
 	auto tempIt = it;
+	if (!Type()) rollBackChanges(tempIt);
 	if (AssignOrCall()) {
 		return;
 	} else {
