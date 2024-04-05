@@ -593,11 +593,35 @@ bool LL::Expr1() {
 bool LL::Expr1List() {
 	if (it->first == "lpar") {
 		nextToken();
-		if (!ParamList()) return false;
+		if (!ArgList()) return false;
 		if (it->first != "rpar") return false;
 		nextToken();
 	} else if (it->first == "opinc") {
 		nextToken();
+	}
+
+	return true;
+}
+
+bool LL::ArgList() {
+	if (it->first == "eof") return false;
+
+	if (it->first == "id") {
+		nextToken();
+		if (!ArgListList()) return false;
+	}
+
+	return true;
+}
+
+bool LL::ArgListList() {
+	if (it->first == "eof") return false;
+
+	if (it->first == "comma") {
+		nextToken();
+		if (it->first != "id") return false;
+		nextToken();
+		if (!ArgListList()) return false;
 	}
 
 	return true;

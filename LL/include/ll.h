@@ -53,6 +53,8 @@ private:
 	bool Expr2();
 	bool Expr1();
 	bool Expr1List();
+	bool ArgList();
+	bool ArgListList();
 };
 
 
