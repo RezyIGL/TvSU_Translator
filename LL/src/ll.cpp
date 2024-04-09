@@ -1,17 +1,29 @@
 #include "ll.h"
+#include <iostream>
 
 LL::LL(std::istream &stream) : lexer {stream} {}
 
 LL::~LL() = default;
 
-std::string LL::validate() {
+void LL::validate() {
 	nextToken();
+	graphIt = states.begin();
 
 	if (StmtList() && it->first == "eof") {
-		return "Accepted!";
-	}
+		while (!finalOutput.empty()) {
+			std::cout << finalOutput.front() << std::endl;
+			finalOutput.pop();
+		}
 
-	return "Incorrect Expression!";
+		std::cout << "\nAccepted!" << std::endl;
+	} else {
+		std::cout << "\nIncorrect Expression!" << std::endl;
+	}
+}
+
+void LL::nextGraphState(const int &a) {
+	states.emplace_back(a);
+	graphIt = states.end() - 1;
 }
 
 void LL::nextToken() {
@@ -110,6 +122,7 @@ bool LL::Stmt() {
 
 	else if (it->first == "kwreturn") {
 		nextToken();
+
 		if (!Expr()) return false;
 		if (it->first != "semicolon") return false;
 		nextToken();
@@ -442,76 +455,256 @@ bool LL::ParamListList() {
 	return true;
 }
 
+void LL::eraseTrash(const std::vector<int>::iterator &da) {
+	states.erase(da, graphIt);
+	graphIt = da;
+}
+
+std::string LL::generateString() {
+	std::string aboba;
+	for (auto i = states.begin(); i != states.end(); i++) {
+		if (i == states.end() - 1) {
+			if (*i == 1) {
+				aboba += "|- ";
+			} else {
+				aboba += "L ";
+			}
+
+			break;
+		}
+
+		if (*i == 1) {
+			aboba += "|  ";
+		} else {
+			aboba += "  ";
+		}
+	}
+
+	return aboba;
+}
+
+void LL::rollbackIter() {
+	graphIt--;
+	states.pop_back();
+}
+
 bool LL::Expr() {
-	if (!Expr7()) return false;
+	nextGraphState(0);
+	std::string newStackString = generateString() + "E";
+	finalOutput.emplace(newStackString);
+
+	auto tempGraph = graphIt;
+
+	if (!Expr7()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr7() {
-	if (!Expr6()) return false;
-	if (!Expr7List()) return false;
+	nextGraphState(0);
+	std::string newStackString = generateString() + "E7";
+	finalOutput.emplace(newStackString);
+
+	auto tempGraph = graphIt;
+
+	if (!Expr6()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	tempGraph = graphIt;
+
+	if (!Expr7List()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr7List() {
-	if (it->first == "eof") return true;
+	nextGraphState(0);
+	std::string newStackString = generateString() + "E7'";
+	finalOutput.emplace(newStackString);
 
 	if (it->first == "opor") {
 		nextToken();
-		if (!Expr6()) return false;
-		if (!Expr7List()) return false;
+
+		std::string huy = generateString() + "|| E6";
+		auto tempGraph = graphIt;
+
+		if (!Expr6()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
+
+		tempGraph = graphIt;
+
+		if (!Expr7List()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	}
 
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr6() {
-	if (!Expr5()) return false;
-	if (!Expr6List()) return false;
+	nextGraphState(1);
+	std::string newStackString = generateString() + "E6";
+	finalOutput.emplace(newStackString);
+
+	auto tempGraph = graphIt;
+
+	if (!Expr5()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	tempGraph = graphIt;
+
+	if (!Expr6List()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr6List() {
-	if (it->first == "eof") return true;
+	nextGraphState(0);
+	std::string newStackString = generateString() + "E6'";
+	finalOutput.emplace(newStackString);
 
 	if (it->first == "opand") {
 		nextToken();
-		if (!Expr5()) return false;
-		if (!Expr6List()) return false;
+
+		std::string huy = generateString() + "&& E5";
+		auto tempGraph = graphIt;
+
+		if (!Expr5()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
+
+		tempGraph = graphIt;
+
+		if (!Expr6List()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	}
 
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr5() {
-	if (!Expr4()) return false;
-	if (!Expr5List()) return false;
+	nextGraphState(1);
+	std::string newStackString = generateString() + "E5";
+	finalOutput.emplace(newStackString);
+
+	nextGraphState(1);
+	auto tempGraph = graphIt;
+
+	if (!Expr4()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	rollbackIter();
+	nextGraphState(0);
+	tempGraph = graphIt;
+
+	if (!Expr5List()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	rollbackIter();
 	return true;
 }
 
 bool LL::Expr5List() {
-	if (it->first == "eof") return true;
+	std::string newStackString = generateString() + "E5'";
+	finalOutput.emplace(newStackString);
 
 	if (it->first == "opeq") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + "== E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	} else if (it->first == "opne") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + "!= E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	} else if (it->first == "ople") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + "<= E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	} else if (it->first == "opgt") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + "> E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	} else if (it->first == "opge") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + ">= E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	} else if (it->first == "oplt") {
 		nextToken();
-		if (!Expr4()) return false;
+
+		std::string huy = generateString() + "< E4";
+		nextGraphState(0);
+		auto tempGraph = graphIt;
+
+		if (!Expr4()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
 	}
 
+	rollbackIter();
 	return true;
 }
 
@@ -522,8 +715,6 @@ bool LL::Expr4() {
 }
 
 bool LL::Expr4List() {
-	if (it->first == "eof") return true;
-
 	if (it->first == "opplus") {
 		nextToken();
 		if (!Expr3()) return false;
@@ -544,8 +735,6 @@ bool LL::Expr3() {
 }
 
 bool LL::Expr3List() {
-	if (it->first == "eof") return true;
-
 	if (it->first == "opmul") {
 		nextToken();
 		if (!Expr2()) return false;
@@ -565,8 +754,6 @@ bool LL::Expr2() {
 }
 
 bool LL::Expr1() {
-	if (it->first == "eof") return false;
-
 	if (it->first == "opinc") {
 		nextToken();
 		if (it->first != "id") return false;
@@ -604,8 +791,6 @@ bool LL::Expr1List() {
 }
 
 bool LL::ArgList() {
-	if (it->first == "eof") return false;
-
 	if (it->first == "id") {
 		nextToken();
 		if (!ArgListList()) return false;
@@ -615,8 +800,6 @@ bool LL::ArgList() {
 }
 
 bool LL::ArgListList() {
-	if (it->first == "eof") return false;
-
 	if (it->first == "comma") {
 		nextToken();
 		if (it->first != "id") return false;

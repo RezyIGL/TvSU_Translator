@@ -2,13 +2,21 @@
 #define TVSU_TRANSLATOR_LL_H
 
 #include "Lexer.h"
+#include <queue>
 
 class LL {
 public:
 	explicit LL(std::istream&);
 	virtual ~LL();
-	std::string validate();
+	void validate();
 private:
+	void nextGraphState(const int &a);
+	void eraseTrash(const std::vector<int>::iterator &da);
+	std::string generateString();
+	std::queue<std::string> finalOutput;
+	std::vector<int> states;
+	std::vector<int>::iterator graphIt;
+	void rollbackIter();
 	Lexer lexer;
 	std::vector<Token> myQueue;
 	std::vector<Token>::iterator it;
