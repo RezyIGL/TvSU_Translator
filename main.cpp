@@ -13,6 +13,8 @@ int main() {
 	 * E;
 	 * ';';
 	 * {StmtList};
+	 * out E;
+	 * in id;
 	 * return E;
 	 */
 

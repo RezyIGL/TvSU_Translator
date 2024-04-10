@@ -11,20 +11,35 @@ public:
 	virtual ~LL();
 	void validate();
 private:
+	// Graph printer
 	void nextGraphState(const int &a);
 	void eraseTrash(const std::vector<int>::iterator &da);
+	void rollbackIter();
+
 	void generateString(const std::string&);
-	std::queue<std::string> finalOutput;
+
 	std::string _input;
 	std::ofstream myStream;
+	std::vector<std::string> outputVector;
+
 	std::vector<int> states;
 	std::vector<int>::iterator graphIt;
-	void rollbackIter();
+
+	int outVecCnt = -1;
+
+	// Syntax analyzer
 	Lexer lexer;
+
 	std::vector<Token> myQueue;
 	std::vector<Token>::iterator it;
+
 	void nextToken();
 	void rollBackChanges(std::vector<Token>::iterator);
+
+	bool StmtList();
+	bool Stmt();
+	bool DeclareStmt();
+	bool DeclareStmtList();
 	bool AssignOrCallOp();
 	bool AssignOrCall();
 	bool AssignOrCallList();
@@ -41,15 +56,12 @@ private:
 	bool ACase();
 	bool InOp();
 	bool OutOp();
-	bool StmtList();
-	bool Stmt();
-	bool DeclareStmt();
 	bool Type();
-	bool DeclareStmtList();
 	bool DeclareVarList();
 	bool InitVar();
 	bool ParamList();
 	bool ParamListList();
+
 	bool Expr();
 	bool Expr7();
 	bool Expr7List();

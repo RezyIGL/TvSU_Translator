@@ -13,8 +13,16 @@ void LL::validate() {
 
 	myStream.open(_input);
 
-	generateString("StmtList");
-	if (StmtList() && it->first == "eof") {
+	// TODO: Change Expr() to StmtList()
+	// TODO: Change Expr to StmtList in generateString()
+
+	generateString("Expr");
+	if (Expr() && it->first == "eof") {
+		while (!outputVector.empty()) {
+			myStream << outputVector.front() << std::endl;
+			outputVector.erase(outputVector.begin());
+		}
+
 		std::cout << "Accepted!" << std::endl;
 	} else {
 		std::cout << "Incorrect Expression!" << std::endl;
@@ -87,71 +95,128 @@ bool LL::Stmt() {
 	if (it->first == "eof") return false;
 
 	auto tempIt = it;
-	auto tempGraph = graphIt;
 
 	// TODO: Make it done
+
+	int tempCnt = outVecCnt;
 
 	if (DeclareStmt()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("DeclareStmt");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (AssignOrCallOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("AssignOrCallOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (WhileOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("WhileOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (ForOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("ForOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (IfOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("IfOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (SwitchOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("SwitchOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (InOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("InOp");
+
+	rollbackIter();
 
 	// TODO: Make it done
 
 	if (OutOp()) {
 		return true;
 	} else {
+		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
+
+	nextGraphState(1);
+	generateString("OutOp");
+
+	rollbackIter();
 
 	if (it->first == "semicolon") {
 		nextToken();
@@ -165,7 +230,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	else if (it->first == "lbrace") {
+	if (it->first == "lbrace") {
 		nextToken();
 
 		nextGraphState(1);
@@ -200,6 +265,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
+	outputVector.erase(outputVector.end() - 1 - 7, outputVector.end());
 	return false;
 }
 
@@ -411,26 +477,95 @@ bool LL::WhileOp() {
 	return true;
 }
 
-// TODO: Make it done
+// TODO: Print InOp Non-Terminal
 
 bool LL::InOp() {
-	if (it->first != "kwin") return false;
+	auto tempGraph = graphIt;
+
+	if (it->first != "kwin") {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	nextGraphState(0);
+	generateString("OutOp");
+
+	nextGraphState(1);
+	generateString("kwin");
+	rollbackIter();
+
 	nextToken();
-	if (it->first != "id") return false;
+
+	tempGraph = graphIt;
+
+	if (it->first != "id") {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	nextGraphState(1);
+	generateString(it->second);
+	rollbackIter();
+
 	nextToken();
-	if (it->first != "semicolon") return false;
+
+	tempGraph = graphIt;
+
+	if (it->first != "semicolon") {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	nextGraphState(0);
+	generateString("semicolon");
+	rollbackIter();
+
 	nextToken();
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
-// TODO: Make it done
+// TODO: Print OutOp Non-Terminal
 
 bool LL::OutOp() {
-	if (it->first != "kwout") return false;
+	auto tempGraph = graphIt;
+
+	if (it->first != "kwout") {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	nextGraphState(0);
+	generateString("OutOp");
+
+	nextGraphState(1);
+	generateString("kwout E");
+
 	nextToken();
-	if (!Expr()) return false;
-	if (it->first != "semicolon") return false;
+
+	tempGraph = graphIt;
+
+	if (!Expr()) {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	tempGraph = graphIt;
+
+	if (it->first != "semicolon") {
+		eraseTrash(tempGraph);
+		return false;
+	}
+
+	nextGraphState(0);
+	generateString("semicolon");
+	rollbackIter();
+
 	nextToken();
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -477,6 +612,8 @@ bool LL::DeclareStmtList() {
 		if (!StmtList()) return false;
 		if (it->first != "rbrace") return false;
 		nextToken();
+
+		rollbackIter();
 		return true;
 	} else if (it->first == "opassign") {
 		nextToken();
@@ -485,12 +622,16 @@ bool LL::DeclareStmtList() {
 			if (!DeclareVarList()) return false;
 			if (it->first != "semicolon") return false;
 			nextToken();
+
+			rollbackIter();
 			return true;
 		} else if (it->first == "char") {
 			nextToken();
 			if (!DeclareVarList()) return false;
 			if (it->first != "semicolon") return false;
 			nextToken();
+
+			rollbackIter();
 			return true;
 		} else {
 			return false;
@@ -499,6 +640,8 @@ bool LL::DeclareStmtList() {
 		if (!DeclareVarList()) return false;
 		if (it->first != "semicolon") return false;
 		nextToken();
+
+		rollbackIter();
 		return true;
 	}
 }
@@ -597,7 +740,7 @@ void LL::generateString(const std::string &abiba) {
 		}
 	}
 
-	myStream << aboba + abiba << std::endl;
+	outputVector.push_back(aboba + abiba);
 }
 
 void LL::rollbackIter() {

@@ -1,20 +1,26 @@
 StmtList
 ├Stmt
-│ ├Stmt
-│ │ └E7
-│ │   ├E6
-│ │   │ ├E5
-│ │   │ │ ├E4
-│ │   │ │ │ ├E3
-│ │   │ │ │ │ ├E2
-│ │   │ │ │ │ │ └E1
-│ │   │ │ │ │ │   └3
-│ │   │ │ │ │ └E3'
-│ │   │ │ │ └E4'
-│ │   │ │ └E5'
-│ │   │ └E6'
-│ │   └E7'
-│ └StmtList
-│   ├Stmt
-│   └StmtList
+│ ├DeclareStmt
+│ ├AssignOrCallOp
+│ ├WhileOp
+│ ├ForOp
+│ ├IfOp
+│ ├SwitchOp
+│ ├InOp
+│ ├OutOp
+│ ├lbrace StmtList
+│ │ ├Stmt
+│ │ │ ├DeclareStmt
+│ │ │ ├AssignOrCallOp
+│ │ │ ├WhileOp
+│ │ │ ├ForOp
+│ │ │ ├IfOp
+│ │ │ ├SwitchOp
+│ │ │ ├InOp
+│ │ │ ├OutOp
+│ │ │ └semicolon
+│ │ └StmtList
+│ │   ├Stmt
+│ │   └StmtList
+│ └rbrace
 └StmtList
