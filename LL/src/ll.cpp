@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-LL::LL(std::istream &stream) : lexer {stream} {}
+LL::LL(std::istream &stream, std::string inputPath) : lexer {stream} {}
 
 LL::~LL() = default;
 
