@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-LL::LL(std::istream &stream, std::string inputPath) : lexer {stream} {}
+LL::LL(std::istream &stream) : lexer {stream} {}
 
 LL::~LL() = default;
 
@@ -10,22 +10,29 @@ void LL::validate() {
 	nextToken();
 	graphIt = states.begin();
 
-// TODO: Change Expr() back to StmtList()
+	std::ofstream myStream;
+
+	myStream.open(R"(E:\CLionProjects\TvSU_Translator\output.txt)");
+//	myStream.clear();
+
+	// TODO: Change Expr() back to StmtList()
 	if (Expr() && it->first == "eof") {
 		while (!finalOutput.empty()) {
-			std::cout << finalOutput.front() << std::endl;
+			myStream << finalOutput.front() << std::endl;
 			finalOutput.pop();
 		}
 
 		std::cout << "\nAccepted!" << std::endl;
 	} else {
 		while (!finalOutput.empty()) {
-			std::cout << finalOutput.front() << std::endl;
+			myStream << finalOutput.front() << std::endl;
 			finalOutput.pop();
 		}
 
 		std::cout << "\nIncorrect Expression!" << std::endl;
 	}
+
+	myStream.close();
 }
 
 void LL::nextGraphState(const int &a) {
