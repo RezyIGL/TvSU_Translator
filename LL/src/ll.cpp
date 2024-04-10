@@ -1,6 +1,5 @@
 #include "ll.h"
 #include <iostream>
-#include <fstream>
 
 LL::LL(std::istream &stream, const std::string &inputPath) : lexer {stream} {
 	_input = inputPath;
@@ -46,15 +45,41 @@ void LL::rollBackChanges(std::vector<Token>::iterator iter) {
 }
 
 bool LL::StmtList() {
-	if (it->first == "eof") return true;
+	auto tempGraph = graphIt;
 
-	auto tempIt = it;
-	if (Stmt()) {
-		if (!StmtList()) return false;
-	} else {
-		rollBackChanges(tempIt);
+	if (it->first == "eof") {
+		eraseTrash(tempGraph);
+		return true;
 	}
 
+	auto tempIt = it;
+	tempGraph = graphIt;
+
+	nextGraphState(1);
+	generateString("Stmt");
+
+	if (Stmt()) {
+
+		tempGraph = graphIt;
+
+		nextGraphState(0);
+		generateString("StmtList");
+
+		if (!StmtList()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
+	} else {
+		rollBackChanges(tempIt);
+		rollbackIter();
+
+		nextGraphState(0);
+		generateString("StmtList");
+
+		rollbackIter();
+	}
+
+	rollbackIter();
 	return true;
 }
 
@@ -62,11 +87,17 @@ bool LL::Stmt() {
 	if (it->first == "eof") return false;
 
 	auto tempIt = it;
+	auto tempGraph = graphIt;
+
+	// TODO: Make it done
+
 	if (DeclareStmt()) {
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
+
+	// TODO: Make it done
 
 	if (AssignOrCallOp()) {
 		return true;
@@ -74,11 +105,15 @@ bool LL::Stmt() {
 		rollBackChanges(tempIt);
 	}
 
+	// TODO: Make it done
+
 	if (WhileOp()) {
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
+
+	// TODO: Make it done
 
 	if (ForOp()) {
 		return true;
@@ -86,11 +121,15 @@ bool LL::Stmt() {
 		rollBackChanges(tempIt);
 	}
 
+	// TODO: Make it done
+
 	if (IfOp()) {
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
+
+	// TODO: Make it done
 
 	if (SwitchOp()) {
 		return true;
@@ -98,11 +137,15 @@ bool LL::Stmt() {
 		rollBackChanges(tempIt);
 	}
 
+	// TODO: Make it done
+
 	if (InOp()) {
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
+
+	// TODO: Make it done
 
 	if (OutOp()) {
 		return true;
@@ -112,25 +155,45 @@ bool LL::Stmt() {
 
 	if (it->first == "semicolon") {
 		nextToken();
+
+		nextGraphState(0);
+		generateString("semicolon");
+
+		rollbackIter();
+
+		rollbackIter();
 		return true;
 	}
 
 	else if (it->first == "lbrace") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("lbrace StmtList");
+
 		if (!StmtList()) return false;
+
 		if (it->first != "rbrace") return false;
+
+		nextGraphState(0);
+		generateString("rbrace");
+
+		rollbackIter();
+
 		nextToken();
+		rollbackIter();
 		return true;
 	}
 
 	else if (it->first == "kwreturn") {
 		nextToken();
 
-
 		nextGraphState(0);
-		generateString("E");
+		generateString("kwreturn E");
+
 		if (!Expr()) return false;
 		if (it->first != "semicolon") return false;
+
 		nextToken();
 
 		rollbackIter();
@@ -139,6 +202,8 @@ bool LL::Stmt() {
 
 	return false;
 }
+
+// TODO: Make it done
 
 bool LL::SwitchOp() {
 	if (it->first != "kwswitch") return false;
@@ -156,11 +221,15 @@ bool LL::SwitchOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::Cases() {
 	if (!ACase()) return false;
 	if (!CasesList()) return false;
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::CasesList() {
 	auto tempIt = it;
@@ -173,6 +242,8 @@ bool LL::CasesList() {
 
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::ACase() {
 	if (it->first == "kwcase") {
@@ -196,6 +267,8 @@ bool LL::ACase() {
 	return false;
 }
 
+// TODO: Make it done
+
 bool LL::ForOp() {
 	if (it->first != "kwfor") return false;
 	nextToken();
@@ -214,6 +287,8 @@ bool LL::ForOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 void LL::ForInit() {
 	auto tempIt = it;
 	if (!Type()) rollBackChanges(tempIt);
@@ -223,6 +298,8 @@ void LL::ForInit() {
 		rollBackChanges(tempIt);
 	}
 }
+
+// TODO: Make it done
 
 void LL::ForExp() {
 	auto tempIt = it;
@@ -234,6 +311,8 @@ void LL::ForExp() {
 	}
 
 }
+
+// TODO: Make it done
 
 bool LL::ForLoop() {
 	if (it->first == "opinc") {
@@ -254,6 +333,8 @@ bool LL::ForLoop() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::IfOp() {
 	if (it->first != "kwif") return false;
 	nextToken();
@@ -267,6 +348,8 @@ bool LL::IfOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::ElsePart() {
 	if (it->first == "kwelse") {
 		nextToken();
@@ -276,6 +359,8 @@ bool LL::ElsePart() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::AssignOrCallOp() {
 	if (!AssignOrCall()) return false;
 	if (it->first != "semicolon") return false;
@@ -283,12 +368,16 @@ bool LL::AssignOrCallOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::AssignOrCall() {
 	if (it->first != "id") return false;
 	nextToken();
 	if (!AssignOrCallList()) return false;
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::AssignOrCallList() {
 	if (it->first == "opassign") {
@@ -308,6 +397,8 @@ bool LL::AssignOrCallList() {
 	return false;
 }
 
+// TODO: Make it done
+
 bool LL::WhileOp() {
 	if (it->first != "kwwhile") return false;
 	nextToken();
@@ -320,6 +411,8 @@ bool LL::WhileOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::InOp() {
 	if (it->first != "kwin") return false;
 	nextToken();
@@ -330,6 +423,8 @@ bool LL::InOp() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::OutOp() {
 	if (it->first != "kwout") return false;
 	nextToken();
@@ -338,6 +433,8 @@ bool LL::OutOp() {
 	nextToken();
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::DeclareStmt() {
 	if (it->first == "eof") return false;
@@ -349,6 +446,8 @@ bool LL::DeclareStmt() {
 
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::Type() {
 	if (it->first == "eof") return false;
@@ -362,6 +461,8 @@ bool LL::Type() {
 
 	return false;
 }
+
+// TODO: Make it done
 
 bool LL::DeclareStmtList() {
 	if (it->first == "eof") return false;
@@ -402,6 +503,8 @@ bool LL::DeclareStmtList() {
 	}
 }
 
+// TODO: Make it done
+
 bool LL::DeclareVarList() {
 	if (it->first == "eof") return false;
 
@@ -415,6 +518,8 @@ bool LL::DeclareVarList() {
 
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::InitVar() {
 	if (it->first == "eof") return false;
@@ -433,6 +538,8 @@ bool LL::InitVar() {
 	return true;
 }
 
+// TODO: Make it done
+
 bool LL::ParamList() {
 	if (it->first == "eof") return false;
 
@@ -448,6 +555,8 @@ bool LL::ParamList() {
 
 	return true;
 }
+
+// TODO: Make it done
 
 bool LL::ParamListList() {
 	if (it->first == "eof") return false;
