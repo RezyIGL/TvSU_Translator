@@ -12,7 +12,7 @@ public:
 private:
 	void nextGraphState(const int &a);
 	void eraseTrash(const std::vector<int>::iterator &da);
-	std::string generateString();
+	void generateString(const std::string&);
 	std::queue<std::string> finalOutput;
 	std::vector<int> states;
 	std::vector<int>::iterator graphIt;
