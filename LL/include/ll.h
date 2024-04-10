@@ -25,7 +25,7 @@ private:
 	std::vector<int> states;
 	std::vector<int>::iterator graphIt;
 
-	int outVecCnt = -1;
+	int outVecCnt = 0;
 
 	// Syntax analyzer
 	Lexer lexer;

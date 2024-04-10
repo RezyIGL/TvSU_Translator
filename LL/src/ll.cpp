@@ -13,11 +13,8 @@ void LL::validate() {
 
 	myStream.open(_input);
 
-	// TODO: Change Expr() to StmtList()
-	// TODO: Change Expr to StmtList in generateString()
-
-	generateString("Expr");
-	if (Expr() && it->first == "eof") {
+	generateString("StmtList");
+	if (StmtList() && it->first == "eof") {
 		while (!outputVector.empty()) {
 			myStream << outputVector.front() << std::endl;
 			outputVector.erase(outputVector.begin());
@@ -103,97 +100,101 @@ bool LL::Stmt() {
 	if (DeclareStmt()) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
 
 	nextGraphState(1);
 	generateString("DeclareStmt");
 
-	rollbackIter();
-
-	// TODO: Make it done
-
-	if (AssignOrCallOp()) {
-		return true;
-	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
-		outVecCnt = tempCnt;
-		rollBackChanges(tempIt);
-	}
-
-	nextGraphState(1);
-	generateString("AssignOrCallOp");
+	tempCnt = outVecCnt;
 
 	rollbackIter();
-
-	// TODO: Make it done
-
-	if (WhileOp()) {
-		return true;
-	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
-		outVecCnt = tempCnt;
-		rollBackChanges(tempIt);
-	}
-
-	nextGraphState(1);
-	generateString("WhileOp");
-
-	rollbackIter();
-
-	// TODO: Make it done
-
-	if (ForOp()) {
-		return true;
-	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
-		outVecCnt = tempCnt;
-		rollBackChanges(tempIt);
-	}
-
-	nextGraphState(1);
-	generateString("ForOp");
-
-	rollbackIter();
-
-	// TODO: Make it done
-
-	if (IfOp()) {
-		return true;
-	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
-		outVecCnt = tempCnt;
-		rollBackChanges(tempIt);
-	}
-
-	nextGraphState(1);
-	generateString("IfOp");
-
-	rollbackIter();
-
-	// TODO: Make it done
-
-	if (SwitchOp()) {
-		return true;
-	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
-		outVecCnt = tempCnt;
-		rollBackChanges(tempIt);
-	}
-
-	nextGraphState(1);
-	generateString("SwitchOp");
-
-	rollbackIter();
+//
+//	// TODO: Make it done
+//
+//	if (AssignOrCallOp()) {
+//		return true;
+//	} else {
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outVecCnt = tempCnt;
+//		rollBackChanges(tempIt);
+//	}
+//
+//	nextGraphState(1);
+//	generateString("AssignOrCallOp");
+//
+//	rollbackIter();
+//
+//	// TODO: Make it done
+//
+//	if (WhileOp()) {
+//		return true;
+//	} else {
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outVecCnt = tempCnt;
+//		rollBackChanges(tempIt);
+//	}
+//
+//	nextGraphState(1);
+//	generateString("WhileOp");
+//
+//	rollbackIter();
+//
+//	// TODO: Make it done
+//
+//	if (ForOp()) {
+//		return true;
+//	} else {
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outVecCnt = tempCnt;
+//		rollBackChanges(tempIt);
+//	}
+//
+//	nextGraphState(1);
+//	generateString("ForOp");
+//
+//	rollbackIter();
+//
+//	// TODO: Make it done
+//
+//	if (IfOp()) {
+//		return true;
+//	} else {
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outVecCnt = tempCnt;
+//		rollBackChanges(tempIt);
+//	}
+//
+//	nextGraphState(1);
+//	generateString("IfOp");
+//
+//	rollbackIter();
+//
+//	// TODO: Make it done
+//
+//	if (SwitchOp()) {
+//		return true;
+//	} else {
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outVecCnt = tempCnt;
+//		rollBackChanges(tempIt);
+//	}
+//
+//	nextGraphState(1);
+//	generateString("SwitchOp");
+//
+//	rollbackIter();
 
 	// TODO: Make it done
 
 	if (InOp()) {
+		rollbackIter();
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
@@ -201,14 +202,17 @@ bool LL::Stmt() {
 	nextGraphState(1);
 	generateString("InOp");
 
+	tempCnt = outVecCnt;
+
 	rollbackIter();
 
 	// TODO: Make it done
 
 	if (OutOp()) {
+		rollbackIter();
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - 1 - outVecCnt, outputVector.end());
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
@@ -250,14 +254,19 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	else if (it->first == "kwreturn") {
+	if (it->first == "kwreturn") {
 		nextToken();
 
-		nextGraphState(0);
+		nextGraphState(1);
 		generateString("kwreturn E");
 
 		if (!Expr()) return false;
 		if (it->first != "semicolon") return false;
+
+		nextGraphState(0);
+		generateString("semicolon");
+
+		rollbackIter();
 
 		nextToken();
 
@@ -265,7 +274,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	outputVector.erase(outputVector.end() - 1 - 7, outputVector.end());
+	outputVector.erase(outputVector.end() - 2 - outVecCnt + tempCnt, outputVector.end());
 	return false;
 }
 
@@ -488,7 +497,7 @@ bool LL::InOp() {
 	}
 
 	nextGraphState(0);
-	generateString("OutOp");
+	generateString("InOp");
 
 	nextGraphState(1);
 	generateString("kwin");
@@ -522,7 +531,6 @@ bool LL::InOp() {
 
 	nextToken();
 
-	rollbackIter();
 	rollbackIter();
 	return true;
 }
@@ -565,7 +573,6 @@ bool LL::OutOp() {
 
 	nextToken();
 	rollbackIter();
-	rollbackIter();
 	return true;
 }
 
@@ -574,11 +581,36 @@ bool LL::OutOp() {
 bool LL::DeclareStmt() {
 	if (it->first == "eof") return false;
 
-	if (!Type()) return false;
-	if (it->first != "id") return false;
-	nextToken();
-	if (!DeclareStmtList()) return false;
+	nextGraphState(0);
+	generateString("DeclareStmt");
 
+	nextGraphState(1);
+	generateString("Type");
+
+	if (!Type()) return false;
+
+	if (it->first != "id") return false;
+
+	nextGraphState(1);
+	generateString(it->second);
+	rollbackIter();
+
+	rollbackIter();
+
+	nextToken();
+
+	nextGraphState(0);
+	generateString("DeclareStmt'");
+
+	auto tempGr = graphIt;
+
+	if (!DeclareStmtList()) {
+		eraseTrash(tempGr);
+		return false;
+	}
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -594,6 +626,7 @@ bool LL::Type() {
 		return true;
 	}
 
+	rollbackIter();
 	return false;
 }
 
@@ -638,8 +671,14 @@ bool LL::DeclareStmtList() {
 		}
 	} else {
 		if (!DeclareVarList()) return false;
+
 		if (it->first != "semicolon") return false;
 		nextToken();
+
+		nextGraphState(0);
+		generateString("semicolon");
+
+		rollbackIter();
 
 		rollbackIter();
 		return true;
@@ -651,6 +690,9 @@ bool LL::DeclareStmtList() {
 bool LL::DeclareVarList() {
 	if (it->first == "eof") return false;
 
+	nextGraphState(1);
+	generateString("DeclareVarList");
+
 	if (it->first == "comma") {
 		nextToken();
 		if (it->first != "id") return false;
@@ -659,6 +701,7 @@ bool LL::DeclareVarList() {
 		if (!DeclareVarList()) return false;
 	}
 
+	rollbackIter();
 	return true;
 }
 
@@ -740,6 +783,7 @@ void LL::generateString(const std::string &abiba) {
 		}
 	}
 
+	outVecCnt++;
 	outputVector.push_back(aboba + abiba);
 }
 
