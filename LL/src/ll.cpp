@@ -1,5 +1,6 @@
 #include "ll.h"
 #include <iostream>
+#include <fstream>
 
 LL::LL(std::istream &stream) : lexer {stream} {}
 
