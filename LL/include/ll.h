@@ -6,7 +6,7 @@
 
 class LL {
 public:
-	explicit LL(std::istream&);
+	explicit LL(std::istream&, std::string inputPath);
 	virtual ~LL();
 	void validate();
 private:
