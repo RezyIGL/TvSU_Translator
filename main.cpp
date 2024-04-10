@@ -1,10 +1,8 @@
-#include <iostream>
-#include <fstream>
 #include "ll.h"
 
 int main() {
-	std::fstream input(R"(E:\CLionProjects\TvSU_Translator\miniC-code.txt)");
-	LL ll(input);
+ // TODO: Pass inputFile name to LL constructor
+	LL ll();
 	ll.validate();
 
 	return 0;
