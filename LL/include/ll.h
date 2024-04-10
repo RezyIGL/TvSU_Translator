@@ -6,7 +6,7 @@
 
 class LL {
 public:
-	explicit LL(std::istream&, std::string inputPath);
+	explicit LL(std::istream&, const std::string &);
 	virtual ~LL();
 	void validate();
 private:
@@ -14,6 +14,7 @@ private:
 	void eraseTrash(const std::vector<int>::iterator &da);
 	void generateString(const std::string&);
 	std::queue<std::string> finalOutput;
+	std::string _input;
 	std::vector<int> states;
 	std::vector<int>::iterator graphIt;
 	void rollbackIter();

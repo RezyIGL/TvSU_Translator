@@ -2,7 +2,9 @@
 #include <iostream>
 #include <fstream>
 
-LL::LL(std::istream &stream, std::string inputPath) : lexer {stream} {}
+LL::LL(std::istream &stream, const std::string &inputPath) : lexer {stream} {
+	_input = inputPath;
+}
 
 LL::~LL() = default;
 
@@ -12,13 +14,10 @@ void LL::validate() {
 
 	std::ofstream myStream;
 
-	myStream.open(R"(E:\CLionProjects\TvSU_Translator\output.txt)");
-//	myStream.clear();
+	myStream.open(_input);
 
-	// TODO: Change Expr() back to StmtList()
-	// TODO: Change generateString argument to StmtList()
-	generateString("E");
-	if (Expr() && it->first == "eof") {
+	generateString("StmtList");
+	if (StmtList() && it->first == "eof") {
 		while (!finalOutput.empty()) {
 			myStream << finalOutput.front() << std::endl;
 			finalOutput.pop();
@@ -139,12 +138,14 @@ bool LL::Stmt() {
 	else if (it->first == "kwreturn") {
 		nextToken();
 
-		// TODO: delete this line
-		nextGraphState(0);
 
+		nextGraphState(0);
+		generateString("E");
 		if (!Expr()) return false;
 		if (it->first != "semicolon") return false;
 		nextToken();
+
+		rollbackIter();
 		return true;
 	}
 
