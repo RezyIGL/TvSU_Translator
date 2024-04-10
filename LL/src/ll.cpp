@@ -12,25 +12,13 @@ void LL::validate() {
 	nextToken();
 	graphIt = states.begin();
 
-	std::ofstream myStream;
-
 	myStream.open(_input);
 
 	generateString("StmtList");
 	if (StmtList() && it->first == "eof") {
-		while (!finalOutput.empty()) {
-			myStream << finalOutput.front() << std::endl;
-			finalOutput.pop();
-		}
-
-		std::cout << "\nAccepted!" << std::endl;
+		std::cout << "Accepted!" << std::endl;
 	} else {
-		while (!finalOutput.empty()) {
-			myStream << finalOutput.front() << std::endl;
-			finalOutput.pop();
-		}
-
-		std::cout << "\nIncorrect Expression!" << std::endl;
+		std::cout << "Incorrect Expression!" << std::endl;
 	}
 
 	myStream.close();
@@ -500,7 +488,7 @@ void LL::generateString(const std::string &abiba) {
 		}
 	}
 
-	finalOutput.emplace(aboba + abiba);
+	myStream << aboba + abiba << std::endl;
 }
 
 void LL::rollbackIter() {

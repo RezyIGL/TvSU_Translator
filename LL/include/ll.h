@@ -3,6 +3,7 @@
 
 #include "Lexer.h"
 #include <queue>
+#include <fstream>
 
 class LL {
 public:
@@ -15,6 +16,7 @@ private:
 	void generateString(const std::string&);
 	std::queue<std::string> finalOutput;
 	std::string _input;
+	std::ofstream myStream;
 	std::vector<int> states;
 	std::vector<int>::iterator graphIt;
 	void rollbackIter();
