@@ -9,7 +9,8 @@ void LL::validate() {
 	nextToken();
 	graphIt = states.begin();
 
-	if (StmtList() && it->first == "eof") {
+// TODO: Change Expr() back to StmtList()
+	if (Expr() && it->first == "eof") {
 		while (!finalOutput.empty()) {
 			std::cout << finalOutput.front() << std::endl;
 			finalOutput.pop();
