@@ -148,14 +148,13 @@ bool LL::Stmt() {
 
 	rollbackIter();
 
-	// TODO: Make it done
-
 	if (ForOp()) {
 		return true;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
 
 	nextGraphState(1);
@@ -181,7 +180,7 @@ bool LL::Stmt() {
 
 	rollbackIter();
 
-	// TODO: Make it done
+	// TODO: Write Graph printer for this shit
 
 	if (SwitchOp()) {
 		return true;
@@ -353,66 +352,124 @@ bool LL::ACase() {
 // TODO: Make it done
 
 bool LL::ForOp() {
+	nextGraphState(0);
+	generateString("ForOp");
+
 	if (it->first != "kwfor") return false;
+
+	nextGraphState(1);
+	generateString("kwfor");
+	rollbackIter();
 	nextToken();
+
 	if (it->first != "lpar") return false;
+
+	nextGraphState(1);
+	generateString("lpar ForInit");
 	nextToken();
+
 	ForInit();
+	rollbackIter();
+
 	if (it->first != "semicolon") return false;
+
+	nextGraphState(1);
+	generateString("semicolon ForExp");
 	nextToken();
+
 	ForExp();
+	rollbackIter();
+
 	if (it->first != "semicolon") return false;
+
+	nextGraphState(1);
+	generateString("semicolon ForLoop");
 	nextToken();
+
+	nextGraphState(0);
 	if (!ForLoop()) return false;
+	rollbackIter();
+
 	if (it->first != "rpar") return false;
+
+	nextGraphState(0);
+	generateString("rpar Stmt");
 	nextToken();
-	if (!Stmt()) return false;
+
+	int tempCnt = outVecCnt;
+
+	if (!Stmt()) {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		return false;
+	}
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
-// TODO: Make it done
-
 void LL::ForInit() {
 	auto tempIt = it;
-	if (!Type()) rollBackChanges(tempIt);
+	int tempCnt = outVecCnt;
+
+	nextGraphState(0);
+	generateString("AssignOrCall");
+
 	if (AssignOrCall()) {
 		return;
 	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
 }
 
-// TODO: Make it done
+// TODO: Fix it. Because you can't do for (;;). But you can do for (id = num;;) or for (;E;)
 
 void LL::ForExp() {
 	auto tempIt = it;
+	int tempCnt = outVecCnt;
+
+	nextGraphState(0);
+	generateString("E");
 
 	if (Expr()) {
 		return;
 	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
-
 }
-
-// TODO: Make it done
 
 bool LL::ForLoop() {
 	if (it->first == "opinc") {
+		nextGraphState(1);
+		generateString("opinc");
+		rollbackIter();
 		nextToken();
+
 		if (it->first != "id") return false;
+
+		nextGraphState(0);
+		generateString(it->second);
+		rollbackIter();
 		nextToken();
+
+		rollbackIter();
 		return true;
 	}
 
 	auto tempIt = it;
 
 	if (AssignOrCall()) {
+		rollbackIter();
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
 
+	rollbackIter();
 	return true;
 }
 
@@ -919,7 +976,7 @@ void LL::eraseTrash(const std::vector<int>::iterator &da) {
 
 void LL::generateString(const std::string &abiba) {
 	std::string aboba;
-	for (auto i = states.begin(); i != states.end(); i++) {
+	for (auto i = states.begin(); i != states.end(); ++i) {
 		if (i == states.end() - 1) {
 			if (*i == 1) {
 				aboba += "├";
@@ -933,7 +990,7 @@ void LL::generateString(const std::string &abiba) {
 		if (*i == 1) {
 			aboba += "│ ";
 		} else {
-			aboba += "  ";
+			aboba += " ";
 		}
 	}
 
