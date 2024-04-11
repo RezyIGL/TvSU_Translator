@@ -93,9 +93,9 @@ bool LL::Stmt() {
 
 	auto tempIt = it;
 
-	// TODO: Make it done
-
 	int tempCnt = outVecCnt;
+
+	// TODO: Доделать до конца, а не 50%
 
 	if (DeclareStmt()) {
 		return true;
@@ -128,7 +128,6 @@ bool LL::Stmt() {
 //
 //	rollbackIter();
 //
-	// TODO: Make it done
 
 	if (WhileOp()) {
 		return true;
@@ -161,20 +160,22 @@ bool LL::Stmt() {
 //
 //	rollbackIter();
 //
-//	// TODO: Make it done
-//
-//	if (IfOp()) {
-//		return true;
-//	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-//		outVecCnt = tempCnt;
-//		rollBackChanges(tempIt);
-//	}
-//
-//	nextGraphState(1);
-//	generateString("IfOp");
-//
-//	rollbackIter();
+
+	if (IfOp()) {
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outVecCnt = tempCnt;
+		rollBackChanges(tempIt);
+		rollbackIter();
+	}
+
+	nextGraphState(1);
+	generateString("IfOp");
+
+	tempCnt = outVecCnt;
+
+	rollbackIter();
 //
 //	// TODO: Make it done
 //
@@ -191,8 +192,6 @@ bool LL::Stmt() {
 //
 //	rollbackIter();
 
-	// TODO: Make it done
-
 	if (InOp()) {
 		rollbackIter();
 		return true;
@@ -208,8 +207,6 @@ bool LL::Stmt() {
 	tempCnt = outVecCnt;
 
 	rollbackIter();
-
-	// TODO: Make it done
 
 	if (OutOp()) {
 		rollbackIter();
@@ -236,6 +233,8 @@ bool LL::Stmt() {
 		rollbackIter();
 		return true;
 	}
+
+	// TODO: FIX THIS FUCKING BULLSHIT
 
 	if (it->first == "lbrace") {
 		nextToken();
@@ -411,29 +410,61 @@ bool LL::ForLoop() {
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::IfOp() {
+
+	nextGraphState(0);
+	generateString("IfOp");
+
 	if (it->first != "kwif") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("kwif");
+	rollbackIter();
+
 	if (it->first != "lpar") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("lpar E");
+
 	if (!Expr()) return false;
+
 	if (it->first != "rpar") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("rpar Stmt");
+
 	if (!Stmt()) return false;
-	if (!ElsePart()) return false;
+
+	int tempCnt = outVecCnt;
+
+	if (!ElsePart()) {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		return false;
+	}
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::ElsePart() {
+
+	nextGraphState(0);
+	generateString("ElsePart");
+
 	if (it->first == "kwelse") {
 		nextToken();
+
+		nextGraphState(0);
+		generateString("kwelse Stmt");
+
 		if (!Stmt()) return false;
 	}
 
+	rollbackIter();
 	return true;
 }
 
@@ -510,8 +541,6 @@ bool LL::WhileOp() {
 	return true;
 }
 
-// TODO: Print InOp Non-Terminal
-
 bool LL::InOp() {
 	auto tempGraph = graphIt;
 
@@ -558,8 +587,6 @@ bool LL::InOp() {
 	rollbackIter();
 	return true;
 }
-
-// TODO: Print OutOp Non-Terminal
 
 bool LL::OutOp() {
 	auto tempGraph = graphIt;
