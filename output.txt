@@ -16,7 +16,23 @@ StmtList
 │   │   │ │ │ ├E3
 │   │   │ │ │ │ ├E2
 │   │   │ │ │ │ │ └E1
-│   │   │ │ │ │ │   └a E1'
+│   │   │ │ │ │ │   ├lpar E
+│   │   │ │ │ │ │   │ └E7
+│   │   │ │ │ │ │   │   ├E6
+│   │   │ │ │ │ │   │   │ ├E5
+│   │   │ │ │ │ │   │   │ │ ├E4
+│   │   │ │ │ │ │   │   │ │ │ ├E3
+│   │   │ │ │ │ │   │   │ │ │ │ ├E2
+│   │   │ │ │ │ │   │   │ │ │ │ │ └E1
+│   │   │ │ │ │ │   │   │ │ │ │ │   └a E1'
+│   │   │ │ │ │ │   │   │ │ │ │ │     ├lpar ArgList
+│   │   │ │ │ │ │   │   │ │ │ │ │     └rpar
+│   │   │ │ │ │ │   │   │ │ │ │ └E3'
+│   │   │ │ │ │ │   │   │ │ │ └E4'
+│   │   │ │ │ │ │   │   │ │ └E5'
+│   │   │ │ │ │ │   │   │ └E6'
+│   │   │ │ │ │ │   │   └E7'
+│   │   │ │ │ │ │   └rpar
 │   │   │ │ │ │ └E3'
 │   │   │ │ │ └E4'
 │   │   │ │ └E5'
@@ -24,41 +40,3 @@ StmtList
 │   │   └E7'
 │   └semicolon
 └StmtList
-  ├Stmt
-  │ ├DeclareStmt
-  │ └AssignOrCallOp
-  │   ├AssignOrCall
-  │   │ └b AssignOrCall'
-  │   │   └opassign E
-  │   │     └E7
-  │   │       ├E6
-  │   │       │ ├E5
-  │   │       │ │ ├E4
-  │   │       │ │ │ ├E3
-  │   │       │ │ │ │ ├E2
-  │   │       │ │ │ │ │ └E1
-  │   │       │ │ │ │ │   └3
-  │   │       │ │ │ │ └E3'
-  │   │       │ │ │ └E4'
-  │   │       │ │ │   ├opplus E3
-  │   │       │ │ │   │ ├E2
-  │   │       │ │ │   │ │ └E1
-  │   │       │ │ │   │ │   └4
-  │   │       │ │ │   │ └E3'
-  │   │       │ │ │   └E4'
-  │   │       │ │ └E5'
-  │   │       │ └E6'
-  │   │       └E7'
-  │   └semicolon
-  └StmtList
-    ├Stmt
-    │ ├DeclareStmt
-    │ └AssignOrCallOp
-    │   ├AssignOrCall
-    │   │ └c AssignOrCall'
-    │   │   ├lpar ArgList
-    │   │   └rpar
-    │   └semicolon
-    └StmtList
-      ├Stmt
-      │ └StmtList

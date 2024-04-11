@@ -114,8 +114,6 @@ bool LL::Stmt() {
 
 	rollbackIter();
 
-	// TODO: Make it done
-
 	if (AssignOrCallOp()) {
 		return true;
 	} else {
@@ -476,8 +474,6 @@ bool LL::ElsePart() {
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::AssignOrCallOp() {
 
 	nextGraphState(0);
@@ -500,8 +496,6 @@ bool LL::AssignOrCallOp() {
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::AssignOrCall() {
 	if (it->first != "id") return false;
 
@@ -514,8 +508,6 @@ bool LL::AssignOrCall() {
 	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::AssignOrCallList() {
 	if (it->first == "opassign") {
@@ -1393,40 +1385,32 @@ bool LL::Expr1() {
 	return false;
 }
 
-// TODO: Add ArgList
-
 bool LL::Expr1List() {
-//	if (it->first == "lpar") {
-//		nextToken();
-//		nextGraphState(1);
-//		generateString("lpar ArgList");
-//
-//		auto tempGraph = graphIt;
-//
-//		if (!ArgList()) {
-//			eraseTrash(tempGraph);
-//			return false;
-//		}
-//
-//		tempGraph = graphIt;
-//
-//		nextGraphState(0);
-//		if (it->first != "rpar") {
-//			eraseTrash(tempGraph);
-//			return false;
-//		}
-//
-//		generateString("rpar");
-//
-//		nextToken();
-//		rollbackIter();
-//	} else if (it->first == "opinc") {
-//		nextToken();
-//
-//		nextGraphState(0);
-//		generateString("opinc");
-//		rollbackIter();
-//	}
+	if (it->first == "lpar") {
+		nextToken();
+
+		auto tempGraph = graphIt;
+		nextGraphState(1);
+		generateString("lpar ArgList");
+
+		if (!ArgList()) {
+			eraseTrash(tempGraph);
+			return false;
+		}
+
+		tempGraph = graphIt;
+
+		if (it->first != "rpar") {
+			eraseTrash(tempGraph);
+			return false;
+		}
+
+		nextGraphState(0);
+		generateString("rpar");
+
+		nextToken();
+		rollbackIter();
+	}
 
 	if (it->first == "opinc") {
 		nextToken();
