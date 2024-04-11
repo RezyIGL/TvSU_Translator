@@ -122,7 +122,10 @@ bool LL::Stmt() {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
+
+	rollbackIter();
 
 	nextGraphState(1);
 	generateString("AssignOrCallOp");
@@ -476,9 +479,24 @@ bool LL::ElsePart() {
 // TODO: Make it done
 
 bool LL::AssignOrCallOp() {
+
+	nextGraphState(0);
+	generateString("AssignOrCallOp");
+
+	nextGraphState(1);
+	generateString("AssignOrCall");
+
 	if (!AssignOrCall()) return false;
+
 	if (it->first != "semicolon") return false;
+
+	nextGraphState(0);
+	generateString("semicolon");
+	rollbackIter();
 	nextToken();
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -486,8 +504,14 @@ bool LL::AssignOrCallOp() {
 
 bool LL::AssignOrCall() {
 	if (it->first != "id") return false;
+
+	nextGraphState(0);
+	generateString(it->second + " AssignOrCall'");
+
 	nextToken();
 	if (!AssignOrCallList()) return false;
+
+	rollbackIter();
 	return true;
 }
 
@@ -496,18 +520,33 @@ bool LL::AssignOrCall() {
 bool LL::AssignOrCallList() {
 	if (it->first == "opassign") {
 		nextToken();
+
+		nextGraphState(0);
+		generateString("opassign E");
+
 		if (!Expr()) return false;
+
+		rollbackIter();
 		return true;
 	}
 
 	if (it->first == "lpar") {
 		nextToken();
-		if (!ParamList()) return false;
+
+		nextGraphState(1);
+		generateString("lpar ArgList");
+
+		if (!ArgList()) return false;
 		if (it->first != "rpar") return false;
+
+		nextGraphState(0);
+		generateString("rpar");
+		rollbackIter();
+
 		nextToken();
+		rollbackIter();
 		return true;
 	}
-
 	return false;
 }
 
