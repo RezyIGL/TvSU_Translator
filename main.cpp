@@ -16,8 +16,9 @@ int main() {
 	 * ;
 	 * { StmtList };
 	 * return Expr;
+	 * AssignOrCallOp
 	 *
-	 * TODO: Make output for -> ForOp && SwitchOp && AssignOrCallOp!!
+	 * TODO: Make output for -> ForOp && SwitchOp!!
 	 */
 
 	LL ll(input, output);
