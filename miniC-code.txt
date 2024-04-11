@@ -1,1 +1,13 @@
-out (a());
+int main() {
+    int a, b;
+
+    in a;
+    in b;
+
+    int c = 0;
+    c = a + b;
+
+    out c;
+
+    return 0;
+}
