@@ -128,21 +128,24 @@ bool LL::Stmt() {
 //
 //	rollbackIter();
 //
-//	// TODO: Make it done
-//
-//	if (WhileOp()) {
-//		return true;
-//	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-//		outVecCnt = tempCnt;
-//		rollBackChanges(tempIt);
-//	}
-//
-//	nextGraphState(1);
-//	generateString("WhileOp");
-//
-//	rollbackIter();
-//
+	// TODO: Make it done
+
+	if (WhileOp()) {
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outVecCnt = tempCnt;
+		rollBackChanges(tempIt);
+		rollbackIter();
+	}
+
+	nextGraphState(1);
+	generateString("WhileOp");
+
+	tempCnt = outVecCnt;
+
+	rollbackIter();
+
 //	// TODO: Make it done
 //
 //	if (ForOp()) {
@@ -475,14 +478,35 @@ bool LL::AssignOrCallList() {
 // TODO: Make it done
 
 bool LL::WhileOp() {
+
+	nextGraphState(0);
+	generateString("WhileOp");
+
 	if (it->first != "kwwhile") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("kwwhile");
+	rollbackIter();
+
 	if (it->first != "lpar") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("lpar E");
+
 	if (!Expr()) return false;
+
 	if (it->first != "rpar") return false;
 	nextToken();
+
+	nextGraphState(0);
+	generateString("rpar Stmt");
+
 	if (!Stmt()) return false;
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -591,7 +615,7 @@ bool LL::DeclareStmt() {
 
 	if (it->first != "id") return false;
 
-	nextGraphState(1);
+	nextGraphState(0);
 	generateString(it->second);
 	rollbackIter();
 
@@ -622,6 +646,9 @@ bool LL::Type() {
 	if (it->first == "kwint" ||
 	    it->first == "kwchar")
 	{
+		nextGraphState(1);
+		generateString(it->first);
+		rollbackIter();
 		nextToken();
 		return true;
 	}
@@ -1270,7 +1297,7 @@ bool LL::Expr1List() {
 bool LL::ArgList() {
 	if (it->first == "id") {
 		nextGraphState(0);
-		generateString(it->second + " ArgListList");
+		generateString(it->second + " ArgList'");
 
 		nextToken();
 
@@ -1302,7 +1329,7 @@ bool LL::ArgListList() {
 			return false;
 		}
 
-		generateString(it->second + " ArgListList");
+		generateString(it->second + " ArgList'");
 
 		nextToken();
 		tempGraph = graphIt;
