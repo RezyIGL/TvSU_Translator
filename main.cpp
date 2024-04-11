@@ -8,16 +8,16 @@ int main() {
 	/*
 	 * Currently you can write:
 	 *
-	 * DeclareStmt
-	 * WhileOp
-	 * IfOp
-	 * InOp
-	 * OutOp
-	 * ';';
-	 * {StmtList};
-	 * return;
+	 * int id; | char id; | int id(ParamList) { StmtList } | char id(ParamList) { StmtList }
+	 * while (Expr) Stmt
+	 * if (Expr) Stmt else Stmt | if (Expr) Stmt
+	 * in id;
+	 * out Expr;
+	 * ;
+	 * { StmtList };
+	 * return Expr;
 	 *
-	 * TODO: ForOp, SwitchOp, AssignOrCallOp
+	 * TODO: Make output for -> ForOp && SwitchOp && AssignOrCallOp!!
 	 */
 
 	LL ll(input, output);

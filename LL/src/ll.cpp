@@ -98,8 +98,6 @@ bool LL::Stmt() {
 
 	int tempCnt = outVecCnt;
 
-	// TODO: Fix -> Type id()
-
 	if (DeclareStmt()) {
 		return true;
 	} else {
@@ -115,22 +113,23 @@ bool LL::Stmt() {
 	tempCnt = outVecCnt;
 
 	rollbackIter();
-//
-//	// TODO: Make it done
-//
-//	if (AssignOrCallOp()) {
-//		return true;
-//	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-//		outVecCnt = tempCnt;
-//		rollBackChanges(tempIt);
-//	}
-//
-//	nextGraphState(1);
-//	generateString("AssignOrCallOp");
-//
-//	rollbackIter();
-//
+
+	// TODO: Make it done
+
+	if (AssignOrCallOp()) {
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outVecCnt = tempCnt;
+		rollBackChanges(tempIt);
+	}
+
+	nextGraphState(1);
+	generateString("AssignOrCallOp");
+
+	tempCnt = outVecCnt;
+
+	rollbackIter();
 
 	if (WhileOp()) {
 		return true;
@@ -148,21 +147,22 @@ bool LL::Stmt() {
 
 	rollbackIter();
 
-//	// TODO: Make it done
-//
-//	if (ForOp()) {
-//		return true;
-//	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-//		outVecCnt = tempCnt;
-//		rollBackChanges(tempIt);
-//	}
-//
-//	nextGraphState(1);
-//	generateString("ForOp");
-//
-//	rollbackIter();
-//
+	// TODO: Make it done
+
+	if (ForOp()) {
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outVecCnt = tempCnt;
+		rollBackChanges(tempIt);
+	}
+
+	nextGraphState(1);
+	generateString("ForOp");
+
+	tempCnt = outVecCnt;
+
+	rollbackIter();
 
 	if (IfOp()) {
 		return true;
@@ -179,21 +179,23 @@ bool LL::Stmt() {
 	tempCnt = outVecCnt;
 
 	rollbackIter();
-//
-//	// TODO: Make it done
-//
-//	if (SwitchOp()) {
-//		return true;
-//	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-//		outVecCnt = tempCnt;
-//		rollBackChanges(tempIt);
-//	}
-//
-//	nextGraphState(1);
-//	generateString("SwitchOp");
-//
-//	rollbackIter();
+
+	// TODO: Make it done
+
+	if (SwitchOp()) {
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outVecCnt = tempCnt;
+		rollBackChanges(tempIt);
+	}
+
+	nextGraphState(1);
+	generateString("SwitchOp");
+
+	tempCnt = outVecCnt;
+
+	rollbackIter();
 
 	if (InOp()) {
 		rollbackIter();
@@ -237,8 +239,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: FIX THIS FUCKING BULLSHIT
-
 	if (it->first == "lbrace") {
 		nextToken();
 
@@ -281,7 +281,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	outputVector.erase(outputVector.end() - 4 - outVecCnt + tempCnt, outputVector.end());
+	outputVector.erase(outputVector.end() - 7 - outVecCnt + tempCnt, outputVector.end());
 	return false;
 }
 
@@ -641,27 +641,15 @@ bool LL::DeclareStmt() {
 
 	if (!Type()) return false;
 
+	rollbackIter();
+
 	if (it->first != "id") return false;
 
 	nextGraphState(0);
-	generateString(it->second);
-	rollbackIter();
-
-	rollbackIter();
-
+	generateString(it->second + " DeclareStmt'");
 	nextToken();
 
-	nextGraphState(0);
-	generateString("DeclareStmt'");
-
-	auto tempCnt = outVecCnt;
-	auto tempGr = graphIt;
-
-	if (!DeclareStmtList()) {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-		eraseTrash(tempGr);
-		return false;
-	}
+	if (!DeclareStmtList()) return false;
 
 	rollbackIter();
 	rollbackIter();
@@ -674,10 +662,11 @@ bool LL::Type() {
 	if (it->first == "kwint" ||
 	    it->first == "kwchar")
 	{
-		nextGraphState(1);
+		nextGraphState(0);
 		generateString(it->first);
 
 		rollbackIter();
+
 		nextToken();
 		return true;
 	}
@@ -702,15 +691,13 @@ bool LL::DeclareStmtList() {
 		nextGraphState(1);
 		generateString("rpar");
 		rollbackIter();
-
 		nextToken();
 
 		if (it->first != "lbrace") return false;
 
-		nextToken();
-
 		nextGraphState(1);
 		generateString("lbrace StmtList");
+		nextToken();
 
 		if (!StmtList()) return false;
 
@@ -719,63 +706,67 @@ bool LL::DeclareStmtList() {
 		nextGraphState(0);
 		generateString("rbrace");
 		rollbackIter();
-
 		nextToken();
 
 		rollbackIter();
 		return true;
 	} else if (it->first == "opassign") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("opassign");
+		rollbackIter();
+
 		if (it->first == "num") {
 			nextGraphState(1);
-			generateString("opassign " + it->second + " DeclareVarList");
-
+			generateString(it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
+
+			rollbackIter();
+
 			if (it->first != "semicolon") return false;
 
 			nextGraphState(0);
 			generateString("semicolon");
-
 			nextToken();
 
 			rollbackIter();
+
 			rollbackIter();
 			return true;
 		} else if (it->first == "char") {
 			nextGraphState(1);
-			generateString("opassign " + it->second + " DeclareVarList");
-
+			generateString(it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
+
+			rollbackIter();
+
 			if (it->first != "semicolon") return false;
 
 			nextGraphState(0);
 			generateString("semicolon");
-
 			nextToken();
 
 			rollbackIter();
+
 			rollbackIter();
 			return true;
 		} else {
 			return false;
 		}
 	} else {
-		nextGraphState(1);
-		generateString("DeclareVarList");
-
 		if (!DeclareVarList()) return false;
-
 		if (it->first != "semicolon") return false;
-		nextToken();
 
 		nextGraphState(0);
 		generateString("semicolon");
-
 		rollbackIter();
+		nextToken();
+
 		rollbackIter();
 		return true;
 	}
@@ -784,32 +775,30 @@ bool LL::DeclareStmtList() {
 bool LL::DeclareVarList() {
 	if (it->first == "eof") return false;
 
-	auto tempCnt = outVecCnt;
-
 	if (it->first == "comma") {
-		nextToken();
 
 		nextGraphState(1);
 		generateString("comma");
 		rollbackIter();
+		nextToken();
 
 		if (it->first != "id") return false;
 
 		nextGraphState(1);
 		generateString(it->second + " InitVar");
-
 		nextToken();
+
 		if (!InitVar()) return false;
 
-		nextGraphState(0);
+		rollbackIter();
+		nextGraphState(1);
 		generateString("DeclareVarList");
 
 		if (!DeclareVarList()) return false;
-	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+
+		rollbackIter();
 	}
 
-	rollbackIter();
 	return true;
 }
 
@@ -818,47 +807,45 @@ bool LL::InitVar() {
 
 	if (it->first == "opassign") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("opassign");
+		rollbackIter();
+
 		if (it->first == "num" ||
 		    it->first == "char")
 		{
-			nextGraphState(1);
-			generateString("opassign");
-
-			rollbackIter();
 			nextGraphState(0);
-			generateString(it->first);
-
+			generateString(it->second);
+			rollbackIter();
 			nextToken();
-			rollbackIter();
-			rollbackIter();
 			return true;
 		}
 		return false;
 	}
 
-	rollbackIter();
 	return true;
 }
 
 bool LL::ParamList() {
 	if (it->first == "eof") return false;
 
-	nextGraphState(0);
-	generateString("Type");
-
 	auto tempIt = it;
 	auto tempCnt = outVecCnt;
+
+	nextGraphState(1);
+	generateString("Type");
 
 	if (Type()) {
 		if (it->first != "id") return false;
 
+		rollbackIter();
+
 		nextGraphState(0);
 		generateString(it->second + " ParamList'");
-
 		nextToken();
-		if (!ParamListList()) return false;
 
-		rollbackIter();
+		if (!ParamListList()) return false;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		rollBackChanges(tempIt);
@@ -874,19 +861,20 @@ bool LL::ParamListList() {
 	if (it->first == "comma") {
 		nextToken();
 
-		nextGraphState(0);
+		nextGraphState(1);
 		generateString("comma Type");
 
 		if (!Type()) return false;
+
+		rollbackIter();
 
 		if (it->first != "id") return false;
 
 		nextGraphState(0);
 		generateString(it->second + " ParamList'");
-
 		nextToken();
+
 		if (!ParamListList()) return false;
-		rollbackIter();
 	}
 
 	rollbackIter();
@@ -1366,32 +1354,42 @@ bool LL::Expr1() {
 	return false;
 }
 
+// TODO: Add ArgList
+
 bool LL::Expr1List() {
-	auto tempGraph = graphIt;
+//	if (it->first == "lpar") {
+//		nextToken();
+//		nextGraphState(1);
+//		generateString("lpar ArgList");
+//
+//		auto tempGraph = graphIt;
+//
+//		if (!ArgList()) {
+//			eraseTrash(tempGraph);
+//			return false;
+//		}
+//
+//		tempGraph = graphIt;
+//
+//		nextGraphState(0);
+//		if (it->first != "rpar") {
+//			eraseTrash(tempGraph);
+//			return false;
+//		}
+//
+//		generateString("rpar");
+//
+//		nextToken();
+//		rollbackIter();
+//	} else if (it->first == "opinc") {
+//		nextToken();
+//
+//		nextGraphState(0);
+//		generateString("opinc");
+//		rollbackIter();
+//	}
 
-	if (it->first == "lpar") {
-		nextToken();
-		nextGraphState(1);
-		generateString("lpar ArgList");
-
-		if (!ArgList()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
-
-		tempGraph = graphIt;
-
-		nextGraphState(0);
-		if (it->first != "rpar") {
-			eraseTrash(tempGraph);
-			return false;
-		}
-
-		generateString("rpar");
-
-		nextToken();
-		rollbackIter();
-	} else if (it->first == "opinc") {
+	if (it->first == "opinc") {
 		nextToken();
 
 		nextGraphState(0);
@@ -1415,6 +1413,9 @@ bool LL::ArgList() {
 			eraseTrash(tempGraph);
 			return false;
 		}
+
+		rollbackIter();
+		return true;
 	}
 
 	rollbackIter();
