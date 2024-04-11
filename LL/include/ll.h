@@ -8,7 +8,6 @@
 class LL {
 public:
 	explicit LL(std::istream&, const std::string &);
-	virtual ~LL();
 	void validate();
 private:
 	// Graph printer

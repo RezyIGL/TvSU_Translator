@@ -5,8 +5,6 @@ LL::LL(std::istream &stream, const std::string &inputPath) : lexer {stream} {
 	_input = inputPath;
 }
 
-LL::~LL() = default;
-
 void LL::validate() {
 	nextToken();
 	graphIt = states.begin();
@@ -22,6 +20,11 @@ void LL::validate() {
 
 		std::cout << "Accepted!" << std::endl;
 	} else {
+		while (!outputVector.empty()) {
+			myStream << outputVector.front() << std::endl;
+			outputVector.erase(outputVector.begin());
+		}
+
 		std::cout << "Incorrect Expression!" << std::endl;
 	}
 
@@ -95,7 +98,7 @@ bool LL::Stmt() {
 
 	int tempCnt = outVecCnt;
 
-	// TODO: Доделать до конца, а не 50%
+	// TODO: Fix -> Type id()
 
 	if (DeclareStmt()) {
 		return true;
@@ -242,6 +245,8 @@ bool LL::Stmt() {
 		nextGraphState(1);
 		generateString("lbrace StmtList");
 
+		int tempCnt = outVecCnt;
+
 		if (!StmtList()) return false;
 
 		if (it->first != "rbrace") return false;
@@ -276,7 +281,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	outputVector.erase(outputVector.end() - 2 - outVecCnt + tempCnt, outputVector.end());
+	outputVector.erase(outputVector.end() - 4 - outVecCnt + tempCnt, outputVector.end());
 	return false;
 }
 
@@ -506,8 +511,6 @@ bool LL::AssignOrCallList() {
 	return false;
 }
 
-// TODO: Make it done
-
 bool LL::WhileOp() {
 
 	nextGraphState(0);
@@ -627,8 +630,6 @@ bool LL::OutOp() {
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::DeclareStmt() {
 	if (it->first == "eof") return false;
 
@@ -653,9 +654,11 @@ bool LL::DeclareStmt() {
 	nextGraphState(0);
 	generateString("DeclareStmt'");
 
+	auto tempCnt = outVecCnt;
 	auto tempGr = graphIt;
 
 	if (!DeclareStmtList()) {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		eraseTrash(tempGr);
 		return false;
 	}
@@ -665,8 +668,6 @@ bool LL::DeclareStmt() {
 	return true;
 }
 
-// TODO: Make it done
-
 bool LL::Type() {
 	if (it->first == "eof") return false;
 
@@ -675,6 +676,7 @@ bool LL::Type() {
 	{
 		nextGraphState(1);
 		generateString(it->first);
+
 		rollbackIter();
 		nextToken();
 		return true;
@@ -684,20 +686,40 @@ bool LL::Type() {
 	return false;
 }
 
-// TODO: Make it done
-
 bool LL::DeclareStmtList() {
 	if (it->first == "eof") return false;
 
 	if (it->first == "lpar") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("lpar ParamList");
+
 		if (!ParamList()) return false;
+
 		if (it->first != "rpar") return false;
+
+		nextGraphState(1);
+		generateString("rpar");
+		rollbackIter();
+
 		nextToken();
+
 		if (it->first != "lbrace") return false;
+
 		nextToken();
+
+		nextGraphState(1);
+		generateString("lbrace StmtList");
+
 		if (!StmtList()) return false;
+
 		if (it->first != "rbrace") return false;
+
+		nextGraphState(0);
+		generateString("rbrace");
+		rollbackIter();
+
 		nextToken();
 
 		rollbackIter();
@@ -705,25 +727,46 @@ bool LL::DeclareStmtList() {
 	} else if (it->first == "opassign") {
 		nextToken();
 		if (it->first == "num") {
+			nextGraphState(1);
+			generateString("opassign " + it->second + " DeclareVarList");
+
 			nextToken();
+
 			if (!DeclareVarList()) return false;
 			if (it->first != "semicolon") return false;
+
+			nextGraphState(0);
+			generateString("semicolon");
+
 			nextToken();
 
 			rollbackIter();
+			rollbackIter();
 			return true;
 		} else if (it->first == "char") {
-			nextToken();
-			if (!DeclareVarList()) return false;
-			if (it->first != "semicolon") return false;
+			nextGraphState(1);
+			generateString("opassign " + it->second + " DeclareVarList");
+
 			nextToken();
 
+			if (!DeclareVarList()) return false;
+			if (it->first != "semicolon") return false;
+
+			nextGraphState(0);
+			generateString("semicolon");
+
+			nextToken();
+
+			rollbackIter();
 			rollbackIter();
 			return true;
 		} else {
 			return false;
 		}
 	} else {
+		nextGraphState(1);
+		generateString("DeclareVarList");
+
 		if (!DeclareVarList()) return false;
 
 		if (it->first != "semicolon") return false;
@@ -733,33 +776,42 @@ bool LL::DeclareStmtList() {
 		generateString("semicolon");
 
 		rollbackIter();
-
 		rollbackIter();
 		return true;
 	}
 }
 
-// TODO: Make it done
-
 bool LL::DeclareVarList() {
 	if (it->first == "eof") return false;
 
-	nextGraphState(1);
-	generateString("DeclareVarList");
+	auto tempCnt = outVecCnt;
 
 	if (it->first == "comma") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("comma");
+		rollbackIter();
+
 		if (it->first != "id") return false;
+
+		nextGraphState(1);
+		generateString(it->second + " InitVar");
+
 		nextToken();
 		if (!InitVar()) return false;
+
+		nextGraphState(0);
+		generateString("DeclareVarList");
+
 		if (!DeclareVarList()) return false;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 	}
 
 	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::InitVar() {
 	if (it->first == "eof") return false;
@@ -769,46 +821,75 @@ bool LL::InitVar() {
 		if (it->first == "num" ||
 		    it->first == "char")
 		{
+			nextGraphState(1);
+			generateString("opassign");
+
+			rollbackIter();
+			nextGraphState(0);
+			generateString(it->first);
+
 			nextToken();
+			rollbackIter();
+			rollbackIter();
 			return true;
 		}
 		return false;
 	}
 
+	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::ParamList() {
 	if (it->first == "eof") return false;
 
+	nextGraphState(0);
+	generateString("Type");
+
 	auto tempIt = it;
+	auto tempCnt = outVecCnt;
 
 	if (Type()) {
 		if (it->first != "id") return false;
+
+		nextGraphState(0);
+		generateString(it->second + " ParamList'");
+
 		nextToken();
 		if (!ParamListList()) return false;
+
+		rollbackIter();
 	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		rollBackChanges(tempIt);
 	}
 
+	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::ParamListList() {
 	if (it->first == "eof") return false;
 
 	if (it->first == "comma") {
 		nextToken();
+
+		nextGraphState(0);
+		generateString("comma Type");
+
 		if (!Type()) return false;
+
 		if (it->first != "id") return false;
+
+		nextGraphState(0);
+		generateString(it->second + " ParamList'");
+
 		nextToken();
 		if (!ParamListList()) return false;
+		rollbackIter();
 	}
 
+	rollbackIter();
 	return true;
 }
 

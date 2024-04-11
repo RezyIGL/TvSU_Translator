@@ -1,1 +1,7 @@
-return a;
+while(i>0) {
+    if (a)
+        while (++j) {
+    out 1;
+    }
+    else ;;;;;;
+}

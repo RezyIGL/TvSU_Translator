@@ -17,7 +17,6 @@ private:
 public:
 	explicit Lexer(std::istream& stream);
 	Token getNextToken();
-
 };
 
 #endif //LEXER_LEXER_H

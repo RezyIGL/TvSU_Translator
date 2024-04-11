@@ -8,14 +8,16 @@ int main() {
 	/*
 	 * Currently you can write:
 	 *
-	 * StmtList;
-	 * Stmt (partially);
-	 * E;
+	 * DeclareStmt
+	 * WhileOp
+	 * IfOp
+	 * InOp
+	 * OutOp
 	 * ';';
 	 * {StmtList};
-	 * out E;
-	 * in id;
-	 * return E;
+	 * return;
+	 *
+	 * TODO: ForOp, SwitchOp, AssignOrCallOp
 	 */
 
 	LL ll(input, output);

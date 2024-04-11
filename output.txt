@@ -1,21 +1,156 @@
 StmtList
 ├Stmt
 │ ├DeclareStmt
-│ ├InOp
-│ ├OutOp
-│ ├kwreturn E
-│ │ └E7
-│ │   ├E6
-│ │   │ ├E5
-│ │   │ │ ├E4
-│ │   │ │ │ ├E3
-│ │   │ │ │ │ ├E2
-│ │   │ │ │ │ │ └E1
-│ │   │ │ │ │ │   └a E1'
-│ │   │ │ │ │ └E3'
-│ │   │ │ │ └E4'
-│ │   │ │ └E5'
-│ │   │ └E6'
-│ │   └E7'
-│ └semicolon
+│ └WhileOp
+│   ├kwwhile
+│   ├lpar E
+│   │ └E7
+│   │   ├E6
+│   │   │ ├E5
+│   │   │ │ ├E4
+│   │   │ │ │ ├E3
+│   │   │ │ │ │ ├E2
+│   │   │ │ │ │ │ └E1
+│   │   │ │ │ │ │   └i E1'
+│   │   │ │ │ │ └E3'
+│   │   │ │ │ └E4'
+│   │   │ │ └E5'
+│   │   │ │   └opgt E4
+│   │   │ │     ├E3
+│   │   │ │     │ ├E2
+│   │   │ │     │ │ └E1
+│   │   │ │     │ │   └0
+│   │   │ │     │ └E3'
+│   │   │ │     └E4'
+│   │   │ └E6'
+│   │   └E7'
+│   └rpar Stmt
+│     ├DeclareStmt
+│     ├WhileOp
+│     ├IfOp
+│     ├InOp
+│     ├OutOp
+│     ├lbrace StmtList
+│     │ ├Stmt
+│     │ │ ├DeclareStmt
+│     │ │ ├WhileOp
+│     │ │ └IfOp
+│     │ │   ├kwif
+│     │ │   ├lpar E
+│     │ │   │ └E7
+│     │ │   │   ├E6
+│     │ │   │   │ ├E5
+│     │ │   │   │ │ ├E4
+│     │ │   │   │ │ │ ├E3
+│     │ │   │   │ │ │ │ ├E2
+│     │ │   │   │ │ │ │ │ └E1
+│     │ │   │   │ │ │ │ │   └a E1'
+│     │ │   │   │ │ │ │ └E3'
+│     │ │   │   │ │ │ └E4'
+│     │ │   │   │ │ └E5'
+│     │ │   │   │ └E6'
+│     │ │   │   └E7'
+│     │ │   ├rpar Stmt
+│     │ │   │ ├DeclareStmt
+│     │ │   │ └WhileOp
+│     │ │   │   ├kwwhile
+│     │ │   │   ├lpar E
+│     │ │   │   │ └E7
+│     │ │   │   │   ├E6
+│     │ │   │   │   │ ├E5
+│     │ │   │   │   │ │ ├E4
+│     │ │   │   │   │ │ │ ├E3
+│     │ │   │   │   │ │ │ │ ├E2
+│     │ │   │   │   │ │ │ │ │ └E1
+│     │ │   │   │   │ │ │ │ │   ├opinc
+│     │ │   │   │   │ │ │ │ │   └j
+│     │ │   │   │   │ │ │ │ └E3'
+│     │ │   │   │   │ │ │ └E4'
+│     │ │   │   │   │ │ └E5'
+│     │ │   │   │   │ └E6'
+│     │ │   │   │   └E7'
+│     │ │   │   └rpar Stmt
+│     │ │   │     ├DeclareStmt
+│     │ │   │     ├WhileOp
+│     │ │   │     ├IfOp
+│     │ │   │     ├InOp
+│     │ │   │     ├OutOp
+│     │ │   │     ├lbrace StmtList
+│     │ │   │     │ ├Stmt
+│     │ │   │     │ │ ├DeclareStmt
+│     │ │   │     │ │ ├WhileOp
+│     │ │   │     │ │ ├IfOp
+│     │ │   │     │ │ ├InOp
+│     │ │   │     │ │ └OutOp
+│     │ │   │     │ │   ├kwout E
+│     │ │   │     │ │   │ └E7
+│     │ │   │     │ │   │   ├E6
+│     │ │   │     │ │   │   │ ├E5
+│     │ │   │     │ │   │   │ │ ├E4
+│     │ │   │     │ │   │   │ │ │ ├E3
+│     │ │   │     │ │   │   │ │ │ │ ├E2
+│     │ │   │     │ │   │   │ │ │ │ │ └E1
+│     │ │   │     │ │   │   │ │ │ │ │   └1
+│     │ │   │     │ │   │   │ │ │ │ └E3'
+│     │ │   │     │ │   │   │ │ │ └E4'
+│     │ │   │     │ │   │   │ │ └E5'
+│     │ │   │     │ │   │   │ └E6'
+│     │ │   │     │ │   │   └E7'
+│     │ │   │     │ │   └semicolon
+│     │ │   │     │ └StmtList
+│     │ │   │     │   ├Stmt
+│     │ │   │     │   └StmtList
+│     │ │   │     └rbrace
+│     │ │   └ElsePart
+│     │ │     └kwelse Stmt
+│     │ │       ├DeclareStmt
+│     │ │       ├WhileOp
+│     │ │       ├IfOp
+│     │ │       ├InOp
+│     │ │       ├OutOp
+│     │ │       └semicolon
+│     │ └StmtList
+│     │   ├Stmt
+│     │   │ ├DeclareStmt
+│     │   │ ├WhileOp
+│     │   │ ├IfOp
+│     │   │ ├InOp
+│     │   │ ├OutOp
+│     │   │ └semicolon
+│     │   └StmtList
+│     │     ├Stmt
+│     │     │ ├DeclareStmt
+│     │     │ ├WhileOp
+│     │     │ ├IfOp
+│     │     │ ├InOp
+│     │     │ ├OutOp
+│     │     │ └semicolon
+│     │     └StmtList
+│     │       ├Stmt
+│     │       │ ├DeclareStmt
+│     │       │ ├WhileOp
+│     │       │ ├IfOp
+│     │       │ ├InOp
+│     │       │ ├OutOp
+│     │       │ └semicolon
+│     │       └StmtList
+│     │         ├Stmt
+│     │         │ ├DeclareStmt
+│     │         │ ├WhileOp
+│     │         │ ├IfOp
+│     │         │ ├InOp
+│     │         │ ├OutOp
+│     │         │ └semicolon
+│     │         └StmtList
+│     │           ├Stmt
+│     │           │ ├DeclareStmt
+│     │           │ ├WhileOp
+│     │           │ ├IfOp
+│     │           │ ├InOp
+│     │           │ ├OutOp
+│     │           │ └semicolon
+│     │           └StmtList
+│     │             ├Stmt
+│     │             └StmtList
+│     └rbrace
 └StmtList
