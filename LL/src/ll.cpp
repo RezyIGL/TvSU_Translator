@@ -1,6 +1,10 @@
 #include "ll.h"
 #include <iostream>
 
+/*
+ * TODO: Make output for -> SwitchOp!!
+*/
+
 LL::LL(std::istream &stream, const std::string &inputPath) : lexer {stream} {
 	_input = inputPath;
 }
@@ -302,10 +306,10 @@ bool LL::Cases() {
 	return true;
 }
 
+// TODO: Implement ACase rollback
+
 bool LL::CasesList() {
 	auto tempIt = it;
-
-	// TODO: Implement ACase rollback
 
 	if (ACase()) {
 
@@ -457,7 +461,7 @@ bool LL::ForLoop() {
 		if (it->first != "id") return false;
 
 		nextGraphState(0);
-		generateString(it->second);
+		generateString(" " + it->second);
 		rollbackIter();
 		nextToken();
 
@@ -562,7 +566,7 @@ bool LL::AssignOrCall() {
 	if (it->first != "id") return false;
 
 	nextGraphState(0);
-	generateString(it->second + " AssignOrCall'");
+	generateString(" " + it->second + " AssignOrCall'");
 
 	nextToken();
 	if (!AssignOrCallList()) return false;
@@ -663,7 +667,7 @@ bool LL::InOp() {
 	}
 
 	nextGraphState(1);
-	generateString(it->second);
+	generateString(" " + it->second);
 	rollbackIter();
 
 	nextToken();
@@ -732,7 +736,7 @@ bool LL::DeclareStmt() {
 	if (it->first != "id") return false;
 
 	nextGraphState(0);
-	generateString(it->second + " DeclareStmt'");
+	generateString(" " + it->second + " DeclareStmt'");
 	nextToken();
 
 	if (!DeclareStmtList()) return false;
@@ -805,7 +809,7 @@ bool LL::DeclareStmtList() {
 
 		if (it->first == "num") {
 			nextGraphState(1);
-			generateString(it->second + " DeclareVarList");
+			generateString(" " + it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
@@ -824,7 +828,7 @@ bool LL::DeclareStmtList() {
 			return true;
 		} else if (it->first == "char") {
 			nextGraphState(1);
-			generateString(it->second + " DeclareVarList");
+			generateString(" " + it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
@@ -871,7 +875,7 @@ bool LL::DeclareVarList() {
 		if (it->first != "id") return false;
 
 		nextGraphState(1);
-		generateString(it->second + " InitVar");
+		generateString(" " + it->second + " InitVar");
 		nextToken();
 
 		if (!InitVar()) return false;
@@ -902,7 +906,7 @@ bool LL::InitVar() {
 		    it->first == "char")
 		{
 			nextGraphState(0);
-			generateString(it->second);
+			generateString(" " + it->second);
 			rollbackIter();
 			nextToken();
 			return true;
@@ -928,7 +932,7 @@ bool LL::ParamList() {
 		rollbackIter();
 
 		nextGraphState(0);
-		generateString(it->second + " ParamList'");
+		generateString(" " + it->second + " ParamList'");
 		nextToken();
 
 		if (!ParamListList()) return false;
@@ -957,7 +961,7 @@ bool LL::ParamListList() {
 		if (it->first != "id") return false;
 
 		nextGraphState(0);
-		generateString(it->second + " ParamList'");
+		generateString(" " + it->second + " ParamList'");
 		nextToken();
 
 		if (!ParamListList()) return false;
@@ -1386,7 +1390,7 @@ bool LL::Expr1() {
 			return false;
 		}
 
-		generateString(it->second);
+		generateString(" " + it->second);
 
 		rollbackIter();
 
@@ -1412,13 +1416,13 @@ bool LL::Expr1() {
 		return true;
 	} else if (it->first == "num") {
 		nextGraphState(0);
-		generateString(it->second);
+		generateString(" " + it->second);
 		nextToken();
 		rollbackIter();
 		return true;
 	} else if (it->first == "id") {
 		nextGraphState(0);
-		generateString(it->second + " E1'");
+		generateString(" " + it->second + " E1'");
 		nextToken();
 
 		if (!Expr1List()) {
@@ -1475,7 +1479,7 @@ bool LL::Expr1List() {
 bool LL::ArgList() {
 	if (it->first == "id") {
 		nextGraphState(0);
-		generateString(it->second + " ArgList'");
+		generateString(" " + it->second + " ArgList'");
 
 		nextToken();
 
@@ -1510,7 +1514,7 @@ bool LL::ArgListList() {
 			return false;
 		}
 
-		generateString(it->second + " ArgList'");
+		generateString(" " + it->second + " ArgList'");
 
 		nextToken();
 		tempGraph = graphIt;
