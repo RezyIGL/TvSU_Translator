@@ -20,11 +20,6 @@ void LL::validate() {
 
 		std::cout << "Accepted!" << std::endl;
 	} else {
-		while (!outputVector.empty()) {
-			myStream << outputVector.front() << std::endl;
-			outputVector.erase(outputVector.begin());
-		}
-
 		std::cout << "Incorrect Expression!" << std::endl;
 	}
 
@@ -95,7 +90,6 @@ bool LL::Stmt() {
 	if (it->first == "eof") return false;
 
 	auto tempIt = it;
-
 	int tempCnt = outVecCnt;
 
 	if (DeclareStmt()) {
@@ -107,12 +101,7 @@ bool LL::Stmt() {
 		rollbackIter();
 	}
 
-	nextGraphState(1);
-	generateString("DeclareStmt");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
 
 	if (AssignOrCallOp()) {
 		return true;
@@ -123,14 +112,7 @@ bool LL::Stmt() {
 		rollbackIter();
 	}
 
-	rollbackIter();
-
-	nextGraphState(1);
-	generateString("AssignOrCallOp");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
 
 	if (WhileOp()) {
 		return true;
@@ -139,14 +121,10 @@ bool LL::Stmt() {
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
+		rollbackIter();
 	}
 
-	nextGraphState(1);
-	generateString("WhileOp");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
 
 	if (ForOp()) {
 		return true;
@@ -157,12 +135,7 @@ bool LL::Stmt() {
 		rollbackIter();
 	}
 
-	nextGraphState(1);
-	generateString("ForOp");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
 
 	if (IfOp()) {
 		return true;
@@ -173,14 +146,7 @@ bool LL::Stmt() {
 		rollbackIter();
 	}
 
-	nextGraphState(1);
-	generateString("IfOp");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
-
-	// TODO: Write Graph printer for this shit
 
 	if (SwitchOp()) {
 		return true;
@@ -188,33 +154,22 @@ bool LL::Stmt() {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
+		rollbackIter();
 	}
 
-	nextGraphState(1);
-	generateString("SwitchOp");
-
 	tempCnt = outVecCnt;
-
-	rollbackIter();
 
 	if (InOp()) {
-		rollbackIter();
 		return true;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
-
-	nextGraphState(1);
-	generateString("InOp");
 
 	tempCnt = outVecCnt;
 
-	rollbackIter();
-
 	if (OutOp()) {
-		rollbackIter();
 		return true;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
@@ -222,10 +177,7 @@ bool LL::Stmt() {
 		rollBackChanges(tempIt);
 	}
 
-	nextGraphState(1);
-	generateString("OutOp");
-
-	rollbackIter();
+	tempCnt = outVecCnt;
 
 	if (it->first == "semicolon") {
 		nextToken();
@@ -245,7 +197,7 @@ bool LL::Stmt() {
 		nextGraphState(1);
 		generateString("lbrace StmtList");
 
-		int tempCnt = outVecCnt;
+		tempCnt = outVecCnt;
 
 		if (!StmtList()) return false;
 
@@ -281,53 +233,105 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	outputVector.erase(outputVector.end() - 7 - outVecCnt + tempCnt, outputVector.end());
 	return false;
 }
 
-// TODO: Make it done
-
 bool LL::SwitchOp() {
+
+	nextGraphState(0);
+	generateString("SwitchOp");
+
 	if (it->first != "kwswitch") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("kwswitch");
+	rollbackIter();
+
 	if (it->first != "lpar") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("lpar E");
+	rollbackIter();
+
 	if (!Expr()) return false;
+
 	if (it->first != "rpar") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("rpar");
+	rollbackIter();
+
 	if (it->first != "lbrace") return false;
 	nextToken();
+
+	nextGraphState(1);
+	generateString("lbrace Cases");
+	rollbackIter();
+
 	if (!Cases()) return false;
+
 	if (it->first != "rbrace") return false;
 	nextToken();
+
+	nextGraphState(0);
+	generateString("rbrace");
+	rollbackIter();
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::Cases() {
+
+	nextGraphState(1);
+	generateString("ACase");
+
 	if (!ACase()) return false;
+
+	nextGraphState(0);
+	generateString("CasesList");
+
 	if (!CasesList()) return false;
+
+	rollbackIter();
+	rollbackIter();
 	return true;
 }
-
-// TODO: Make it done
 
 bool LL::CasesList() {
 	auto tempIt = it;
+
+	// TODO: Implement ACase rollback
+
 	if (ACase()) {
+
+		nextGraphState(0);
+		generateString("CasesList");
+
 		if (!CasesList()) return false;
+
+		rollbackIter();
+		rollbackIter();
 		return true;
 	} else {
 		rollBackChanges(tempIt);
 	}
 
+	rollbackIter();
 	return true;
 }
 
 // TODO: Make it done
 
 bool LL::ACase() {
+
+	nextGraphState(0);
+	generateString("ACase");
+
 	if (it->first == "kwcase") {
 		nextToken();
 		if (it->first != "num") return false;
@@ -349,8 +353,6 @@ bool LL::ACase() {
 	return false;
 }
 
-// TODO: Make it done
-
 bool LL::ForOp() {
 	nextGraphState(0);
 	generateString("ForOp");
@@ -369,7 +371,6 @@ bool LL::ForOp() {
 	nextToken();
 
 	ForInit();
-	rollbackIter();
 
 	if (it->first != "semicolon") return false;
 
@@ -378,7 +379,6 @@ bool LL::ForOp() {
 	nextToken();
 
 	ForExp();
-	rollbackIter();
 
 	if (it->first != "semicolon") return false;
 
@@ -416,15 +416,15 @@ void LL::ForInit() {
 	generateString("AssignOrCall");
 
 	if (AssignOrCall()) {
+		rollbackIter();
 		return;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		rollBackChanges(tempIt);
 		rollbackIter();
+		rollbackIter();
 	}
 }
-
-// TODO: Fix it. Because you can't do for (;;). But you can do for (id = num;;) or for (;E;)
 
 void LL::ForExp() {
 	auto tempIt = it;
@@ -434,9 +434,14 @@ void LL::ForExp() {
 	generateString("E");
 
 	if (Expr()) {
+		rollbackIter();
 		return;
 	} else {
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) {
+			rollbackIter();
+		}
+		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
@@ -629,6 +634,7 @@ bool LL::WhileOp() {
 
 	rollbackIter();
 	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -676,6 +682,7 @@ bool LL::InOp() {
 	nextToken();
 
 	rollbackIter();
+	rollbackIter();
 	return true;
 }
 
@@ -687,33 +694,24 @@ bool LL::OutOp() {
 		return false;
 	}
 
+	nextToken();
+
 	nextGraphState(0);
 	generateString("OutOp");
 
 	nextGraphState(1);
 	generateString("kwout E");
 
+	if (!Expr()) return false;
+	if (it->first != "semicolon") return false;
+
 	nextToken();
-
-	tempGraph = graphIt;
-
-	if (!Expr()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
-
-	tempGraph = graphIt;
-
-	if (it->first != "semicolon") {
-		eraseTrash(tempGraph);
-		return false;
-	}
 
 	nextGraphState(0);
 	generateString("semicolon");
-	rollbackIter();
 
-	nextToken();
+	rollbackIter();
+	rollbackIter();
 	rollbackIter();
 	return true;
 }
@@ -879,7 +877,7 @@ bool LL::DeclareVarList() {
 		if (!InitVar()) return false;
 
 		rollbackIter();
-		nextGraphState(1);
+		nextGraphState(0);
 		generateString("DeclareVarList");
 
 		if (!DeclareVarList()) return false;
@@ -970,8 +968,8 @@ bool LL::ParamListList() {
 }
 
 void LL::eraseTrash(const std::vector<int>::iterator &da) {
-	states.erase(da, graphIt);
-	graphIt = da;
+	// I deleted this function. It killed every part of my code.
+	// Now I just don't want to delete it everywhere.
 }
 
 void LL::generateString(const std::string &abiba) {
@@ -1008,10 +1006,8 @@ bool LL::Expr() {
 
 	nextGraphState(0);
 	generateString("E7");
-	if (!Expr7()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+
+	if (!Expr7()) return false;
 
 	rollbackIter();
 	return true;
@@ -1397,20 +1393,16 @@ bool LL::Expr1() {
 		nextToken();
 		return true;
 	} else if (it->first == "lpar") {
-		nextToken();
+
 		nextGraphState(1);
 		generateString("lpar E");
 
-		if (!Expr()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		nextToken();
+
+		if (!Expr()) return false;
 
 		nextGraphState(0);
-		if (it->first != "rpar") {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (it->first != "rpar") return false;
 
 		generateString("rpar");
 

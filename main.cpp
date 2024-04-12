@@ -3,7 +3,7 @@
 
 int main() {
     std::string output = R"(E:\CLionProjects\TvSU_Translator\output.txt)";
-    std::fstream input(R"(E:\CLionProjects\TvSU_Translator\miniC-code.txt)");
+    std::fstream input(R"(E:\CLionProjects\TvSU_Translator\input.minic)");
 
 	/*
 	 * Currently you can write:
