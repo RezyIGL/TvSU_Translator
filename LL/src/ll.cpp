@@ -1,10 +1,6 @@
 #include "ll.h"
 #include <iostream>
 
-/*
- * TODO: Make output for -> SwitchOp!!
-*/
-
 LL::LL(std::istream &stream, const std::string &inputPath) : lexer {stream} {
 	_input = inputPath;
 }
@@ -80,8 +76,7 @@ bool LL::StmtList() {
 		rollBackChanges(tempIt);
 		rollbackIter();
 
-		nextGraphState(0);
-		generateString("StmtList");
+		outputVector.erase(outputVector.end() - 1);
 
 		rollbackIter();
 	}
@@ -257,7 +252,6 @@ bool LL::SwitchOp() {
 
 	nextGraphState(1);
 	generateString("lpar E");
-	rollbackIter();
 
 	if (!Expr()) return false;
 
@@ -273,7 +267,6 @@ bool LL::SwitchOp() {
 
 	nextGraphState(1);
 	generateString("lbrace Cases");
-	rollbackIter();
 
 	if (!Cases()) return false;
 
@@ -282,8 +275,8 @@ bool LL::SwitchOp() {
 
 	nextGraphState(0);
 	generateString("rbrace");
-	rollbackIter();
 
+	rollbackIter();
 	rollbackIter();
 	rollbackIter();
 	return true;
@@ -306,51 +299,75 @@ bool LL::Cases() {
 	return true;
 }
 
-// TODO: Implement ACase rollback
-
 bool LL::CasesList() {
 	auto tempIt = it;
+	int tempCnt = outVecCnt;
+
+	nextGraphState(1);
+	generateString("ACase");
 
 	if (ACase()) {
-
 		nextGraphState(0);
 		generateString("CasesList");
 
 		if (!CasesList()) return false;
 
 		rollbackIter();
-		rollbackIter();
 		return true;
 	} else {
+		for (int i = 0; i < outVecCnt - tempCnt; i++) {
+			rollbackIter();
+		}
+
+		outputVector.erase(outputVector.end() - 1, outputVector.end());
+
 		rollBackChanges(tempIt);
+		return true;
 	}
-
-	rollbackIter();
-	return true;
 }
-
-// TODO: Make it done
 
 bool LL::ACase() {
 
-	nextGraphState(0);
-	generateString("ACase");
-
 	if (it->first == "kwcase") {
+
+		nextGraphState(1);
+		generateString("kwcase");
 		nextToken();
+		rollbackIter();
+
 		if (it->first != "num") return false;
+
+		nextGraphState(1);
+		generateString(" " + it->second);
 		nextToken();
+		rollbackIter();
+
 		if (it->first != "colon") return false;
+
+		nextGraphState(0);
+		generateString("colon StmtList");
 		nextToken();
+
 		if (!StmtList()) return false;
+
 		return true;
 	}
 
 	if (it->first == "kwdefault") {
+
+		nextGraphState(1);
+		generateString("kwdefault");
 		nextToken();
+		rollbackIter();
+
 		if (it->first != "colon") return false;
+
+		nextGraphState(0);
+		generateString("colon StmtList");
 		nextToken();
+
 		if (!StmtList()) return false;
+
 		return true;
 	}
 
