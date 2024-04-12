@@ -77,8 +77,6 @@ bool LL::StmtList() {
 		rollbackIter();
 
 		outputVector.erase(outputVector.end() - 1);
-
-		rollbackIter();
 	}
 
 	rollbackIter();
@@ -288,6 +286,7 @@ bool LL::Cases() {
 	generateString("ACase");
 
 	if (!ACase()) return false;
+	rollbackIter();
 
 	nextGraphState(0);
 	generateString("CasesList");
@@ -307,6 +306,8 @@ bool LL::CasesList() {
 	generateString("ACase");
 
 	if (ACase()) {
+		rollbackIter();
+
 		nextGraphState(0);
 		generateString("CasesList");
 
@@ -831,8 +832,6 @@ bool LL::DeclareStmtList() {
 
 			if (!DeclareVarList()) return false;
 
-			rollbackIter();
-
 			if (it->first != "semicolon") return false;
 
 			nextGraphState(0);
@@ -850,8 +849,6 @@ bool LL::DeclareStmtList() {
 
 			if (!DeclareVarList()) return false;
 
-			rollbackIter();
-
 			if (it->first != "semicolon") return false;
 
 			nextGraphState(0);
@@ -859,7 +856,6 @@ bool LL::DeclareStmtList() {
 			nextToken();
 
 			rollbackIter();
-
 			rollbackIter();
 			return true;
 		} else {
@@ -874,6 +870,8 @@ bool LL::DeclareStmtList() {
 		rollbackIter();
 		nextToken();
 
+		rollbackIter();
+		rollbackIter();
 		rollbackIter();
 		return true;
 	}
@@ -902,8 +900,6 @@ bool LL::DeclareVarList() {
 		generateString("DeclareVarList");
 
 		if (!DeclareVarList()) return false;
-
-		rollbackIter();
 	}
 
 	return true;
