@@ -839,7 +839,6 @@ bool LL::DeclareStmtList() {
 			nextToken();
 
 			rollbackIter();
-
 			rollbackIter();
 			return true;
 		} else if (it->first == "char") {
@@ -862,6 +861,10 @@ bool LL::DeclareStmtList() {
 			return false;
 		}
 	} else {
+
+		nextGraphState(1);
+		generateString("DeclareVarList");
+
 		if (!DeclareVarList()) return false;
 		if (it->first != "semicolon") return false;
 
@@ -870,8 +873,6 @@ bool LL::DeclareStmtList() {
 		rollbackIter();
 		nextToken();
 
-		rollbackIter();
-		rollbackIter();
 		rollbackIter();
 		return true;
 	}
@@ -902,6 +903,7 @@ bool LL::DeclareVarList() {
 		if (!DeclareVarList()) return false;
 	}
 
+	rollbackIter();
 	return true;
 }
 
