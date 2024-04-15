@@ -2,7 +2,7 @@
 #include <fstream>
 
 int main() {
-    std::string output = "../output.txt";
+    std::string output = "../output.graph";
     std::fstream input("../input.minic");
 
 	LL ll(input, output);
