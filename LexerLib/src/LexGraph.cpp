@@ -121,6 +121,7 @@ std::map<int, std::vector<E>> TokenFSM = {
 		    }},
 		{23, {
 				    {"DIGIT", true, true, 23, ""},
+				     {"_", true, false, 23, ""},
 				    {"", false, false, 0, "num"}
 		    }},
 		{24, {

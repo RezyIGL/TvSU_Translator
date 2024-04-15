@@ -1,4 +1,4 @@
-int a, b = 3, c;
+int a, b = 33_2321_123, c;
 char a, b, c = 'a';
 
 int a() {};
