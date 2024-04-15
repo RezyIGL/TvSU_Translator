@@ -9,18 +9,18 @@ void LL::validate() {
 	nextToken();
 	graphIt = states.begin();
 
-	myStream.open(_input);
-
 	generateString("StmtList");
 	if (StmtList() && it->first == "eof") {
-		while (!outputVector.empty()) {
-			myStream << outputVector.front() << std::endl;
-			outputVector.erase(outputVector.begin());
-		}
-
 		std::cout << "Accepted!" << std::endl;
 	} else {
 		std::cout << "Incorrect Expression!" << std::endl;
+	}
+
+	myStream.open(_input);
+
+	while (!outputVector.empty()) {
+		myStream << outputVector.front() << std::endl;
+		outputVector.erase(outputVector.begin());
 	}
 
 	myStream.close();
@@ -50,10 +50,7 @@ void LL::rollBackChanges(std::vector<Token>::iterator iter) {
 bool LL::StmtList() {
 	auto tempGraph = graphIt;
 
-	if (it->first == "eof") {
-		eraseTrash(tempGraph);
-		return true;
-	}
+	if (it->first == "eof") return true;
 
 	auto tempIt = it;
 	tempGraph = graphIt;
@@ -68,10 +65,7 @@ bool LL::StmtList() {
 		nextGraphState(0);
 		generateString("StmtList");
 
-		if (!StmtList()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!StmtList()) return false;
 	} else {
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -183,7 +177,6 @@ bool LL::Stmt() {
 		generateString("semicolon");
 
 		rollbackIter();
-
 		rollbackIter();
 		return true;
 	}
@@ -663,10 +656,7 @@ bool LL::WhileOp() {
 bool LL::InOp() {
 	auto tempGraph = graphIt;
 
-	if (it->first != "kwin") {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (it->first != "kwin") return false;
 
 	nextGraphState(0);
 	generateString("InOp");
@@ -679,10 +669,7 @@ bool LL::InOp() {
 
 	tempGraph = graphIt;
 
-	if (it->first != "id") {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (it->first != "id") return false;
 
 	nextGraphState(1);
 	generateString(" " + it->second);
@@ -692,10 +679,7 @@ bool LL::InOp() {
 
 	tempGraph = graphIt;
 
-	if (it->first != "semicolon") {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (it->first != "semicolon") return false;
 
 	nextGraphState(0);
 	generateString("semicolon");
@@ -711,10 +695,7 @@ bool LL::InOp() {
 bool LL::OutOp() {
 	auto tempGraph = graphIt;
 
-	if (it->first != "kwout") {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (it->first != "kwout") return false;
 
 	nextToken();
 
@@ -986,11 +967,6 @@ bool LL::ParamListList() {
 	return true;
 }
 
-void LL::eraseTrash(const std::vector<int>::iterator &da) {
-	// I deleted this function. It killed every part of my code.
-	// Now I just don't want to delete it everywhere.
-}
-
 void LL::generateString(const std::string &abiba) {
 	std::string aboba;
 	for (auto i = states.begin(); i != states.end(); ++i) {
@@ -1037,19 +1013,13 @@ bool LL::Expr7() {
 
 	nextGraphState(1);
 	generateString("E6");
-	if (!Expr6()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr6()) return false;
 
 	tempGraph = graphIt;
 
 	nextGraphState(0);
 	generateString("E7'");
-	if (!Expr7List()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr7List()) return false;
 
 	rollbackIter();
 	return true;
@@ -1063,19 +1033,13 @@ bool LL::Expr7List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr6()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr6()) return false;
 
 		tempGraph = graphIt;
 
 		nextGraphState(0);
 		generateString("E7'");
-		if (!Expr7List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr7List()) return false;
 	}
 
 	rollbackIter();
@@ -1087,19 +1051,13 @@ bool LL::Expr6() {
 
 	nextGraphState(1);
 	generateString("E5");
-	if (!Expr5()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr5()) return false;
 
 	tempGraph = graphIt;
 
 	nextGraphState(0);
 	generateString("E6'");
-	if (!Expr6List()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr6List()) return false;
 
 	rollbackIter();
 	return true;
@@ -1113,19 +1071,13 @@ bool LL::Expr6List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr5()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr5()) return false;
 
 		tempGraph = graphIt;
 
 		nextGraphState(0);
 		generateString("E6'");
-		if (!Expr6List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr6List()) return false;
 	}
 
 	rollbackIter();
@@ -1137,19 +1089,13 @@ bool LL::Expr5() {
 
 	nextGraphState(1);
 	generateString("E4");
-	if (!Expr4()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr4()) return false;
 
 	tempGraph = graphIt;
 
 	nextGraphState(0);
 	generateString("E5'");
-	if (!Expr5List()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr5List()) return false;
 
 	rollbackIter();
 	return true;
@@ -1163,10 +1109,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4()) return false;
 
 	} else if (it->first == "opne") {
 		nextToken();
@@ -1175,10 +1118,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4()) return false;
 
 	} else if (it->first == "ople") {
 		nextToken();
@@ -1187,10 +1127,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4()) return false;
 
 	} else if (it->first == "opgt") {
 		nextToken();
@@ -1199,10 +1136,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4()) return false;
 
 	} else if (it->first == "opge") {
 		nextToken();
@@ -1211,10 +1145,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4()) return false;
 
 	} else if (it->first == "oplt") {
 		nextToken();
@@ -1223,11 +1154,7 @@ bool LL::Expr5List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr4()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
-
+		if (!Expr4()) return false;
 	}
 
 	rollbackIter();
@@ -1239,19 +1166,13 @@ bool LL::Expr4() {
 	nextGraphState(1);
 	generateString("E3");
 
-	if (!Expr3()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr3()) return false;
 
 	tempGraph = graphIt;
 
 	nextGraphState(0);
 	generateString("E4'");
-	if (!Expr4List()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr4List()) return false;
 
 	rollbackIter();
 	return true;
@@ -1265,20 +1186,14 @@ bool LL::Expr4List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr3()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr3()) return false;
 
 		tempGraph = graphIt;
 
 		nextGraphState(0);
 		generateString("E4'");
 
-		if (!Expr4List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4List()) return false;
 
 	} else if (it->first == "opminus") {
 		nextToken();
@@ -1287,20 +1202,14 @@ bool LL::Expr4List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr3()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr3()) return false;
 
 		tempGraph = graphIt;
 
 		nextGraphState(0);
 		generateString("E4'");
 
-		if (!Expr4List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr4List()) return false;
 
 	}
 
@@ -1313,20 +1222,14 @@ bool LL::Expr3() {
 	nextGraphState(1);
 	generateString("E2");
 
-	if (!Expr2()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr2()) return false;
 
 	tempGraph = graphIt;
 
 	nextGraphState(0);
 	generateString("E3'");
 
-	if (!Expr3List()) {
-		eraseTrash(tempGraph);
-		return false;
-	}
+	if (!Expr3List()) return false;
 
 	rollbackIter();
 	return true;
@@ -1340,18 +1243,12 @@ bool LL::Expr3List() {
 
 		auto tempGraph = graphIt;
 
-		if (!Expr2()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr2()) return false;
 
 		nextGraphState(0);
 		generateString("E3'");
 
-		if (!Expr3List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr3List()) return false;
 
 	}
 
@@ -1367,20 +1264,14 @@ bool LL::Expr2() {
 		nextGraphState(0);
 		generateString("opnot E1");
 
-		if (!Expr1()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr1()) return false;
 
 		rollbackIter();
 	} else {
 		nextGraphState(0);
 		generateString("E1");
 
-		if (!Expr1()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr1()) return false;
 
 		rollbackIter();
 	}
@@ -1400,10 +1291,7 @@ bool LL::Expr1() {
 		rollbackIter();
 
 		nextGraphState(0);
-		if (it->first != "id") {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (it->first != "id") return false;
 
 		generateString(" " + it->second);
 
@@ -1440,16 +1328,12 @@ bool LL::Expr1() {
 		generateString(" " + it->second + " E1'");
 		nextToken();
 
-		if (!Expr1List()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!Expr1List()) return false;
 
 		rollbackIter();
 		return true;
 	}
 
-	eraseTrash(tempGraph);
 	return false;
 }
 
@@ -1461,17 +1345,11 @@ bool LL::Expr1List() {
 		nextGraphState(1);
 		generateString("lpar ArgList");
 
-		if (!ArgList()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!ArgList()) return false;
 
 		tempGraph = graphIt;
 
-		if (it->first != "rpar") {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (it->first != "rpar") return false;
 
 		nextGraphState(0);
 		generateString("rpar");
@@ -1500,10 +1378,7 @@ bool LL::ArgList() {
 
 		auto tempGraph = graphIt;
 
-		if (!ArgListList()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!ArgListList()) return false;
 
 		rollbackIter();
 		return true;
@@ -1524,20 +1399,14 @@ bool LL::ArgListList() {
 		rollbackIter();
 
 		nextGraphState(0);
-		if (it->first != "id") {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (it->first != "id") return false;
 
 		generateString(" " + it->second + " ArgList'");
 
 		nextToken();
 		tempGraph = graphIt;
 
-		if (!ArgListList()) {
-			eraseTrash(tempGraph);
-			return false;
-		}
+		if (!ArgListList()) return false;
 	}
 
 	rollbackIter();

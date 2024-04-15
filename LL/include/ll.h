@@ -12,7 +12,6 @@ public:
 private:
 	// Graph printer
 	void nextGraphState(const int &a);
-	void eraseTrash(const std::vector<int>::iterator &da);
 	void rollbackIter();
 
 	void generateString(const std::string&);
