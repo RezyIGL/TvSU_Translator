@@ -69,8 +69,6 @@ bool LL::StmtList() {
 	} else {
 		rollBackChanges(tempIt);
 		rollbackIter();
-
-		outputVector.erase(outputVector.end() - 1);
 	}
 
 	rollbackIter();
@@ -234,30 +232,22 @@ bool LL::SwitchOp() {
 	if (it->first != "kwswitch") return false;
 	nextToken();
 
-	nextGraphState(1);
-	generateString("kwswitch");
-	rollbackIter();
-
 	if (it->first != "lpar") return false;
 	nextToken();
 
 	nextGraphState(1);
-	generateString("lpar E");
+	generateString("kwswitch lpar E");
 
 	if (!Expr()) return false;
 
 	if (it->first != "rpar") return false;
 	nextToken();
 
-	nextGraphState(1);
-	generateString("rpar");
-	rollbackIter();
-
 	if (it->first != "lbrace") return false;
 	nextToken();
 
 	nextGraphState(1);
-	generateString("lbrace Cases");
+	generateString("rpar lbrace Cases");
 
 	if (!Cases()) return false;
 
@@ -324,22 +314,16 @@ bool LL::ACase() {
 
 	if (it->first == "kwcase") {
 
-		nextGraphState(1);
-		generateString("kwcase");
 		nextToken();
-		rollbackIter();
 
 		if (it->first != "num") return false;
-
-		nextGraphState(1);
-		generateString(" " + it->second);
+		auto temp = it->second;
 		nextToken();
-		rollbackIter();
 
 		if (it->first != "colon") return false;
 
 		nextGraphState(0);
-		generateString("colon StmtList");
+		generateString("kwcase " + temp + " colon StmtList");
 		nextToken();
 
 		if (!StmtList()) return false;
@@ -348,16 +332,12 @@ bool LL::ACase() {
 	}
 
 	if (it->first == "kwdefault") {
-
-		nextGraphState(1);
-		generateString("kwdefault");
 		nextToken();
-		rollbackIter();
 
 		if (it->first != "colon") return false;
 
 		nextGraphState(0);
-		generateString("colon StmtList");
+		generateString("kwdefault colon StmtList");
 		nextToken();
 
 		if (!StmtList()) return false;
@@ -374,15 +354,12 @@ bool LL::ForOp() {
 
 	if (it->first != "kwfor") return false;
 
-	nextGraphState(1);
-	generateString("kwfor");
-	rollbackIter();
 	nextToken();
 
 	if (it->first != "lpar") return false;
 
 	nextGraphState(1);
-	generateString("lpar ForInit");
+	generateString("kwfor lpar ForInit");
 	nextToken();
 
 	ForInit();
@@ -464,15 +441,12 @@ void LL::ForExp() {
 
 bool LL::ForLoop() {
 	if (it->first == "opinc") {
-		nextGraphState(1);
-		generateString("opinc");
-		rollbackIter();
 		nextToken();
 
 		if (it->first != "id") return false;
 
 		nextGraphState(0);
-		generateString(" " + it->second);
+		generateString("opinc " + it->second);
 		rollbackIter();
 		nextToken();
 
@@ -501,15 +475,11 @@ bool LL::IfOp() {
 	if (it->first != "kwif") return false;
 	nextToken();
 
-	nextGraphState(1);
-	generateString("kwif");
-	rollbackIter();
-
 	if (it->first != "lpar") return false;
 	nextToken();
 
 	nextGraphState(1);
-	generateString("lpar E");
+	generateString("kwif lpar E");
 
 	if (!Expr()) return false;
 
@@ -627,15 +597,11 @@ bool LL::WhileOp() {
 	if (it->first != "kwwhile") return false;
 	nextToken();
 
-	nextGraphState(1);
-	generateString("kwwhile");
-	rollbackIter();
-
 	if (it->first != "lpar") return false;
 	nextToken();
 
 	nextGraphState(1);
-	generateString("lpar E");
+	generateString("kwwhile lpar E");
 
 	if (!Expr()) return false;
 
@@ -660,20 +626,13 @@ bool LL::InOp() {
 
 	nextGraphState(0);
 	generateString("InOp");
-
-	nextGraphState(1);
-	generateString("kwin");
-	rollbackIter();
-
 	nextToken();
 
 	tempGraph = graphIt;
 
 	if (it->first != "id") return false;
 
-	nextGraphState(1);
-	generateString(" " + it->second);
-	rollbackIter();
+	auto temp = it->second;
 
 	nextToken();
 
@@ -682,7 +641,7 @@ bool LL::InOp() {
 	if (it->first != "semicolon") return false;
 
 	nextGraphState(0);
-	generateString("semicolon");
+	generateString("kwin " + temp + " semicolon");
 	rollbackIter();
 
 	nextToken();
@@ -777,15 +736,12 @@ bool LL::DeclareStmtList() {
 
 		if (it->first != "rpar") return false;
 
-		nextGraphState(1);
-		generateString("rpar");
-		rollbackIter();
 		nextToken();
 
 		if (it->first != "lbrace") return false;
 
 		nextGraphState(1);
-		generateString("lbrace StmtList");
+		generateString("rpar lbrace StmtList");
 		nextToken();
 
 		if (!StmtList()) return false;
@@ -802,13 +758,9 @@ bool LL::DeclareStmtList() {
 	} else if (it->first == "opassign") {
 		nextToken();
 
-		nextGraphState(1);
-		generateString("opassign");
-		rollbackIter();
-
 		if (it->first == "num") {
 			nextGraphState(1);
-			generateString(" " + it->second + " DeclareVarList");
+			generateString("opassign " + it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
@@ -824,7 +776,7 @@ bool LL::DeclareStmtList() {
 			return true;
 		} else if (it->first == "char") {
 			nextGraphState(1);
-			generateString(" " + it->second + " DeclareVarList");
+			generateString("opassign " + it->second + " DeclareVarList");
 			nextToken();
 
 			if (!DeclareVarList()) return false;
@@ -864,15 +816,12 @@ bool LL::DeclareVarList() {
 
 	if (it->first == "comma") {
 
-		nextGraphState(1);
-		generateString("comma");
-		rollbackIter();
 		nextToken();
 
 		if (it->first != "id") return false;
 
 		nextGraphState(1);
-		generateString(" " + it->second + " InitVar");
+		generateString("comma " + it->second + " InitVar");
 		nextToken();
 
 		if (!InitVar()) return false;
@@ -894,15 +843,11 @@ bool LL::InitVar() {
 	if (it->first == "opassign") {
 		nextToken();
 
-		nextGraphState(1);
-		generateString("opassign");
-		rollbackIter();
-
 		if (it->first == "num" ||
 		    it->first == "char")
 		{
 			nextGraphState(0);
-			generateString(" " + it->second);
+			generateString("opassign " + it->second);
 			rollbackIter();
 			nextToken();
 			return true;
@@ -1392,16 +1337,12 @@ bool LL::ArgListList() {
 	if (it->first == "comma") {
 		auto tempGraph = graphIt;
 
-		nextGraphState(1);
-		generateString("comma");
 		nextToken();
-
-		rollbackIter();
 
 		nextGraphState(0);
 		if (it->first != "id") return false;
 
-		generateString(" " + it->second + " ArgList'");
+		generateString("comma " + it->second + " ArgList'");
 
 		nextToken();
 		tempGraph = graphIt;
