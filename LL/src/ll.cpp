@@ -67,6 +67,7 @@ bool LL::StmtList() {
 
 		if (!StmtList()) return false;
 	} else {
+		outputVector.erase(outputVector.end() - 1, outputVector.end());
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
@@ -194,9 +195,8 @@ bool LL::Stmt() {
 		nextGraphState(0);
 		generateString("rbrace");
 
-		rollbackIter();
-
 		nextToken();
+		rollbackIter();
 		rollbackIter();
 		return true;
 	}

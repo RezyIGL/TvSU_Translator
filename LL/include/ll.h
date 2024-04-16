@@ -5,11 +5,21 @@
 #include <queue>
 #include <fstream>
 
+using FT = std::pair<bool, std::string>;
+
 class LL {
 public:
 	explicit LL(std::istream&, const std::string &);
 	void validate();
 private:
+	// Semantic analyze
+	void newLabel();
+	void alloc(const int &scope);
+	void addVar(const std::string &name, const int &scope, const std::string &type, const std::string &init = 0);
+	void addFunc(const std::string &name, const std::string &type);
+	bool checkVar(const int &scope, const std::string &name);
+	bool checkFunc(const std::string &name, const int &len);
+
 	// Graph printer
 	void nextGraphState(const int &a);
 	void rollbackIter();
