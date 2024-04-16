@@ -9,16 +9,19 @@ using FT = std::pair<bool, std::string>;
 
 class LL {
 public:
-	explicit LL(std::istream&, const std::string &);
+	explicit LL(std::istream&, const std::string &, const std::string &);
 	void validate();
 private:
 	// Semantic analyze
-	void newLabel();
-	void alloc(const int &scope);
-	void addVar(const std::string &name, const int &scope, const std::string &type, const std::string &init = 0);
-	void addFunc(const std::string &name, const std::string &type);
-	bool checkVar(const int &scope, const std::string &name);
-	bool checkFunc(const std::string &name, const int &len);
+	std::string newLabel();
+	std::string alloc(const std::string &scope);
+	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
+	std::string addFunc(const std::string &name, const std::string &type);
+	std::string checkVar(const std::string &scope, const std::string &name);
+	std::string checkFunc(const std::string &name, const int &len);
+	std::vector<std::string> atoms;
+	std::string _atomsInput;
+	void generateAtom(const std::string &text, const std::string &first, const std::string &second,const std::string &third);
 
 	// Graph printer
 	void nextGraphState(const int &a);
@@ -70,22 +73,22 @@ private:
 	bool ParamList();
 	bool ParamListList();
 
-	bool Expr();
-	bool Expr7();
-	bool Expr7List();
-	bool Expr6();
-	bool Expr6List();
-	bool Expr5();
-	bool Expr5List();
-	bool Expr4();
-	bool Expr4List();
-	bool Expr3();
-	bool Expr3List();
-	bool Expr2();
-	bool Expr1();
-	bool Expr1List();
-	bool ArgList();
-	bool ArgListList();
+	FT Expr(const std::string &context);
+	FT Expr7(const std::string &context);
+	FT Expr7List(const std::string &context, const std::string &funcID);
+	FT Expr6(const std::string &context);
+	FT Expr6List(const std::string &context, const std::string &funcID);
+	FT Expr5(const std::string &context);
+	FT Expr5List(const std::string &context, const std::string &funcID);
+	FT Expr4(const std::string &context);
+	FT Expr4List(const std::string &context, const std::string &funcID);
+	FT Expr3(const std::string &context);
+	FT Expr3List(const std::string &context, const std::string &funcID);
+	FT Expr2(const std::string &context);
+	FT Expr1(const std::string &context);
+	FT Expr1List(const std::string &context, const std::string &funcID);
+	FT ArgList(const std::string &context);
+	FT ArgListList(const std::string &context);
 };
 
 
