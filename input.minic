@@ -5,7 +5,7 @@ else
 b = 3;
 
 int a = 1_000_000;
-int a, b = 1000000, c;
+int a, b = 10_0_0_00_0, c;
 char a, b, c = 'a';
 
 int a() {};
