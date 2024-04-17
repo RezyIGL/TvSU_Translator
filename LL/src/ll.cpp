@@ -12,6 +12,10 @@ void LL::validate() {
 
 	// TODO: Return StmtList as entry point.
 
+	addFunc("a", "-1", "int", "2");
+	addVar("b", "-1", "int", "0");
+	addVar("c", "-1", "int", "0");
+
 	generateString("StmtList");
 	std::string context = "-1";
 	if (Expr(context).first && it->first == "eof") {
@@ -51,29 +55,54 @@ std::string LL::alloc(const std::string &scope) {
 
 std::string LL::addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "0") {
 	if (AtomicMap.count(scope)) {
-		if (AtomicMap[scope].name == name) {
-			return "ERROR";
+		for (const auto &i : AtomicMap[scope]) {
+			if (i.name == name) {
+				return "ERROR";
+			}
 		}
 	}
 
 	VarOrFunc temp = {name, scope, type, init, "var", AtomicMapCnt++};
+	AtomicMap[scope].emplace_back(temp);
 
-	return std::to_string(temp.cnt);
+	return "'" + std::to_string(temp.cnt) + "'";
 }
 
-std::string LL::addFunc(const std::string &name, const std::string &type) {
-	if (AtomicMap["-1"].name == name) {
-		return "ERROR";
+
+std::string LL::addFunc(const std::string &name, const std::string &scope, const std::string &type, const std::string &length = "0") {
+	for (const auto &i : AtomicMap["-1"]) {
+		if (i.name == name) {
+			return "ERROR";
+		}
 	}
 
-	VarOrFunc temp = {name, "-1", type, "", "func", AtomicMapCnt++};
+	VarOrFunc temp = {name, "-1", type, length, "func", AtomicMapCnt++};
+	AtomicMap["-1"].emplace_back(temp);
 
-	return std::to_string(temp.cnt);
+	return "'" + std::to_string(temp.cnt) + "'";
 }
-// TODO: checkVar
-std::string LL::checkVar(const std::string &scope, const std::string &name) {return "isVar";}
-// TODO: checkFunc
-std::string LL::checkFunc(const std::string &name, const std::string &len) {return "isFunc";}
+
+std::string LL::checkVar(const std::string &scope, const std::string &name) {
+	for (const auto &i : AtomicMap[scope]) {
+		if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
+		else if (i.name == name && i.type != "var") return "ERROR";
+	}
+
+	for (const auto &i : AtomicMap["-1"]) {
+		if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
+		else if (i.name == name && i.type != "var") return "ERROR";
+	}
+
+	return "ERROR";
+}
+
+std::string LL::checkFunc(const std::string &name, const std::string &len) {
+	for (const auto &i : AtomicMap["-1"]) {
+		if (i.name == name && i.kind == "func" && i.init == len) return "'" + std::to_string(i.cnt) + "'";
+	}
+
+	return "ERROR";
+}
 
 void LL::nextGraphState(const int &a) {
 	states.emplace_back(a);

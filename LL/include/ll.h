@@ -23,7 +23,7 @@ private:
 	std::string newLabel();
 	std::string alloc(const std::string &scope);
 	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
-	std::string addFunc(const std::string &name, const std::string &type);
+	std::string addFunc(const std::string &name, const std::string &scope, const std::string &type, const std::string &length);
 	std::string checkVar(const std::string &scope, const std::string &name);
 	std::string checkFunc(const std::string &name, const std::string &len);
 	std::vector<Atom> atoms;
@@ -41,7 +41,7 @@ private:
 		int cnt;
 	};
 
-	std::map<std::string, VarOrFunc> AtomicMap;
+	std::map<std::string, std::vector<VarOrFunc>> AtomicMap;
 	int AtomicMapCnt = 0;
 
 	// Graph printer
