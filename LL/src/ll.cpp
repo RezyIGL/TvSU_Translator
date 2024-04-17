@@ -891,7 +891,7 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextToken();
 
 		// TODO: Reassembly {RET,,,0}. Make it optional
-		generateAtom(context, "RET", "", "", "0");
+		// generateAtom(context, "RET", "", "", "0");
 
 		rollbackIter();
 		return true;
