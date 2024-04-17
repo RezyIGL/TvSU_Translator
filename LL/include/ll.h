@@ -22,6 +22,9 @@ private:
 	std::vector<std::string> atoms;
 	std::string _atomsInput;
 	void generateAtom(const std::string &text, const std::string &first, const std::string &second,const std::string &third);
+	int LabelCnt = 1;
+	int NewVarCnt = 1;
+	void undoneAlloc();
 
 	// Graph printer
 	void nextGraphState(const int &a);

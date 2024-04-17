@@ -43,10 +43,12 @@ void LL::generateAtom(const std::string &text, const std::string &first = "", co
 	atoms.emplace_back(atom);
 }
 
-// TODO: newLabel
-std::string LL::newLabel() {return "newLabel";}
-// TODO: alloc
-std::string LL::alloc(const std::string &scope) {return "newCode";}
+std::string LL::newLabel() {
+	return "L" + std::to_string(LabelCnt++);
+}
+std::string LL::alloc(const std::string &scope) {
+	return "T" + std::to_string(NewVarCnt++);
+}
 // TODO: addVar
 std::string LL::addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "0") {return "newVar";}
 // TODO: addFunc
@@ -55,6 +57,9 @@ std::string LL::addFunc(const std::string &name, const std::string &type) {retur
 std::string LL::checkVar(const std::string &scope, const std::string &name) {return "isVar";}
 // TODO: checkFunc
 std::string LL::checkFunc(const std::string &name, const int &len) {return "isFunc";}
+void LL::undoneAlloc() {
+	NewVarCnt--;
+}
 
 void LL::nextGraphState(const int &a) {
 	states.emplace_back(a);
@@ -1033,7 +1038,10 @@ FT LL::Expr7List(const std::string &context, const std::string &funcID) {
 		generateString("E7'");
 		
 		auto E7ListResult = Expr7List(context, s);
-		if (!E7ListResult.first) return {false, "-2"};
+		if (!E7ListResult.first) {
+			
+			return {false, "-2"};
+		}
 
 		rollbackIter();
 		return {true, E7ListResult.second};
@@ -1085,14 +1093,17 @@ FT LL::Expr6List(const std::string &context, const std::string &funcID) {
 
 		auto E6ListResult = Expr6List(context, s);
 
-		if (!E6ListResult.first) return {false, "-2"};
+		if (!E6ListResult.first) {
+			
+			return {false, "-2"};
+		}
 
 		rollbackIter();
 		return {true, E6ListResult.second};
 	}
 
 	rollbackIter();
-	return {true, context};
+	return {true, funcID};
 }
 
 FT LL::Expr5(const std::string &context) {
@@ -1241,7 +1252,7 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 	}
 
 	rollbackIter();
-	return {true, context};
+	return {true, funcID};
 }
 
 FT LL::Expr4(const std::string &context) {
@@ -1283,7 +1294,10 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		nextGraphState(0);
 		generateString("E4'");
 		auto E4ListResult = Expr4List(context, s);
-		if (!E4ListResult.first) return {false, "-2"};
+		if (!E4ListResult.first) {
+			
+			return {false, "-2"};
+		}
 
 		rollbackIter();
 		return {true, E4ListResult.second};
@@ -1306,14 +1320,17 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		nextGraphState(0);
 		generateString("E4'");
 		auto E4ListResult = Expr4List(context, s);
-		if (!E4ListResult.first) return {false, "-2"};
+		if (!E4ListResult.first) {
+			
+			return {false, "-2"};
+		}
 
 		rollbackIter();
 		return {true, E4ListResult.second};
 	}
 
 	rollbackIter();
-	return {true, context};
+	return {true, funcID};
 }
 
 FT LL::Expr3(const std::string &context) {
@@ -1354,14 +1371,17 @@ FT LL::Expr3List(const std::string &context, const std::string &funcID) {
 		generateString("E3'");
 
 		auto E3ListResult = Expr3List(context, s);
-		if (!E3ListResult.first) return {false, "-2"};
+		if (!E3ListResult.first) {
+			
+			return {false, "-2"};
+		}
 
 		rollbackIter();
 		return {true, E3ListResult.second};
 	}
 
 	rollbackIter();
-	return {true, context};
+	return {true, funcID};
 }
 
 FT LL::Expr2(const std::string &context) {
@@ -1389,13 +1409,9 @@ FT LL::Expr2(const std::string &context) {
 		if (!E1Result.first) return {false, "-2"};
 
 		rollbackIter();
-
 		rollbackIter();
 		return {true, E1Result.second};
 	}
-
-	rollbackIter();
-	return {true, context};
 }
 
 FT LL::Expr1(const std::string &context) {
@@ -1502,7 +1518,7 @@ FT LL::Expr1List(const std::string &context, const std::string &funcID) {
 		return {true, r};
 	}
 
-	return {true, context};
+	return {true, funcID};
 }
 
 FT LL::ArgList(const std::string &context) {
