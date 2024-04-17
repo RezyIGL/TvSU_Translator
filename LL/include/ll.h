@@ -23,7 +23,7 @@ private:
 	std::string newLabel();
 	std::string alloc(const std::string &scope);
 	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
-	std::string addFunc(const std::string &name, const std::string &scope, const std::string &type, const std::string &length);
+	std::string addFunc(const std::string &name, const std::string &type, const std::string &length);
 	std::string checkVar(const std::string &scope, const std::string &name);
 	std::string checkFunc(const std::string &name, const std::string &len);
 	std::vector<Atom> atoms;
@@ -70,11 +70,11 @@ private:
 
 	bool StmtList(const std::string &context);
 	bool Stmt(const std::string &context);
-	bool DeclareStmt(const std::string &context); // Ready
-	bool DeclareStmtList(const std::string &context);
+	bool DeclareStmt(const std::string &context);
+	bool DeclareStmtList(const std::string &context, const std::string &q, const std::string &r);
 	bool AssignOrCallOp(const std::string &context);
 	bool AssignOrCall(const std::string &context);
-	bool AssignOrCallList(const std::string &context);
+	bool AssignOrCallList(const std::string &context, const std::string &name);
 	bool WhileOp(const std::string &context);
 	bool ForOp(const std::string &context);
 	void ForInit(const std::string &context);
@@ -88,11 +88,12 @@ private:
 	bool ACase(const std::string &context);
 	bool InOp(const std::string &context);
 	bool OutOp(const std::string &context);
-	bool Type(const std::string &context);
-	bool DeclareVarList(const std::string &context);
-	bool InitVar(const std::string &context);
-	bool ParamList(const std::string &context);
-	bool ParamListList(const std::string &context);
+	bool OutOpList(const std::string &context);
+	FT Type(const std::string &context);
+	bool DeclareVarList(const std::string &context, const std::string &type);
+	bool InitVar(const std::string &context, const std::string &r, const std::string &s);
+	FT ParamList(const std::string &context);
+	FT ParamListList(const std::string &context);
 
 	FT Expr(const std::string &context);
 	FT Expr7(const std::string &context);

@@ -1,1 +1,14 @@
-a(b + 3 * 4, c++ +-5)
+int fiba(int n, int b) {
+    return fiba(n - 1, b) + fiba(n - 2, b);
+}
+
+int main() {
+    int vvod;
+    in vvod;
+
+    vvod = fiba(vvod, vvod + 1);
+
+    out vvod;
+
+    return 0;
+}
