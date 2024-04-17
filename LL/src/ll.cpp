@@ -30,16 +30,14 @@ void LL::validate() {
 
 	myStream.open(_atomsInput);
 	while (!atoms.empty()) {
-		myStream << atoms.front() << std::endl;
+		myStream << atoms.front().context << ": (" << atoms.front().text << "," << atoms.front().first << "," << atoms.front().second << "," << atoms.front().third << ")" << std::endl;
 		atoms.erase(atoms.begin());
 	}
 	myStream.close();
 }
 
-void LL::generateAtom(const std::string &text, const std::string &first = "", const std::string &second = "",const std::string &third = "") {
-	std::string atom = "(";
-	atom += text + "," + first + "," + second + "," + third + ")";
-
+void LL::generateAtom(const std::string &context = "", const std::string &text = "", const std::string &first = "", const std::string &second = "",const std::string &third = "") {
+	Atom atom = {context, text, first, second, third};
 	atoms.emplace_back(atom);
 }
 
@@ -56,10 +54,7 @@ std::string LL::addFunc(const std::string &name, const std::string &type) {retur
 // TODO: checkVar
 std::string LL::checkVar(const std::string &scope, const std::string &name) {return "isVar";}
 // TODO: checkFunc
-std::string LL::checkFunc(const std::string &name, const int &len) {return "isFunc";}
-void LL::undoneAlloc() {
-	NewVarCnt--;
-}
+std::string LL::checkFunc(const std::string &name, const std::string &len) {return "isFunc";}
 
 void LL::nextGraphState(const int &a) {
 	states.emplace_back(a);
@@ -1032,7 +1027,7 @@ FT LL::Expr7List(const std::string &context, const std::string &funcID) {
 		tempGraph = graphIt;
 
 		auto s = alloc(context);
-		generateAtom("OR", funcID, E6Result.second, s);
+		generateAtom(context, "OR", funcID, E6Result.second, s);
 
 		nextGraphState(0);
 		generateString("E7'");
@@ -1086,7 +1081,7 @@ FT LL::Expr6List(const std::string &context, const std::string &funcID) {
 		tempGraph = graphIt;
 
 		auto s = alloc(context);
-		generateAtom("AND", funcID, E5Result.second, s);
+		generateAtom(context, "AND", funcID, E5Result.second, s);
 
 		nextGraphState(0);
 		generateString("E6'");
@@ -1138,15 +1133,18 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto tempGraph = graphIt;
 
 		auto E4Result = Expr4(context);
-		if (!E4Result.first) return {false, "-2"};
+		if (!E4Result.first) {
+			
+			return {false, "-2"};
+		}
 
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("EQ", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context, "MOV", "1", "", s);
+		generateAtom(context, "EQ", funcID, E4Result.second, l);
+		generateAtom(context, "MOV", "0", "", s);
+		generateAtom(context, "LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1162,10 +1160,10 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("NE", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context, "MOV", "1", "", s);
+		generateAtom(context, "NE", funcID, E4Result.second, l);
+		generateAtom(context, "MOV", "0", "", s);
+		generateAtom(context, "LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1182,10 +1180,10 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("LE", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context, "MOV", "1", "", s);
+		generateAtom(context, "LE", funcID, E4Result.second, l);
+		generateAtom(context, "MOV", "0", "", s);
+		generateAtom(context, "LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1202,10 +1200,10 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("GT", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context,"MOV", "1", "", s);
+		generateAtom(context,"GT", funcID, E4Result.second, l);
+		generateAtom(context,"MOV", "0", "", s);
+		generateAtom(context,"LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1222,10 +1220,10 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("GE", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context,"MOV", "1", "", s);
+		generateAtom(context,"GE", funcID, E4Result.second, l);
+		generateAtom(context,"MOV", "0", "", s);
+		generateAtom(context,"LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1242,10 +1240,10 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto s = alloc(context);
 		auto l = newLabel();
 
-		generateAtom("MOV", "1", "", s);
-		generateAtom("LT", funcID, E4Result.second, l);
-		generateAtom("MOV", "0", "", s);
-		generateAtom("LBL", "", "", l);
+		generateAtom(context,"MOV", "1", "", s);
+		generateAtom(context,"LT", funcID, E4Result.second, l);
+		generateAtom(context,"MOV", "0", "", s);
+		generateAtom(context,"LBL", "", "", l);
 
 		rollbackIter();
 		return {true, s};
@@ -1289,7 +1287,7 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		tempGraph = graphIt;
 
 		auto s = alloc(context);
-		generateAtom("ADD", funcID, E3Result.second, s);
+		generateAtom(context,"ADD", funcID, E3Result.second, s);
 
 		nextGraphState(0);
 		generateString("E4'");
@@ -1315,7 +1313,7 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		tempGraph = graphIt;
 
 		auto s = alloc(context);
-		generateAtom("SUB", funcID, E3Result.second, s);
+		generateAtom(context,"SUB", funcID, E3Result.second, s);
 
 		nextGraphState(0);
 		generateString("E4'");
@@ -1365,7 +1363,7 @@ FT LL::Expr3List(const std::string &context, const std::string &funcID) {
 		if (!E2Result.first) return {false, "-2"};
 
 		auto s = alloc(context);
-		generateAtom("MUL", funcID, E2Result.second, s);
+		generateAtom(context,"MUL", funcID, E2Result.second, s);
 
 		nextGraphState(0);
 		generateString("E3'");
@@ -1396,7 +1394,7 @@ FT LL::Expr2(const std::string &context) {
 		if (!E1Result.first) return {false, "-2"};
 
 		auto r = alloc(context);
-		generateAtom("NOT", E1Result.second, "", r);
+		generateAtom(context,"NOT", E1Result.second, "", r);
 
 		rollbackIter();
 		rollbackIter();
@@ -1430,7 +1428,7 @@ FT LL::Expr1(const std::string &context) {
 		rollbackIter();
 
 		auto q = checkVar(context, it->second);
-		generateAtom("ADD", q, "1", q);
+		generateAtom(context,"ADD", q, "1", q);
 
 		nextToken();
 		return {true, q};
@@ -1497,9 +1495,12 @@ FT LL::Expr1List(const std::string &context, const std::string &funcID) {
 		nextToken();
 		rollbackIter();
 
-		// TODO: Implement ATOM GENERATION
+		auto s = checkFunc(funcID, ArgListResult.second);
+		auto r = alloc(context);
 
-		return {true, ArgListResult.second};
+		generateAtom(context, "CALL", s, "", r);
+
+		return {true, r};
 	}
 
 	if (it->first == "opinc") {
@@ -1512,8 +1513,8 @@ FT LL::Expr1List(const std::string &context, const std::string &funcID) {
 		auto s = checkVar(context, funcID);
 		auto r = alloc(context);
 
-		generateAtom("MOV", s, "", r);
-		generateAtom("ADD", s, "1", s);
+		generateAtom(context,"MOV", s, "", r);
+		generateAtom(context,"ADD", s, "1", s);
 
 		return {true, r};
 	}
@@ -1537,7 +1538,7 @@ FT LL::ArgList(const std::string &context) {
 		auto ArgListListResult = ArgListList(context);
 		if (!ArgListListResult.first) return {false, "-2"};
 
-		// TODO: Implement ATOM GENERATION
+		generateAtom(context, "PARAM", "", "", EResult.second);
 
 		rollbackIter();
 		return {true, std::to_string(stoi(ArgListListResult.second) + 1)};
@@ -1571,7 +1572,7 @@ FT LL::ArgListList(const std::string &context) {
 			auto ArgListListResult = ArgListList(context);
 			if (!ArgListListResult.first) return {false, "-2"};
 
-			// TODO: Implement ATOM GENERATION
+			generateAtom(context, "PARAM", "", "", EResult.second);
 
 			rollbackIter();
 			return {true, std::to_string(stoi(ArgListListResult.second) + 1)};

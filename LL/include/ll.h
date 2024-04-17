@@ -13,18 +13,24 @@ public:
 	void validate();
 private:
 	// Semantic analyze
+	struct Atom {
+		std::string context;
+		std::string text;
+		std::string first;
+		std::string second;
+		std::string third;
+	};
 	std::string newLabel();
 	std::string alloc(const std::string &scope);
 	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
 	std::string addFunc(const std::string &name, const std::string &type);
 	std::string checkVar(const std::string &scope, const std::string &name);
-	std::string checkFunc(const std::string &name, const int &len);
-	std::vector<std::string> atoms;
+	std::string checkFunc(const std::string &name, const std::string &len);
+	std::vector<Atom> atoms;
 	std::string _atomsInput;
-	void generateAtom(const std::string &text, const std::string &first, const std::string &second,const std::string &third);
+	void generateAtom(const std::string &context, const std::string &text, const std::string &first, const std::string &second,const std::string &third);
 	int LabelCnt = 1;
 	int NewVarCnt = 1;
-	void undoneAlloc();
 
 	// Graph printer
 	void nextGraphState(const int &a);
