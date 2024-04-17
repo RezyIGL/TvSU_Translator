@@ -32,6 +32,18 @@ private:
 	int LabelCnt = 1;
 	int NewVarCnt = 1;
 
+	struct VarOrFunc {
+		std::string name;
+		std::string scope;
+		std::string type;
+		std::string init;
+		std::string kind;
+		int cnt;
+	};
+
+	std::map<std::string, VarOrFunc> AtomicMap;
+	int AtomicMapCnt = 0;
+
 	// Graph printer
 	void nextGraphState(const int &a);
 	void rollbackIter();

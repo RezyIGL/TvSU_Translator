@@ -44,13 +44,32 @@ void LL::generateAtom(const std::string &context = "", const std::string &text =
 std::string LL::newLabel() {
 	return "L" + std::to_string(LabelCnt++);
 }
+
 std::string LL::alloc(const std::string &scope) {
 	return "T" + std::to_string(NewVarCnt++);
 }
-// TODO: addVar
-std::string LL::addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "0") {return "newVar";}
-// TODO: addFunc
-std::string LL::addFunc(const std::string &name, const std::string &type) {return "newFunc";}
+
+std::string LL::addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "0") {
+	if (AtomicMap.count(scope)) {
+		if (AtomicMap[scope].name == name) {
+			return "ERROR";
+		}
+	}
+
+	VarOrFunc temp = {name, scope, type, init, "var", AtomicMapCnt++};
+
+	return std::to_string(temp.cnt);
+}
+
+std::string LL::addFunc(const std::string &name, const std::string &type) {
+	if (AtomicMap["-1"].name == name) {
+		return "ERROR";
+	}
+
+	VarOrFunc temp = {name, "-1", type, "", "func", AtomicMapCnt++};
+
+	return std::to_string(temp.cnt);
+}
 // TODO: checkVar
 std::string LL::checkVar(const std::string &scope, const std::string &name) {return "isVar";}
 // TODO: checkFunc
@@ -1033,10 +1052,7 @@ FT LL::Expr7List(const std::string &context, const std::string &funcID) {
 		generateString("E7'");
 		
 		auto E7ListResult = Expr7List(context, s);
-		if (!E7ListResult.first) {
-			
-			return {false, "-2"};
-		}
+		if (!E7ListResult.first) return {false, "-2"};
 
 		rollbackIter();
 		return {true, E7ListResult.second};
@@ -1115,8 +1131,7 @@ FT LL::Expr5(const std::string &context) {
 	nextGraphState(0);
 	generateString("E5'");
 
-	auto s = alloc(context);
-	auto E5ListResult = Expr5List(context, s);
+	auto E5ListResult = Expr5List(context, E4Result.second);
 
 	if (!E5ListResult.first) return {false, "-2"};
 
