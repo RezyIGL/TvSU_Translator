@@ -147,6 +147,7 @@ bool LL::StmtList(const std::string &context) {
 		if (!StmtList(context)) return false;
 	} else {
 		outputVector.pop_back();
+		outputVector.pop_back();
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
@@ -233,7 +234,7 @@ bool LL::Stmt(const std::string &context) {
 	if (SwitchOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
