@@ -84,9 +84,9 @@ private:
 	bool IfOp(const std::string &context);
 	bool ElsePart(const std::string &context);
 	bool SwitchOp(const std::string &context);
-	bool Cases(const std::string &context);
-	bool CasesList(const std::string &context);
-	bool ACase(const std::string &context);
+	bool Cases(const std::string &context, const std::string &p, const std::string &end);
+	bool CasesList(const std::string &context, const std::string &p, const std::string &end, const std::string &def);
+	FT ACase(const std::string &context, const std::string &p, const std::string &end);
 	bool InOp(const std::string &context);
 	bool OutOp(const std::string &context);
 	bool OutOpList(const std::string &context);

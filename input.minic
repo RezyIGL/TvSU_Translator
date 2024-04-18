@@ -1,17 +1,13 @@
-int fiba(int n) {
-    return fiba(n- 1) + fiba(n - 2);
-};
-
 int main() {
-    int num, ans, i;
-    in num;
+    int a;
 
-    for (i = 0; i < num; ++i) {
-        ans = fiba(num);
-
-        out "Your Fibonacci number is: ";
-        out ans;
+    switch (a) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        ;
+        default:
+        ;
     }
-
-    return 0;
 }

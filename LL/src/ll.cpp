@@ -68,7 +68,7 @@ void LL::generateAtom(const std::string &context = "", const std::string &text =
 }
 
 std::string LL::newLabel() {
-	return "L" + std::to_string(LabelCnt++);
+	return std::to_string(LabelCnt++);
 }
 
 std::string LL::alloc(const std::string &scope) {
@@ -349,7 +349,8 @@ bool LL::SwitchOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("kwswitch lpar E");
 
-	if (!Expr(context).first) return false;
+	auto ERes = Expr(context);
+	if (!ERes.first) return false;
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -360,10 +361,13 @@ bool LL::SwitchOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("rpar lbrace Cases");
 
-	if (!Cases(context)) return false;
+	auto end = newLabel();
+	if (!Cases(context, ERes.second, end)) return false;
 
 	if (it->first != "rbrace") return false;
 	nextToken();
+
+	generateAtom(context, "LBL", "", "", "L" + end);
 
 	nextGraphState(0);
 	generateString("rbrace");
@@ -374,38 +378,47 @@ bool LL::SwitchOp(const std::string &context) {
 	return true;
 }
 
-bool LL::Cases(const std::string &context) {
+bool LL::Cases(const std::string &context, const std::string &p, const std::string &end) {
 
 	nextGraphState(1);
 	generateString("ACase");
 
-	if (!ACase(context)) return false;
+	auto notACase = ACase(context, p, end);
+	if (!notACase.first) return false;
 	rollbackIter();
 
 	nextGraphState(0);
 	generateString("CasesList");
 
-	if (!CasesList(context)) return false;
+	if (!CasesList(context, p, end, notACase.second)) return false;
 
 	rollbackIter();
 	rollbackIter();
 	return true;
 }
 
-bool LL::CasesList(const std::string &context) {
+bool LL::CasesList(const std::string &context, const std::string &p, const std::string &end, const std::string &def) {
 	auto tempIt = it;
 	int tempCnt = outVecCnt;
 
 	nextGraphState(1);
 	generateString("ACase");
 
-	if (ACase(context)) {
+	auto YaCase = ACase(context, p, end);
+	if (stoi(def) >= 0 && stoi(YaCase.second) >= 0) {
+		// TODO: RETURN FALSE. 2 Default sections
+		generateAtom("SYSTEM", "ERROR", "ERROR", "ERROR", "ERROR");
+	}
+
+	if (YaCase.first) {
 		rollbackIter();
 
 		nextGraphState(0);
 		generateString("CasesList");
 
-		if (!CasesList(context)) return false;
+		auto maxDef = stoi(def) < stoi(YaCase.second) ? YaCase.second : def;
+
+		if (!CasesList(context, p, end, maxDef)) return false;
 
 		rollbackIter();
 		return true;
@@ -416,47 +429,65 @@ bool LL::CasesList(const std::string &context) {
 
 		outputVector.pop_back();
 
+		auto q = stoi(def) >= 0 ? def : end;
+		generateAtom(context, "JMP", "", "", "L" + q);
+
 		rollBackChanges(tempIt);
 		return true;
 	}
 }
 
-bool LL::ACase(const std::string &context) {
+FT LL::ACase(const std::string &context, const std::string &p, const std::string &end) {
 
 	if (it->first == "kwcase") {
 
 		nextToken();
 
-		if (it->first != "num") return false;
+		if (it->first != "num") return {false, ""};
 		auto temp = it->second;
 		nextToken();
 
-		if (it->first != "colon") return false;
+		auto next = newLabel();
+		generateAtom(context, "NE", p, temp, "L" + next);
+
+		if (it->first != "colon") return {false, ""};
 
 		nextGraphState(0);
 		generateString("kwcase " + temp + " colon StmtList");
 		nextToken();
 
-		if (!StmtList(context)) return false;
+		if (!StmtList(context)) return {false, ""};
 
-		return true;
+		generateAtom(context, "JMP", "", "", "L" + end);
+		generateAtom(context, "LBL", "", "", "L" + next);
+
+		return {true, "-1"};
 	}
 
 	if (it->first == "kwdefault") {
 		nextToken();
 
-		if (it->first != "colon") return false;
+		if (it->first != "colon") return {false, ""};
+
+		auto next = newLabel();
+		auto def = newLabel();
+
+		generateAtom(context, "JMP", "", "", "L" + next);
+		generateAtom(context, "LBL", "", "", "L" + def);
 
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 		nextToken();
 
-		if (!StmtList(context)) return false;
+		if (!StmtList(context)) return {false, ""};
 
-		return true;
+		generateAtom(context, "JMP", "", "", "L" + end);
+		generateAtom(context, "LBL", "", "", "L" + next);
+
+		return {true, def};
 	}
 
-	return false;
+	return {false, ""};
 }
 
 bool LL::ForOp(const std::string &context) {
@@ -483,7 +514,7 @@ bool LL::ForOp(const std::string &context) {
 
 	if (it->first != "semicolon") return false;
 
-	generateAtom(context, "LBL", "", "", l1);
+	generateAtom(context, "LBL", "", "", "L" + l1);
 
 	nextGraphState(1);
 	generateString("semicolon ForExp");
@@ -493,9 +524,9 @@ bool LL::ForOp(const std::string &context) {
 
 	if (it->first != "semicolon") return false;
 
-	generateAtom(context, "EQ", da, "0", l4);
-	generateAtom(context, "JMP", "", "", l3);
-	generateAtom(context, "LBL", "", "", l2);
+	generateAtom(context, "EQ", da, "0", "L" + l4);
+	generateAtom(context, "JMP", "", "", "L" + l3);
+	generateAtom(context, "LBL", "", "", "L" + l2);
 
 	nextGraphState(1);
 	generateString("semicolon ForLoop");
@@ -505,11 +536,11 @@ bool LL::ForOp(const std::string &context) {
 	if (!ForLoop(context)) return false;
 	rollbackIter();
 
-	generateAtom(context, "JMP", "", "", l1);
+	generateAtom(context, "JMP", "", "", "L" + l1);
 
 	if (it->first != "rpar") return false;
 
-	generateAtom(context, "LBL", "", "", l3);
+	generateAtom(context, "LBL", "", "", "L" + l3);
 
 	nextGraphState(0);
 	generateString("rpar Stmt");
@@ -522,8 +553,8 @@ bool LL::ForOp(const std::string &context) {
 		return false;
 	}
 
-	generateAtom(context, "JMP", "", "", l2);
-	generateAtom(context, "LBL", "", "", l4);
+	generateAtom(context, "JMP", "", "", "L" + l2);
+	generateAtom(context, "LBL", "", "", "L" + l4);
 
 	rollbackIter();
 	rollbackIter();
@@ -753,7 +784,7 @@ bool LL::WhileOp(const std::string &context) {
 	auto Expra = Expr(context);
 	if (!Expra.first) return false;
 
-	generateAtom(context, "EQ", Expra.second, "0", l2);
+	generateAtom(context, "EQ", Expra.second, "0", "L" + l2);
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -763,8 +794,8 @@ bool LL::WhileOp(const std::string &context) {
 
 	if (!Stmt(context)) return false;
 
-	generateAtom(context, "JMP", "", "", l1);
-	generateAtom(context, "LBL", "", "", l2);
+	generateAtom(context, "JMP", "", "", "L" + l1);
+	generateAtom(context, "LBL", "", "", "L" + l2);
 
 	rollbackIter();
 	rollbackIter();
@@ -1322,9 +1353,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "EQ", funcID, E4Result.second, l);
+		generateAtom(context, "EQ", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
@@ -1341,9 +1372,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "NE", funcID, E4Result.second, l);
+		generateAtom(context, "NE", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
@@ -1361,9 +1392,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "LE", funcID, E4Result.second, l);
+		generateAtom(context, "LE", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
@@ -1381,9 +1412,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "GT", funcID, E4Result.second, l);
+		generateAtom(context, "GT", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
@@ -1401,9 +1432,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "GE", funcID, E4Result.second, l);
+		generateAtom(context, "GE", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
@@ -1421,9 +1452,9 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 		auto l = newLabel();
 
 		generateAtom(context, "MOV", "1", "", s);
-		generateAtom(context, "LT", funcID, E4Result.second, l);
+		generateAtom(context, "LT", funcID, E4Result.second, "L" + l);
 		generateAtom(context, "MOV", "0", "", s);
-		generateAtom(context, "LBL", "", "", l);
+		generateAtom(context, "LBL", "", "", "L" + l);
 
 		rollbackIter();
 		return {true, s};
