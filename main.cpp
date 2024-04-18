@@ -1,5 +1,6 @@
 #include "ll.h"
 #include <fstream>
+#include <iostream>
 
 int main() {
     std::string output = "../output.graph";
@@ -7,7 +8,12 @@ int main() {
 	std::string atomsOutput = "../result.atom";
 
 	LL ll(input, output, atomsOutput);
-	ll.validate();
+	try {
+		ll.validate();
+	} catch (std::exception &e) {
+		std::cerr << e.what() << std::endl;
+		return -1;
+	}
 
 	return 0;
 }

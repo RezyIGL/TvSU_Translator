@@ -10,6 +10,7 @@ using FT = std::pair<bool, std::string>;
 class LL {
 public:
 	explicit LL(std::istream&, const std::string &, const std::string &);
+	virtual ~LL() = default;
 	void validate();
 private:
 	// Semantic analyze
