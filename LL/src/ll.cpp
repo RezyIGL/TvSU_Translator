@@ -25,10 +25,10 @@ void LL::validate() {
 		myStream << "Context: Atom\n" << std::endl;
 		while (!atoms.empty()) {
 			myStream << atoms.front().context << ": ("
-					 << atoms.front().text << ","
-					 << atoms.front().first << ","
-					 << atoms.front().second << ","
-					 << atoms.front().third << ")" << std::endl;
+			         << atoms.front().text << ","
+			         << atoms.front().first << ","
+			         << atoms.front().second << ","
+			         << atoms.front().third << ")" << std::endl;
 			atoms.erase(atoms.begin());
 		}
 		myStream.close();
@@ -137,6 +137,8 @@ bool LL::StmtList(const std::string &context) {
 	nextGraphState(1);
 	generateString("Stmt");
 
+	auto tempa = outVecCnt;
+
 	if (Stmt(context)) {
 
 		tempGraph = graphIt;
@@ -145,15 +147,20 @@ bool LL::StmtList(const std::string &context) {
 		generateString("StmtList");
 
 		if (!StmtList(context)) return false;
-	} else {
-		outputVector.pop_back();
-		outputVector.pop_back();
-		rollBackChanges(tempIt);
-		rollbackIter();
-	}
 
-	rollbackIter();
-	return true;
+		rollbackIter();
+		return true;
+	} else {
+		outputVector.erase(outputVector.end() - outVecCnt + tempa - 1, outputVector.end());
+		rollBackChanges(tempIt);
+
+		for (int i = 0; i < outVecCnt - tempa + 2; i++) {
+			rollbackIter();
+		}
+
+		outVecCnt = tempa;
+		return true;
+	}
 }
 
 bool LL::Stmt(const std::string &context) {
@@ -186,6 +193,8 @@ bool LL::Stmt(const std::string &context) {
 
 	if (context == "-1") return false;
 
+	tempCnt = outVecCnt;
+
 	if (AssignOrCallOp(context)) {
 		return true;
 	} else {
@@ -196,14 +205,16 @@ bool LL::Stmt(const std::string &context) {
 	}
 
 	tempCnt = outVecCnt;
+	auto tempara = *(states.end() - 1);
+	rollbackIter();
 
 	if (WhileOp(context)) {
 		return true;
 	} else {
+		states.push_back(tempara);
 		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
-		rollbackIter();
 		rollbackIter();
 	}
 
@@ -234,7 +245,7 @@ bool LL::Stmt(const std::string &context) {
 	if (SwitchOp(context)) {
 		return true;
 	} else {
-//		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -273,6 +284,8 @@ bool LL::Stmt(const std::string &context) {
 		if (!StmtList(context)) return false;
 
 		if (it->first != "rbrace") return false;
+
+		rollbackIter();
 
 		nextGraphState(0);
 		generateString("rbrace");
@@ -608,7 +621,6 @@ bool LL::ElsePart(const std::string &context) {
 }
 
 bool LL::AssignOrCallOp(const std::string &context) {
-
 	nextGraphState(0);
 	generateString("AssignOrCallOp");
 
@@ -883,6 +895,7 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextToken();
 
 		if (!StmtList(TC)) return false;
+		rollbackIter();
 
 		if (it->first != "rbrace") return false;
 
@@ -1163,7 +1176,7 @@ FT LL::Expr7List(const std::string &context, const std::string &funcID) {
 
 		nextGraphState(0);
 		generateString("E7'");
-		
+
 		auto E7ListResult = Expr7List(context, s);
 		if (!E7ListResult.first) return {false, "-2"};
 
@@ -1218,7 +1231,7 @@ FT LL::Expr6List(const std::string &context, const std::string &funcID) {
 		auto E6ListResult = Expr6List(context, s);
 
 		if (!E6ListResult.first) {
-			
+
 			return {false, "-2"};
 		}
 
@@ -1262,7 +1275,7 @@ FT LL::Expr5List(const std::string &context, const std::string &funcID) {
 
 		auto E4Result = Expr4(context);
 		if (!E4Result.first) {
-			
+
 			return {false, "-2"};
 		}
 
@@ -1421,7 +1434,7 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		generateString("E4'");
 		auto E4ListResult = Expr4List(context, s);
 		if (!E4ListResult.first) {
-			
+
 			return {false, "-2"};
 		}
 
@@ -1447,7 +1460,7 @@ FT LL::Expr4List(const std::string &context, const std::string &funcID) {
 		generateString("E4'");
 		auto E4ListResult = Expr4List(context, s);
 		if (!E4ListResult.first) {
-			
+
 			return {false, "-2"};
 		}
 
@@ -1498,7 +1511,7 @@ FT LL::Expr3List(const std::string &context, const std::string &funcID) {
 
 		auto E3ListResult = Expr3List(context, s);
 		if (!E3ListResult.first) {
-			
+
 			return {false, "-2"};
 		}
 
