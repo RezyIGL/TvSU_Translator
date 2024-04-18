@@ -687,6 +687,9 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 
 bool LL::WhileOp(const std::string &context) {
 
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+
 	nextGraphState(0);
 	generateString("WhileOp");
 
@@ -699,7 +702,10 @@ bool LL::WhileOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("kwwhile lpar E");
 
-	if (!Expr(context).first) return false;
+	auto Expra = Expr(context);
+	if (!Expra.first) return false;
+
+	generateAtom(context, "EQ", Expra.second, "0", l2);
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -708,6 +714,9 @@ bool LL::WhileOp(const std::string &context) {
 	generateString("rpar Stmt");
 
 	if (!Stmt(context)) return false;
+
+	generateAtom(context, "JMP", "", "", l1);
+	generateAtom(context, "LBL", "", "", l2);
 
 	rollbackIter();
 	rollbackIter();
