@@ -1,4 +1,13 @@
 int main() {
-    int a;
+    int a = 0;
+    int b;
+    in b;
 
-    switch}
+    while (a < b) {
+        a = a + 1;
+    }
+
+    out a;
+
+    return 0;
+}

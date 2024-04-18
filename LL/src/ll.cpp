@@ -787,7 +787,7 @@ bool LL::OutOpList(const std::string &context) {
 		auto temp = it->second;
 		nextToken();
 
-		generateAtom(context, "OUT", "", "", temp);
+		generateAtom(context, "OUT", "", "", "\"" + temp + "\"");
 
 		rollbackIter();
 		return true;
