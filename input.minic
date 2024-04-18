@@ -11,7 +11,5 @@ int main() {
         case 4:
             a = a - 2;
         default:
-            a = a * a;
-        ;
     }
 }

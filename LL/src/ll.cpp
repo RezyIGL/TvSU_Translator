@@ -406,9 +406,11 @@ bool LL::CasesList(const std::string &context, const std::string &p, const std::
 
 	auto YaCase = ACase(context, p, end);
 // TODO: RETURN FALSE. 2 Default sections
-//	if (stoi(def) >= 0 && stoi(YaCase.second) >= 0) {
-//		generateAtom("SYSTEM", "ERROR", "ERROR", "ERROR", "ERROR");
-//	}
+	if (!YaCase.second.empty()) {
+		if ((stoi(def) >= 0) && (stoi(YaCase.second) >= 0)) {
+			generateAtom("SYSTEM", "ERROR", "ERROR", "ERROR", "ERROR");
+		}
+	}
 
 	if (YaCase.first) {
 		rollbackIter();
