@@ -8,12 +8,5 @@ int main() {
 	std::string atomsOutput = "../result.atom";
 
 	LL ll(input, output, atomsOutput);
-	try {
-		ll.validate();
-	} catch (std::exception &e) {
-		std::cerr << e.what() << std::endl;
-		return -1;
-	}
-
-	return 0;
+	ll.validate();
 }

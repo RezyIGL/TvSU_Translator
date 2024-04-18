@@ -15,7 +15,7 @@ void LL::validate() {
 
 	if (StmtList(StartContext) && it->first == "eof") {
 		myStream.open(_input);
-		while (!outputVector.empty()) {
+		while (outputVector.begin() != outputVector.end()) {
 			myStream << outputVector.front() << std::endl;
 			outputVector.erase(outputVector.begin());
 		}
@@ -23,7 +23,7 @@ void LL::validate() {
 
 		myStream.open(_atomsInput);
 		myStream << "Context: Atom\n" << std::endl;
-		while (!atoms.empty()) {
+		while (atoms.begin() != atoms.end()) {
 			myStream << atoms.front().context << ": ("
 			         << atoms.front().text << ","
 			         << atoms.front().first << ","
@@ -165,7 +165,7 @@ bool LL::Stmt(const std::string &context) {
 	if (DeclareStmt(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -191,7 +191,7 @@ bool LL::Stmt(const std::string &context) {
 	if (AssignOrCallOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -202,7 +202,7 @@ bool LL::Stmt(const std::string &context) {
 	if (WhileOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -214,7 +214,7 @@ bool LL::Stmt(const std::string &context) {
 	if (ForOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -225,7 +225,7 @@ bool LL::Stmt(const std::string &context) {
 	if (IfOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -236,7 +236,7 @@ bool LL::Stmt(const std::string &context) {
 	if (SwitchOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -247,7 +247,7 @@ bool LL::Stmt(const std::string &context) {
 	if (InOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
@@ -257,7 +257,7 @@ bool LL::Stmt(const std::string &context) {
 	if (OutOp(context)) {
 		return true;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
@@ -392,7 +392,7 @@ bool LL::CasesList(const std::string &context) {
 			rollbackIter();
 		}
 
-		outputVector.erase(outputVector.end() - 1, outputVector.end());
+		outputVector.pop_back();
 
 		rollBackChanges(tempIt);
 		return true;
@@ -480,7 +480,7 @@ bool LL::ForOp(const std::string &context) {
 	int tempCnt = outVecCnt;
 
 	if (!Stmt(context)) {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		return false;
 	}
 
@@ -500,7 +500,7 @@ void LL::ForInit(const std::string &context) {
 		rollbackIter();
 		return;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		rollBackChanges(tempIt);
 		rollbackIter();
 		rollbackIter();
@@ -518,10 +518,8 @@ void LL::ForExp(const std::string &context) {
 		rollbackIter();
 		return;
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-		for (int i = 0; i < outVecCnt - tempCnt; i++) {
-			rollbackIter();
-		}
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
+		for (int i = 0; i < outVecCnt - tempCnt; i++) rollbackIter();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -583,7 +581,7 @@ bool LL::IfOp(const std::string &context) {
 	int tempCnt = outVecCnt;
 
 	if (!ElsePart(context)) {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		return false;
 	}
 
@@ -1038,7 +1036,7 @@ FT LL::ParamList(const std::string &context) {
 		rollbackIter();
 		return {true, std::to_string(stoi(da.second) + 1)};
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		rollBackChanges(tempIt);
 	}
 
@@ -1105,7 +1103,7 @@ void LL::generateString(const std::string &abiba) {
 
 void LL::rollbackIter() {
 	states.pop_back();
-	graphIt = states.end() - 1;
+	if (states.begin() != states.end()) graphIt = states.end() - 1;
 }
 
 FT LL::Expr(const std::string &context) {
@@ -1675,10 +1673,8 @@ FT LL::ArgList(const std::string &context) {
 		rollbackIter();
 		return {true, std::to_string(stoi(ArgListListResult.second) + 1)};
 	} else {
-		outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
-		for (int i = 0; i < outVecCnt - tempCnt; i++) {
-			rollbackIter();
-		}
+		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
+		for (int i = 0; i < outVecCnt - tempCnt; i++) rollbackIter();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
@@ -1712,7 +1708,7 @@ FT LL::ArgListList(const std::string &context) {
 			rollbackIter();
 			return {true, std::to_string(stoi(ArgListListResult.second) + 1)};
 		} else {
-			outputVector.erase(outputVector.end() - outVecCnt + tempCnt, outputVector.end());
+			for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 			outVecCnt = tempCnt;
 			rollBackChanges(tempIt);
 		}
