@@ -4,8 +4,9 @@
 int main() {
     std::string output = "../output.graph";
     std::fstream input("../input.minic");
+	std::string atomsOutput = "../result.atom";
 
-	LL ll(input, output);
+	LL ll(input, output, atomsOutput);
 	ll.validate();
 
 	return 0;

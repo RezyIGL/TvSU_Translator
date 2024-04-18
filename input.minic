@@ -1,1 +1,31 @@
+if (a > 6)
+if (b<-7)
+a = 13;
+else
+b = 3;
+
+int a = 1_000_000;
+int a, b = 1000000, c;
+char a, b, c = 'a';
+
+int a() {};
+char b() {};
+
+int a(int a, char b) {};
+char b(int a, char b) {};
+
+a = 1;
+a();
+a(a, b);
+
+while (a < 2) {}
+for (;;) {}
+if (42) {}
+switch (fiftyCent) {case 5: {} default: {}}
+in a;
+out ++b;
+;
 {}
+return 12 + (4 * 2);
+
+return (4 --4);
