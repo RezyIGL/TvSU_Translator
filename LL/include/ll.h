@@ -79,7 +79,7 @@ private:
 	bool WhileOp(const std::string &context);
 	bool ForOp(const std::string &context);
 	void ForInit(const std::string &context);
-	void ForExp(const std::string &context);
+	std::string ForExp(const std::string &context);
 	bool ForLoop(const std::string &context);
 	bool IfOp(const std::string &context);
 	bool ElsePart(const std::string &context);

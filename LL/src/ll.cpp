@@ -1,5 +1,6 @@
 #include "ll.h"
 #include <iostream>
+#include <algorithm>
 
 LL::LL(std::istream &stream, const std::string &inputPath, const std::string &atomsPath) : lexer{stream} {
 	_input = inputPath;
@@ -31,6 +32,26 @@ void LL::validate() {
 			         << atoms.front().third << ")" << std::endl;
 			atoms.erase(atoms.begin());
 		}
+
+		myStream << "\n=============================================\nCode: value\n\n";
+
+		std::vector<VarOrFunc> tempik;
+
+		for (auto i : AtomicMap) {
+			for (auto j : i.second) {
+				tempik.emplace_back(j);
+			}
+		}
+
+		struct {
+			bool operator()(VarOrFunc a, VarOrFunc b) const {return a.cnt < b.cnt;};
+		} customLess;
+		std::sort(tempik.begin(), tempik.end(), customLess);
+
+		for (const auto &i : tempik) {
+			myStream << "'" << i.cnt << "': " << i.name << std::endl;
+		}
+
 		myStream.close();
 
 		std::cout << "===========[Translated to Atom Language!]===========";
@@ -51,7 +72,8 @@ std::string LL::newLabel() {
 }
 
 std::string LL::alloc(const std::string &scope) {
-	return "T" + std::to_string(NewVarCnt++);
+	addVar("T" + std::to_string(NewVarCnt), scope, "int", "0");
+	return "'" + std::to_string(NewVarCnt++) + "'";
 }
 
 std::string
@@ -438,6 +460,12 @@ bool LL::ACase(const std::string &context) {
 }
 
 bool LL::ForOp(const std::string &context) {
+
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+	auto l3 = newLabel();
+	auto l4 = newLabel();
+
 	nextGraphState(0);
 	generateString("ForOp");
 
@@ -455,13 +483,19 @@ bool LL::ForOp(const std::string &context) {
 
 	if (it->first != "semicolon") return false;
 
+	generateAtom(context, "LBL", "", "", l1);
+
 	nextGraphState(1);
 	generateString("semicolon ForExp");
 	nextToken();
 
-	ForExp(context);
+	auto da = ForExp(context);
 
 	if (it->first != "semicolon") return false;
+
+	generateAtom(context, "EQ", da, "0", l4);
+	generateAtom(context, "JMP", "", "", l3);
+	generateAtom(context, "LBL", "", "", l2);
 
 	nextGraphState(1);
 	generateString("semicolon ForLoop");
@@ -471,7 +505,11 @@ bool LL::ForOp(const std::string &context) {
 	if (!ForLoop(context)) return false;
 	rollbackIter();
 
+	generateAtom(context, "JMP", "", "", l1);
+
 	if (it->first != "rpar") return false;
+
+	generateAtom(context, "LBL", "", "", l3);
 
 	nextGraphState(0);
 	generateString("rpar Stmt");
@@ -483,6 +521,9 @@ bool LL::ForOp(const std::string &context) {
 		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		return false;
 	}
+
+	generateAtom(context, "JMP", "", "", l2);
+	generateAtom(context, "LBL", "", "", l4);
 
 	rollbackIter();
 	rollbackIter();
@@ -507,22 +548,24 @@ void LL::ForInit(const std::string &context) {
 	}
 }
 
-void LL::ForExp(const std::string &context) {
+std::string LL::ForExp(const std::string &context) {
 	auto tempIt = it;
 	int tempCnt = outVecCnt;
 
 	nextGraphState(0);
 	generateString("E");
 
-	if (Expr(context).first) {
+	auto ERes = Expr(context);
+	if (ERes.first) {
 		rollbackIter();
-		return;
+		return ERes.second;
 	} else {
 		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		for (int i = 0; i < outVecCnt - tempCnt; i++) rollbackIter();
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 		rollbackIter();
+		return "1";
 	}
 }
 
@@ -532,10 +575,15 @@ bool LL::ForLoop(const std::string &context) {
 
 		if (it->first != "id") return false;
 
+		auto temp = it->second;
+
 		nextGraphState(0);
 		generateString("opinc " + it->second);
 		rollbackIter();
 		nextToken();
+
+		auto p = checkVar(context, temp);
+		generateAtom(context, "ADD", p, "1", p);
 
 		rollbackIter();
 		return true;
