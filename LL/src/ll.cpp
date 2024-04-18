@@ -72,8 +72,8 @@ std::string LL::newLabel() {
 }
 
 std::string LL::alloc(const std::string &scope) {
-	addVar("T" + std::to_string(NewVarCnt), scope, "int", "0");
-	return "'" + std::to_string(NewVarCnt++) + "'";
+	std::string temp = addVar("T" + std::to_string(NewVarCnt++), scope, "int", "0");
+	return "'" + temp + "'";
 }
 
 std::string
