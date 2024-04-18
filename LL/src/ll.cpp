@@ -67,6 +67,7 @@ bool LL::StmtList() {
 
 		if (!StmtList()) return false;
 	} else {
+		outputVector.pop_back();
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
