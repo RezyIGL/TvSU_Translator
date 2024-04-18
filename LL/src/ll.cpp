@@ -145,6 +145,7 @@ bool LL::StmtList(const std::string &context) {
 		generateString("StmtList");
 
 		if (!StmtList(context)) return false;
+		rollbackIter();
 	} else {
 		outputVector.pop_back();
 		rollBackChanges(tempIt);
@@ -156,6 +157,7 @@ bool LL::StmtList(const std::string &context) {
 }
 
 bool LL::Stmt(const std::string &context) {
+
 	if (it->first == "eof") return false;
 
 	auto tempIt = it;
@@ -313,12 +315,12 @@ bool LL::Stmt(const std::string &context) {
 
 bool LL::SwitchOp(const std::string &context) {
 
-	nextGraphState(0);
-	generateString("SwitchOp");
 
 	if (it->first != "kwswitch") return false;
 	nextToken();
 
+	nextGraphState(0);
+	generateString("SwitchOp");
 	if (it->first != "lpar") return false;
 	nextToken();
 
@@ -436,11 +438,11 @@ bool LL::ACase(const std::string &context) {
 }
 
 bool LL::ForOp(const std::string &context) {
-	nextGraphState(0);
-	generateString("ForOp");
 
 	if (it->first != "kwfor") return false;
 
+	nextGraphState(0);
+	generateString("ForOp");
 	nextToken();
 
 	if (it->first != "lpar") return false;
@@ -556,12 +558,12 @@ bool LL::ForLoop(const std::string &context) {
 
 bool LL::IfOp(const std::string &context) {
 
-	nextGraphState(0);
-	generateString("IfOp");
 
 	if (it->first != "kwif") return false;
 	nextToken();
 
+	nextGraphState(0);
+	generateString("IfOp");
 	if (it->first != "lpar") return false;
 	nextToken();
 
@@ -688,11 +690,12 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 
 bool LL::WhileOp(const std::string &context) {
 
-	nextGraphState(0);
-	generateString("WhileOp");
 
 	if (it->first != "kwwhile") return false;
 	nextToken();
+
+	nextGraphState(0);
+	generateString("WhileOp");
 
 	if (it->first != "lpar") return false;
 	nextToken();
@@ -860,6 +863,7 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 	if (it->first == "eof") return false;
 
 	if (it->first == "lpar") {
+
 		if (stoi(context) > -1) return false;
 
 		nextToken();
@@ -883,18 +887,17 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextToken();
 
 		if (!StmtList(TC)) return false;
-		rollbackIter();
 
 		if (it->first != "rbrace") return false;
 
 		nextGraphState(0);
 		generateString("rbrace");
-		rollbackIter();
 		nextToken();
 
 		// TODO: Reassembly {RET,,,0}. Make it optional
 		// generateAtom(context, "RET", "", "", "0");
 
+		rollbackIter();
 		rollbackIter();
 		return true;
 	} else if (it->first == "opassign") {
