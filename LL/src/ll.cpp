@@ -35,6 +35,13 @@ void LL::validate() {
 
 		myStream << "\n=============================================\nCode: value\n\n";
 
+		if (atoms.front().text == "ERROR") {
+			std::cout << "===========[Translated to Atom Language!]===========" << std::endl;
+			std::cout << "... with error" << std::endl;
+			myStream.close();
+			return;
+		}
+
 		std::vector<VarOrFunc> tempik;
 
 		for (auto i : AtomicMap) {
@@ -57,12 +64,21 @@ void LL::validate() {
 		std::cout << "===========[Translated to Atom Language!]===========";
 	} else {
 		atoms.clear();
+		AtomicMap.clear();
 		std::cout << "=============[Your code is incorrect!]=============";
 	}
 }
 
 void LL::generateAtom(const std::string &context = "", const std::string &text = "", const std::string &first = "",
                       const std::string &second = "", const std::string &third = "") {
+	if (atoms.size() == 1 && atoms[0].text == "ERROR") return;
+
+	if (context == "ERROR" || text == "ERROR" || first == "ERROR" || second == "ERROR" || third == "ERROR") {
+		atoms.clear();
+		atoms.emplace_back("SYSTEM", "ERROR", "ERROR", "ERROR", "ERROR");
+		return;
+	}
+
 	Atom atom = {context, text, first, second, third};
 	atoms.emplace_back(atom);
 }
