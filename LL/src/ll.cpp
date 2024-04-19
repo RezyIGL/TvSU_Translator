@@ -689,7 +689,7 @@ bool LL::IfOp(const std::string &context) {
 		return false;
 	}
 
-	generateAtom(context, "LBL", "", "", "L" + l1);
+	generateAtom(context, "LBL", "", "", "L" + l2);
 
 	rollbackIter();
 	rollbackIter();
@@ -801,6 +801,8 @@ bool LL::WhileOp(const std::string &context) {
 
 	if (it->first != "kwwhile") return false;
 	nextToken();
+
+	generateAtom(context, "LBL", "", "", "L" + l1);
 
 	if (it->first != "lpar") return false;
 	nextToken();
