@@ -1,16 +1,4 @@
-int fiba(int n) {
-    if (n == 1 || n == 0) return 1;
-    return fiba(n - 1) + fiba(n - 2);
-}
-
 int main() {
     int a;
-    in a;
-
-    a = fiba(a);
-
-    out "Your result: ";
-    out a;
-
-    return 0;
+    switch (a) {default: }
 }

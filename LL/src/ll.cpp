@@ -24,18 +24,21 @@ void LL::validate() {
 
 		myStream.open(_atomsInput);
 		myStream << "Context: Atom\n" << std::endl;
-		while (atoms.begin() != atoms.end()) {
-			myStream << atoms.front().context << ": ("
-			         << atoms.front().text << ","
-			         << atoms.front().first << ","
-			         << atoms.front().second << ","
-			         << atoms.front().third << ")" << std::endl;
-			atoms.erase(atoms.begin());
+
+		std::reverse(atoms.begin(), atoms.end());
+
+		for (const auto &i : atoms) {
+			myStream << i.context << ": ("
+			         << i.text << ","
+			         << i.first << ","
+			         << i.second << ","
+			         << i.third << ")" << std::endl;
+			atoms.pop_back();
 		}
 
 		myStream << "\n=============================================\nName : Code : Class : Type : Init : Scope \n\n";
 
-		if (atoms.front().text == "ERROR") {
+		if (!atoms.empty() && atoms.front().text == "ERROR") {
 			std::cout << "===========[Translated to Atom Language!]===========" << std::endl;
 			std::cout << "... with error" << std::endl;
 			myStream.close();
