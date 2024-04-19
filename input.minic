@@ -1,18 +1,8 @@
-int fiba(int n) {
-    if (n == 0 || n == 1) return 1;
-    return fiba(n - 1) + fiba(n - 2);
-}
-
 int main() {
-    int num, res, i;
-    in num;
+    int a;
+    in a;
 
-    for (i = 0; i < num; ++i) {
-        res = fiba(i);
-
-        out "Awesome number = ";
-        out res;
-    }
-
-    return 0;
+    if (a == 1) out "Yes";
+    else if (a == 2) out "No";
+    else out "hz";
 }

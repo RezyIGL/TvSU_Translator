@@ -33,7 +33,7 @@ void LL::validate() {
 			atoms.erase(atoms.begin());
 		}
 
-		myStream << "\n=============================================\nCode: value\n\n";
+		myStream << "\n=============================================\nName : Code : Class : Type : Init : Scope \n\n";
 
 		if (atoms.front().text == "ERROR") {
 			std::cout << "===========[Translated to Atom Language!]===========" << std::endl;
@@ -44,19 +44,20 @@ void LL::validate() {
 
 		std::vector<VarOrFunc> tempik;
 
-		for (auto i : AtomicMap) {
-			for (auto j : i.second) {
+		for (const auto &i: AtomicMap) {
+			for (const auto &j: i.second) {
 				tempik.emplace_back(j);
 			}
 		}
 
 		struct {
-			bool operator()(VarOrFunc a, VarOrFunc b) const {return a.cnt < b.cnt;};
+			bool operator()(VarOrFunc &a, VarOrFunc &b) const { return a.cnt < b.cnt; };
 		} customLess;
 		std::sort(tempik.begin(), tempik.end(), customLess);
 
-		for (const auto &i : tempik) {
-			myStream << "'" << i.cnt << "': " << i.name << std::endl;
+		for (const auto &i: tempik) {
+			myStream << "'" << i.name << "' : " << i.cnt << " : " << i.kind << " : " << i.type << " : " << i.init
+			         << " : " << i.scope << std::endl;
 		}
 
 		myStream.close();
@@ -663,15 +664,23 @@ bool LL::IfOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("kwif lpar E");
 
-	if (!Expr(context).first) return false;
+	auto ERes = Expr(context);
+	if (!ERes.first) return false;
 
 	if (it->first != "rpar") return false;
 	nextToken();
+
+	auto l1 = newLabel();
+	generateAtom(context, "EQ", ERes.second, "0", "L" + l1);
 
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
 	if (!Stmt(context)) return false;
+
+	auto l2 = newLabel();
+	generateAtom(context, "JMP", "", "", "L" + l2);
+	generateAtom(context, "LBL", "", "", "L" + l1);
 
 	int tempCnt = outVecCnt;
 
@@ -679,6 +688,8 @@ bool LL::IfOp(const std::string &context) {
 		for (int i = 0; i < outVecCnt - tempCnt; i++) outputVector.pop_back();
 		return false;
 	}
+
+	generateAtom(context, "LBL", "", "", "L" + l1);
 
 	rollbackIter();
 	rollbackIter();
