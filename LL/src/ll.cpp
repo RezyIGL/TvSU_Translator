@@ -69,6 +69,36 @@ void LL::validate() {
 	}
 }
 
+void LL::generateString(const std::string &abiba) {
+	std::string aboba;
+	for (auto i = states.begin(); i != states.end(); ++i) {
+		if (i == states.end() - 1) {
+			if (*i == 1) {
+				aboba += "├";
+			} else {
+				aboba += "└";
+			}
+
+			break;
+		}
+
+		if (*i == 1) {
+			aboba += "│ ";
+		} else {
+			aboba += " ";
+		}
+	}
+
+	outVecCnt++;
+	outputVector.push_back(aboba + abiba);
+}
+
+void LL::rollbackIter() {
+	states.pop_back();
+	if (states.begin() != states.end()) graphIt = states.end() - 1;
+	graphIt = states.begin();
+}
+
 void LL::generateAtom(const std::string &context = "", const std::string &text = "", const std::string &first = "",
                       const std::string &second = "", const std::string &third = "") {
 	if (atoms.size() == 1 && atoms[0].text == "ERROR") return;
@@ -107,7 +137,6 @@ LL::addVar(const std::string &name, const std::string &scope, const std::string 
 
 	return std::to_string(temp.cnt);
 }
-
 
 std::string LL::addFunc(const std::string &name, const std::string &type, const std::string &length = "0") {
 	for (const auto &i: AtomicMap["-1"]) {
@@ -1173,36 +1202,6 @@ FT LL::ParamListList(const std::string &context) {
 
 	rollbackIter();
 	return {true, "0"};
-}
-
-void LL::generateString(const std::string &abiba) {
-	std::string aboba;
-	for (auto i = states.begin(); i != states.end(); ++i) {
-		if (i == states.end() - 1) {
-			if (*i == 1) {
-				aboba += "├";
-			} else {
-				aboba += "└";
-			}
-
-			break;
-		}
-
-		if (*i == 1) {
-			aboba += "│ ";
-		} else {
-			aboba += " ";
-		}
-	}
-
-	outVecCnt++;
-	outputVector.push_back(aboba + abiba);
-}
-
-void LL::rollbackIter() {
-	states.pop_back();
-	if (states.begin() != states.end()) graphIt = states.end() - 1;
-	graphIt = states.begin();
 }
 
 FT LL::Expr(const std::string &context) {
