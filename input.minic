@@ -1,3 +1,12 @@
 int main() {
+    int a = 3, c;
 
+    in c;
+
+    a = a + c;
+
+    out "Something: ";
+    out a;
+
+    return -1;
 }
