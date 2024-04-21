@@ -25,9 +25,7 @@ void LL::validate() {
 		myStream.open(_atomsInput);
 		myStream << "Context: Atom\n" << std::endl;
 
-//		std::reverse(atoms.begin(), atoms.end());
-
-		for (const auto &i : atoms) {
+		for (const auto &i: atoms) {
 			myStream << i.context << ": ("
 			         << i.text << ","
 			         << i.first << ","
@@ -211,8 +209,6 @@ bool LL::Stmt(const std::string &context) {
 		rollbackIter();
 	}
 
-	tempCnt = outVecCnt;
-
 	if (it->first == "semicolon") {
 		nextToken();
 
@@ -226,8 +222,6 @@ bool LL::Stmt(const std::string &context) {
 
 	if (context == "-1") return false;
 
-	tempCnt = outVecCnt;
-
 	if (AssignOrCallOp(context)) {
 		return true;
 	} else {
@@ -236,8 +230,6 @@ bool LL::Stmt(const std::string &context) {
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
-
-	tempCnt = outVecCnt;
 
 	if (WhileOp(context)) {
 		return true;
@@ -249,8 +241,6 @@ bool LL::Stmt(const std::string &context) {
 		rollbackIter();
 	}
 
-	tempCnt = outVecCnt;
-
 	if (ForOp(context)) {
 		return true;
 	} else {
@@ -259,8 +249,6 @@ bool LL::Stmt(const std::string &context) {
 		rollBackChanges(tempIt);
 		rollbackIter();
 	}
-
-	tempCnt = outVecCnt;
 
 	if (IfOp(context)) {
 		return true;
@@ -271,8 +259,6 @@ bool LL::Stmt(const std::string &context) {
 		rollbackIter();
 	}
 
-	tempCnt = outVecCnt;
-
 	if (SwitchOp(context)) {
 		return true;
 	} else {
@@ -282,8 +268,6 @@ bool LL::Stmt(const std::string &context) {
 		rollbackIter();
 	}
 
-	tempCnt = outVecCnt;
-
 	if (InOp(context)) {
 		return true;
 	} else {
@@ -292,8 +276,6 @@ bool LL::Stmt(const std::string &context) {
 		rollBackChanges(tempIt);
 	}
 
-	tempCnt = outVecCnt;
-
 	if (OutOp(context)) {
 		return true;
 	} else {
@@ -301,8 +283,6 @@ bool LL::Stmt(const std::string &context) {
 		outVecCnt = tempCnt;
 		rollBackChanges(tempIt);
 	}
-
-	tempCnt = outVecCnt;
 
 	if (it->first == "lbrace") {
 		nextToken();
@@ -313,7 +293,6 @@ bool LL::Stmt(const std::string &context) {
 		tempCnt = outVecCnt;
 
 		if (!StmtList(context)) return false;
-
 		if (it->first != "rbrace") return false;
 
 		nextGraphState(0);
@@ -510,15 +489,15 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 
 bool LL::ForOp(const std::string &context) {
 
-	auto l1 = newLabel();
-	auto l2 = newLabel();
-	auto l3 = newLabel();
-	auto l4 = newLabel();
-
 	nextGraphState(0);
 	generateString("ForOp");
 
 	if (it->first != "kwfor") return false;
+
+	auto l1 = newLabel();
+	auto l2 = newLabel();
+	auto l3 = newLabel();
+	auto l4 = newLabel();
 
 	nextToken();
 
@@ -793,15 +772,14 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 }
 
 bool LL::WhileOp(const std::string &context) {
-
-	auto l1 = newLabel();
-	auto l2 = newLabel();
-
 	nextGraphState(0);
 	generateString("WhileOp");
 
 	if (it->first != "kwwhile") return false;
 	nextToken();
+
+	auto l1 = newLabel();
+	auto l2 = newLabel();
 
 	generateAtom(context, "LBL", "", "", "L" + l1);
 
@@ -1224,6 +1202,7 @@ void LL::generateString(const std::string &abiba) {
 void LL::rollbackIter() {
 	states.pop_back();
 	if (states.begin() != states.end()) graphIt = states.end() - 1;
+	graphIt = states.begin();
 }
 
 FT LL::Expr(const std::string &context) {
