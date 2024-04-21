@@ -10,7 +10,6 @@ using FT = std::pair<bool, std::string>;
 class LL {
 public:
 	explicit LL(std::istream&, const std::string &, const std::string &);
-	virtual ~LL() = default;
 	void validate();
 private:
 	// Semantic analyze
@@ -21,15 +20,19 @@ private:
 		std::string second;
 		std::string third;
 	};
+
 	std::string newLabel();
 	std::string alloc(const std::string &scope);
 	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
 	std::string addFunc(const std::string &name, const std::string &type, const std::string &length);
 	std::string checkVar(const std::string &scope, const std::string &name);
 	std::string checkFunc(const std::string &name, const std::string &len);
+
 	std::vector<Atom> atoms;
 	std::string _atomsInput;
+
 	void generateAtom(const std::string &context, const std::string &text, const std::string &first, const std::string &second,const std::string &third);
+
 	int LabelCnt = 1;
 	int NewVarCnt = 1;
 
@@ -56,7 +59,7 @@ private:
 	std::vector<std::string> outputVector;
 
 	std::vector<int> states;
-	std::vector<int>::iterator graphIt;
+	std::vector<int>::iterator graphIt = states.begin();
 
 	int outVecCnt = 0;
 
@@ -64,7 +67,7 @@ private:
 	Lexer lexer;
 
 	std::vector<Token> myQueue;
-	std::vector<Token>::iterator it;
+	std::vector<Token>::iterator it = myQueue.begin();
 
 	void nextToken();
 	void rollBackChanges(std::vector<Token>::iterator);

@@ -25,7 +25,7 @@ void LL::validate() {
 		myStream.open(_atomsInput);
 		myStream << "Context: Atom\n" << std::endl;
 
-		std::reverse(atoms.begin(), atoms.end());
+//		std::reverse(atoms.begin(), atoms.end());
 
 		for (const auto &i : atoms) {
 			myStream << i.context << ": ("
@@ -59,7 +59,7 @@ void LL::validate() {
 		std::sort(tempik.begin(), tempik.end(), customLess);
 
 		for (const auto &i: tempik) {
-			myStream << "'" << i.name << "' : " << i.cnt << " : " << i.kind << " : " << i.type << " : " << i.init
+			myStream << i.name << " : '" << i.cnt << "' : " << i.kind << " : " << i.type << " : " << i.init
 			         << " : " << i.scope << std::endl;
 		}
 
@@ -67,8 +67,6 @@ void LL::validate() {
 
 		std::cout << "===========[Translated to Atom Language!]===========";
 	} else {
-		atoms.clear();
-		AtomicMap.clear();
 		std::cout << "=============[Your code is incorrect!]=============";
 	}
 }
@@ -1008,6 +1006,8 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextGraphState(0);
 		generateString("rbrace");
 		nextToken();
+
+		generateAtom(context, "RET", "", "", "0");
 
 		rollbackIter();
 		rollbackIter();
