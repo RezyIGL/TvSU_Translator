@@ -1,12 +1,14 @@
 int main() {
-    int a = 3, c;
+    int a;
 
-    in c;
+    in a;
 
-    a = a + c;
-
-    out "Something: ";
-    out a;
-
-    return -1;
+    switch (a) {
+        default:
+            out "Java govno";
+        case 3:
+            out "JavaScript is the best";
+        case 0:
+            out "Python sosat";
+    }
 }
