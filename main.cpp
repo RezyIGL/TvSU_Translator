@@ -1,12 +1,12 @@
 #include "ll.h"
-#include <fstream>
-#include <iostream>
 
 int main() {
-    std::string output = "../output.graph";
-	std::string atomsOutput = "../result.atom";
-	std::fstream input("../input.minic");
+	std::fstream INPUT_PATH("../MiniC_Code.minic");
+	const std::string GRAPH_PATH = "../CodeGraph.graph";
+	const std::string ATOMS_PATH = "../Atoms.atom";
+	const std::string ASM_PATH = "../Result.asm";
 
-	LL ll(input, output, atomsOutput);
+	LL ll(INPUT_PATH, GRAPH_PATH, ATOMS_PATH, ASM_PATH);
+
 	ll.validate();
 }
