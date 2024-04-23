@@ -25,63 +25,62 @@ struct VarOrFunc {
 
 class LL {
 public:
+	// Constructor.
 	explicit LL(std::istream&, const std::string&, const std::string&, const std::string&);
+
+	// Function to translate your input and generate output graph.
 	void validate();
 private:
 
-	// TODO: NEW STUFF
-
+	// Functions to print everything to files.
 	void isTranslated();
 	void printGraph();
 	bool printAtoms();
 	void printASMCode();
-	std::vector<VarOrFunc> sortedAtomsVector;
 
+	// Needful variables
+	std::string _atomsInput; // path to Atoms output file
+	std::string _asmOut; // path to ASM i8080 output file
+	std::string _graph; // path to output graph output file
+	std::ofstream myStream; // path to the input file
 
-	// Semantic analyze
+	std::vector<Atom> atoms; // Contains all the atoms we generated
+	std::vector<VarOrFunc> sortedAtomsVector; // contains sorted list of variables that we will need to allocate
+
+	int LabelCnt = 1; // Variable to know which labels we already used
+	int NewVarCnt = 1; // Variable to create new tempVariables
+
+	std::map<std::string, std::vector<VarOrFunc>> AtomicMap; // Map: Context -> all the (functions or variables)
+	int AtomicMapCnt = 0; // Amount of... idk... I forgot :(
+
+	std::vector<std::string> outputVector; // Vector that stores all the strings of output graph
+	std::vector<int> states; // states to understand which string to generate for graph
+	std::vector<int>::iterator graphIterator = states.begin(); // Iterator of my graph vector
+
+	std::vector<Token> lexemVector; // All the Tokens from Lexer we store here
+	std::vector<Token>::iterator it = lexemVector.begin(); // Iterator for that vector
+
+	int outVecCnt = 0; // The shift, if I remember correctly
+
+	// Translation to Atoms Language
 	std::string newLabel();
 	std::string alloc(const std::string &scope);
 	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
 	std::string addFunc(const std::string &name, const std::string &type, const std::string &length);
 	std::string checkVar(const std::string &scope, const std::string &name);
 	std::string checkFunc(const std::string &name, const std::string &len);
-
-	std::vector<Atom> atoms;
-	std::string _atomsInput;
-
-	std::string _asmOut;
-
 	void generateAtom(const std::string &context, const std::string &text, const std::string &first, const std::string &second,const std::string &third);
 
-	int LabelCnt = 1;
-	int NewVarCnt = 1;
-
-	std::map<std::string, std::vector<VarOrFunc>> AtomicMap;
-	int AtomicMapCnt = 0;
-
-	// Graph printer
+	// Creation of output graph
 	void nextGraphState(const int &a);
 	void rollbackGraphNode();
-
 	void generateString(const std::string&);
 
-	std::string _graph;
-	std::ofstream myStream;
-	std::vector<std::string> outputVector;
-
-	std::vector<int> states;
-	std::vector<int>::iterator graphIterator = states.begin();
-
-	int outVecCnt = 0;
-
-	// Syntax analyzer
+	// Correct or not checker (everything under that)
 	Lexer lexer;
-
-	std::vector<Token> lexemVector;
-	std::vector<Token>::iterator it = lexemVector.begin();
-
 	void nextToken();
 
+	// MiniC grammar checker
 	bool StmtList(const std::string &context);
 	bool Stmt(const std::string &context);
 	bool DeclareStmt(const std::string &context);
@@ -109,6 +108,7 @@ private:
 	FT ParamList(const std::string &context);
 	FT ParamListList(const std::string &context);
 
+	// Expression checker
 	FT Expr(const std::string &context);
 	FT Expr7(const std::string &context);
 	FT Expr7List(const std::string &context, const std::string &funcID);

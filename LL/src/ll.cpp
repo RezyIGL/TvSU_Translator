@@ -224,11 +224,13 @@ void LL::nextToken() {
 	it++;
 }
 
+// TODO: CHECK THIS STUFF
 void LL::nextGraphState(const int &state) {
 //	states.emplace_back(state);
 //	graphIterator = states.end() - 1;
 }
 
+// TODO: CHECK THIS STUFF
 void LL::rollbackGraphNode() {
 //	graphIterator = (graphIterator > states.begin()) ? graphIterator - 1 : states.begin();
 //	states.pop_back();
