@@ -32,6 +32,13 @@ public:
 	void validate();
 private:
 
+	// ASM i8080 translating functions
+	void MOV(const Atom&);
+	void LBL(const Atom&);
+	void JMP(const Atom&);
+	void ADD(const Atom&);
+	void SUB(const Atom&);
+
 	// Functions to print everything to files.
 	void isTranslated();
 	void printGraph();

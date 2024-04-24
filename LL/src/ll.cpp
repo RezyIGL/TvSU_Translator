@@ -38,7 +38,6 @@ bool LL::printAtoms() {
 		         << i.first << ","
 		         << i.second << ","
 		         << i.third << ")" << std::endl;
-		atoms.pop_back();
 	}
 
 	myStream << "\n=============================================\nName : Code : Class : Type : Init : Scope \n\n";
@@ -66,18 +65,32 @@ bool LL::printAtoms() {
 void LL::printASMCode() {
 	myStream.open(_asmOut);
 
-	for (const auto &i : sortedAtomsVector) {
+	myStream << "JMP START" << std::endl << std::endl;
+
+	for (const auto &i: sortedAtomsVector) {
 		if (i.kind == "var") {
 			if (i.type == "kwint") {
-				myStream << i.name << ": db ";
-				if (i.init.empty()) myStream << "0H" << std::endl;
-				else myStream << i.init << "H" << std::endl;
+				myStream << "int_" + i.name << ": db ";
+				if (i.init.empty()) myStream << "0" << std::endl;
+				else myStream << i.init << "" << std::endl;
 			} else {
-				myStream << i.name << ": dw ";
+				myStream << "char_" + i.name << ": dw ";
 				if (i.init.empty()) myStream << "\"\"" << std::endl;
 				else myStream << "\"" << i.init << "\"" << std::endl;
 			}
 		}
+	}
+
+	myStream << std::endl;
+
+	myStream << "START:" << std::endl << std::endl;
+
+	for (const auto &atom: atoms) {
+		if (atom.text == "MOV") MOV(atom);
+		if (atom.text == "LBL") LBL(atom);
+		if (atom.text == "JMP") JMP(atom);
+		if (atom.text == "ADD") ADD(atom);
+		if (atom.text == "SUB") SUB(atom);
 	}
 
 	myStream.close();
@@ -133,6 +146,84 @@ void LL::generateString(const std::string &TextToAdd) {
 
 	outVecCnt++;
 	outputVector.push_back(_text + TextToAdd);
+}
+
+// ASM i8080 translation functions
+void LL::MOV(const Atom &atom) {
+	if (atom.first.starts_with('\'')) {
+		int idFirst = stoi(atom.first.substr(1, atom.first.size() - 1));
+		std::string lh = sortedAtomsVector[idFirst].type.substr(2, sortedAtomsVector[idFirst].type.size()) +
+				"_" + sortedAtomsVector[idFirst].name;
+
+		int idSecond = stoi(atom.third.substr(1, atom.first.size() - 1));
+		std::string rh = sortedAtomsVector[idSecond].type.substr(2, sortedAtomsVector[idSecond].type.size()) +
+				"_" + sortedAtomsVector[idSecond].name;
+
+		myStream << "LDA " + lh << std::endl;
+		myStream << "STA " + rh << std::endl;
+	} else {
+		int idSecond = stoi(atom.third.substr(1, atom.first.size() - 1));
+		std::string rh = sortedAtomsVector[idSecond].type.substr(2, sortedAtomsVector[idSecond].type.size()) +
+				"_" + sortedAtomsVector[idSecond].name;
+
+		myStream << "MVI A, " + atom.first << std::endl;
+		myStream << "STA " + rh << std::endl;
+	}
+
+	myStream << std::endl;
+}
+
+void LL::LBL(const Atom &atom) {
+	myStream << atom.third + ":" << std::endl;
+	myStream << std::endl;
+}
+
+void LL::JMP(const Atom &atom) {
+	myStream << "JMP " + atom.third << std::endl;
+	myStream << std::endl;
+}
+
+void LL::ADD(const Atom &atom) {
+
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                 "_" + sortedAtomsVector[TempVarId].name;
+
+	myStream << "ADD B" << std::endl;
+	myStream << "STA " + TempVar << std::endl;
+
+	myStream << std::endl;
+}
+
+void LL::SUB(const Atom &atom) {
+
 }
 
 //	// LL analyzer check functions
@@ -230,7 +321,7 @@ void LL::nextGraphState(const int &state) {
 	graphIterator = states.end() - 1;
 }
 
-// Literally deletes last state and rolls iterator baclk
+// Literally deletes last state and rolls iterator back
 void LL::rollbackGraphNode() {
 	graphIterator = (graphIterator > states.begin()) ? graphIterator - 1 : states.begin();
 	states.pop_back();
@@ -1701,7 +1792,8 @@ FT LL::ArgListList(const std::string &context) {
 	if (it->first == "comma") {
 		nextToken();
 
-		if (it->first == "lpar" || it->first == "opinc" || it->first == "num" || it->first == "char" || it->first == "id") {
+		if (it->first == "lpar" || it->first == "opinc" || it->first == "num" || it->first == "char" ||
+		    it->first == "id") {
 
 			nextGraphState(1);
 			generateString("comma E");
