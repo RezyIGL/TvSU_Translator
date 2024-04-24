@@ -91,15 +91,17 @@ void LL::printASMCode() {
 		if (atom.text == "JMP") JMP(atom); // done
 		if (atom.text == "ADD") ADD(atom); // done
 		if (atom.text == "SUB") SUB(atom); // done
-		if (atom.text == "OR") OR(atom);
-		if (atom.text == "AND") AND(atom);
-		if (atom.text == "EQ") EQ(atom);
-		if (atom.text == "NE") NE(atom);
-		if (atom.text == "GT") GT(atom);
-		if (atom.text == "LT") LT(atom);
-		if (atom.text == "GE") GE(atom);
-		if (atom.text == "LE") LE(atom);
-		if (atom.text == "NOT") NOT(atom);
+		if (atom.text == "OR") OR(atom); // done
+		if (atom.text == "AND") AND(atom); // done
+		if (atom.text == "EQ") EQ(atom); // done
+		if (atom.text == "NE") NE(atom); // done
+		if (atom.text == "GT") GT(atom); // done
+		if (atom.text == "LT") LT(atom); // done
+		if (atom.text == "GE") GE(atom); // done
+		if (atom.text == "LE") LE(atom); // done
+		if (atom.text == "NOT") NOT(atom); // done
+
+		// It is really complicated or eliben.org/js8080/ didn't implement it
 		if (atom.text == "MUL") MUL(atom); // cannot
 		if (atom.text == "CALL") CALL(atom);  // cannot
 		if (atom.text == "PARAM") PARAM(atom);  // cannot
@@ -275,23 +277,300 @@ void LL::SUB(const Atom &atom) {
 	myStream << std::endl;
 }
 
-void LL::OR(const Atom &atom) {}
+void LL::OR(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
 
-void LL::AND(const Atom &atom) {}
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
 
-void LL::EQ(const Atom &atom) {}
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
 
-void LL::NE(const Atom &atom) {}
+	myStream << "MOV B, A" << std::endl;
 
-void LL::GT(const Atom &atom) {}
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
 
-void LL::LT(const Atom &atom) {}
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
 
-void LL::GE(const Atom &atom) {}
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                      "_" + sortedAtomsVector[TempVarId].name;
 
-void LL::LE(const Atom &atom) {}
+	myStream << "ORA B" << std::endl;
+	myStream << "STA " + TempVar << std::endl;
 
-void LL::NOT(const Atom &atom) {}
+	myStream << std::endl;
+}
+
+void LL::AND(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                      "_" + sortedAtomsVector[TempVarId].name;
+
+	myStream << "ANA B" << std::endl;
+	myStream << "STA " + TempVar << std::endl;
+
+	myStream << std::endl;
+}
+
+void LL::EQ(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JZ " + atom.third << std::endl << std::endl;
+}
+
+void LL::NE(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JNZ " + atom.third << std::endl << std::endl;
+}
+
+void LL::GT(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JP " + atom.third << std::endl << std::endl;
+}
+
+void LL::LT(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JM " + atom.third << std::endl << std::endl;
+}
+
+void LL::GE(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JP " + atom.third << std::endl;
+	myStream << "JZ " + atom.third << std::endl << std::endl;
+}
+
+void LL::LE(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "SUB B" << std::endl;
+	myStream << "JM " + atom.third << std::endl;
+	myStream << "JZ " + atom.third << std::endl << std::endl;
+}
+
+void LL::NOT(const Atom &atom) {
+	std::string LeftHand;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	myStream << "CMA" << std::endl;
+
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                      "_" + sortedAtomsVector[TempVarId].name;
+
+	myStream << "STA " + TempVar << std::endl;
+
+	myStream << std::endl;
+}
 
 // useless (as they're now) functions
 
