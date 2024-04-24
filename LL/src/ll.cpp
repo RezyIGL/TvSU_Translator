@@ -603,8 +603,7 @@ void LL::OUT(const Atom &atom) {
 	myStream << "; OUT IS NOT IMPLEMENTED" << std::endl << std::endl;
 }
 
-//	// LL analyzer check functions
-
+// LL analyzer check functions
 // Semantic analyzer functions
 std::string LL::newLabel() {
 	return std::to_string(LabelCnt++);

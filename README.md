@@ -1,19 +1,24 @@
-# Lexical Analyzer
+# Translator: MiniC to ASM i8080
 
-This repository contains a lexical analyzer, which is a key component of the compilation process. 
-The analyzer takes a source code file as input and produces a sequence of tokens, which are the smallest meaningful units of the program.
+This repository contains:
+- Lexical Analyzer.
+(To provide Tokens of my input code)
+
+- Top-Down Syntax Analyzer.
+(To check if code correct or not and translate it to Atom language and then to ASM i8080)
+
+- Shunting Yard Machine.
+(Just for fun. And because my teacher asked me to)
 
 ## How to Use
 
-To use the lexical analyzer, clone this repository and run the analyzer with the source code file as an argument.
-
-```bash
-git clone <https://github.com/RezyIGL/TvSU-Translator>
-cd TvSU-Translator
-```
-
-Then build this project with CMake.
-The output will be a list of tokens, each of which will be displayed on its own line.
+Just clone it.
+After that you can input your code in:
+- MiniC_Code.minic
+and there will be 3 different output files.
+1. CodeGraph.graph - that will draw you a tree of disassembly
+2. Atoms.atom - that will give you your code on Atoms language
+3. Result.asm - that will give you your code on ASM i8080
 
 ## Contributions
 
