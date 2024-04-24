@@ -86,6 +86,9 @@ void LL::printASMCode() {
 	myStream << "START:" << std::endl << std::endl;
 
 	for (const auto &atom: atoms) {
+
+		// Atom translation functions
+
 		if (atom.text == "MOV") MOV(atom); // done
 		if (atom.text == "LBL") LBL(atom); // done
 		if (atom.text == "JMP") JMP(atom); // done
@@ -102,12 +105,14 @@ void LL::printASMCode() {
 		if (atom.text == "NOT") NOT(atom); // done
 
 		// It is really complicated or eliben.org/js8080/ didn't implement it
-		if (atom.text == "MUL") MUL(atom); // cannot
-		if (atom.text == "CALL") CALL(atom);  // cannot
-		if (atom.text == "PARAM") PARAM(atom);  // cannot
-		if (atom.text == "RET") RET(atom);  // cannot
-		if (atom.text == "IN") IN(atom);  // cannot
-		if (atom.text == "OUT") OUT(atom);  // cannot
+
+		if (atom.text == "MUL") MUL(atom); // I'm lazy for it for now
+		if (atom.text == "CALL") CALL(atom);  // I'm lazy for it for now
+		if (atom.text == "PARAM") PARAM(atom);  // I'm lazy for it for now
+		if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
+
+		if (atom.text == "IN") IN(atom);  // Not implemented on the site
+		if (atom.text == "OUT") OUT(atom);  // Not implemented on the site
 	}
 
 	myStream.close();
