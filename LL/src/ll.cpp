@@ -112,7 +112,7 @@ void LL::printASMCode() {
 		if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
 
 		if (atom.text == "IN") IN(atom);  // Not implemented on the site
-		if (atom.text == "OUT") OUT(atom);  // Pseudo implementation
+		if (atom.text == "OUT") OUT(atom);  // Not implemented on the site
 	}
 
 	myStream.close();
@@ -600,8 +600,7 @@ void LL::IN(const Atom &atom) {
 }
 
 void LL::OUT(const Atom &atom) {
-	myStream << "; Pseudo OUT -> " << std::endl;
-	myStream << "; " + atom.third << std::endl << std::endl;
+	myStream << "; OUT IS NOT IMPLEMENTED" << std::endl << std::endl;
 }
 
 //	// LL analyzer check functions
