@@ -223,7 +223,41 @@ void LL::ADD(const Atom &atom) {
 }
 
 void LL::SUB(const Atom &atom) {
+	std::string LeftHand;
+	std::string RightHand;
 
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV B, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                      "_" + sortedAtomsVector[TempVarId].name;
+
+	myStream << "SUB B" << std::endl;
+	myStream << "STA " + TempVar << std::endl;
+
+	myStream << std::endl;
 }
 
 //	// LL analyzer check functions
