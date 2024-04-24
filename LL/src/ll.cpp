@@ -86,11 +86,26 @@ void LL::printASMCode() {
 	myStream << "START:" << std::endl << std::endl;
 
 	for (const auto &atom: atoms) {
-		if (atom.text == "MOV") MOV(atom);
-		if (atom.text == "LBL") LBL(atom);
-		if (atom.text == "JMP") JMP(atom);
-		if (atom.text == "ADD") ADD(atom);
-		if (atom.text == "SUB") SUB(atom);
+		if (atom.text == "MOV") MOV(atom); // done
+		if (atom.text == "LBL") LBL(atom); // done
+		if (atom.text == "JMP") JMP(atom); // done
+		if (atom.text == "ADD") ADD(atom); // done
+		if (atom.text == "SUB") SUB(atom); // done
+		if (atom.text == "OR") OR(atom);
+		if (atom.text == "AND") AND(atom);
+		if (atom.text == "EQ") EQ(atom);
+		if (atom.text == "NE") NE(atom);
+		if (atom.text == "GT") GT(atom);
+		if (atom.text == "LT") LT(atom);
+		if (atom.text == "GE") GE(atom);
+		if (atom.text == "LE") LE(atom);
+		if (atom.text == "NOT") NOT(atom);
+		if (atom.text == "MUL") MUL(atom); // cannot
+		if (atom.text == "CALL") CALL(atom);  // cannot
+		if (atom.text == "PARAM") PARAM(atom);  // cannot
+		if (atom.text == "RET") RET(atom);  // cannot
+		if (atom.text == "IN") IN(atom);  // cannot
+		if (atom.text == "OUT") OUT(atom);  // cannot
 	}
 
 	myStream.close();
@@ -260,35 +275,49 @@ void LL::SUB(const Atom &atom) {
 	myStream << std::endl;
 }
 
-// TODO: OR
+void LL::OR(const Atom &atom) {}
 
-// TODO: AND
+void LL::AND(const Atom &atom) {}
 
-// TODO: EQ
+void LL::EQ(const Atom &atom) {}
 
-// TODO: NE
+void LL::NE(const Atom &atom) {}
 
-// TODO: GT
+void LL::GT(const Atom &atom) {}
 
-// TODO: LT
+void LL::LT(const Atom &atom) {}
 
-// TODO: GE
+void LL::GE(const Atom &atom) {}
 
-// TODO: LE
+void LL::LE(const Atom &atom) {}
 
-// TODO: MUL
+void LL::NOT(const Atom &atom) {}
 
-// TODO: NOT
+// useless (as they're now) functions
 
-// TODO: CALL
+void LL::MUL(const Atom &atom) {
+	myStream << "; MUL IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
 
-// TODO: PARAM
+void LL::CALL(const Atom &atom) {
+	myStream << "; CALL IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
 
-// TODO: RET
+void LL::PARAM(const Atom &atom) {
+	myStream << "; PARAM IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
 
-// TODO: IN
+void LL::RET(const Atom &atom) {
+	myStream << "; RET IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
 
-// TODO: OUT
+void LL::IN(const Atom &atom) {
+	myStream << "; IN IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
+
+void LL::OUT(const Atom &atom) {
+	myStream << "; OUT IS NOT IMPLEMENTED" << std::endl << std::endl;
+}
 
 //	// LL analyzer check functions
 

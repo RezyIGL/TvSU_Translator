@@ -38,6 +38,24 @@ private:
 	void JMP(const Atom&);
 	void ADD(const Atom&);
 	void SUB(const Atom&);
+	void OR(const Atom&);
+	void AND(const Atom&);
+	void EQ(const Atom&);
+	void NE(const Atom&);
+	void GT(const Atom&);
+	void LT(const Atom&);
+	void GE(const Atom&);
+	void LE(const Atom&);
+	void NOT(const Atom&);
+
+	// Not implemented, because we don't have good i8080 emulator
+	// You can do it yourself if you want to though
+	void MUL(const Atom&);
+	void CALL(const Atom&);
+	void PARAM(const Atom&);
+	void RET(const Atom&);
+	void IN(const Atom&);
+	void OUT(const Atom&);
 
 	// Functions to print everything to files.
 	void isTranslated();
