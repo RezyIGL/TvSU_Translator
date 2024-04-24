@@ -260,6 +260,36 @@ void LL::SUB(const Atom &atom) {
 	myStream << std::endl;
 }
 
+// TODO: OR
+
+// TODO: AND
+
+// TODO: EQ
+
+// TODO: NE
+
+// TODO: GT
+
+// TODO: LT
+
+// TODO: GE
+
+// TODO: LE
+
+// TODO: MUL
+
+// TODO: NOT
+
+// TODO: CALL
+
+// TODO: PARAM
+
+// TODO: RET
+
+// TODO: IN
+
+// TODO: OUT
+
 //	// LL analyzer check functions
 
 // Semantic analyzer functions
