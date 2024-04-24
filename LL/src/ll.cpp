@@ -269,7 +269,6 @@ bool LL::StmtList(const std::string &context) {
 bool LL::Stmt(const std::string &context) {
 	if (it->first == "eof") return false;
 
-	// TODO: .
 	if (it->first == "kwint" || it->first == "kwchar") {
 		nextGraphState(0);
 		generateString("DeclareStmt");
@@ -293,7 +292,6 @@ bool LL::Stmt(const std::string &context) {
 
 	if (context == "-1") return false;
 
-	// TODO: .
 	if (it->first == "id") {
 		nextGraphState(0);
 		generateString("AssignOrCallOp");
@@ -304,7 +302,6 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
-	// TODO: .
 	if (it->first == "kwwhile") {
 		nextToken();
 
@@ -341,7 +338,6 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
-	// TODO: .
 	if (it->first == "kwswitch") {
 		nextToken();
 
@@ -425,6 +421,10 @@ bool LL::Stmt(const std::string &context) {
 }
 
 bool LL::DeclareStmt(const std::string &context) {
+
+	nextGraphState(1);
+	generateString("Type");
+
 	auto TypeResult = Type(context);
 	if (!TypeResult.first) return false;
 
@@ -432,8 +432,12 @@ bool LL::DeclareStmt(const std::string &context) {
 	auto temp = it->second;
 	nextToken();
 
+	nextGraphState(0);
+	generateString(temp + " DeclareStmt'");
+
 	if (!DeclareStmtList(context, TypeResult.second, temp)) return false;
 
+	rollbackGraphNode();
 	return true;
 }
 
@@ -443,6 +447,9 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 	if (it->first == "lpar") {
 		if (stoi(context) > -1) return false;
 		nextToken();
+
+		nextGraphState(1);
+		generateString("lpar ParamList");
 
 		auto ParamListRes = ParamList(context);
 		if (!ParamListRes.first) return false;
@@ -455,6 +462,9 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		if (it->first != "lbrace") return false;
 		nextToken();
 
+		nextGraphState(1);
+		generateString("rpar lbrace StmtList");
+
 		if (!StmtList(TC)) return false;
 
 		if (it->first != "rbrace") return false;
@@ -462,13 +472,22 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 
 		generateAtom(context, "RET", "", "", "0");
 
+		nextGraphState(0);
+		generateString("rbrace");
+
+		rollbackGraphNode();
+		rollbackGraphNode();
 		return true;
 	} else if (it->first == "opassign") {
 		nextToken();
+		auto _temp = it->second;
 
 		if (it->first == "num") {
-			addVar(name, context, type, it->second);
+			addVar(name, context, type, _temp);
 			nextToken();
+
+			nextGraphState(1);
+			generateString("opassign " + _temp + " DeclareVarList");
 
 			auto DecVarListRes = DeclareVarList(context, type);
 			if (!DecVarListRes) return false;
@@ -476,10 +495,18 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			if (it->first != "semicolon") return false;
 			nextToken();
 
+			nextGraphState(0);
+			generateString("semicolon");
+
+			rollbackGraphNode();
+			rollbackGraphNode();
 			return true;
 		} else if (it->first == "char") {
-			addVar(name, context, type, it->second);
+			addVar(name, context, type, _temp);
 			nextToken();
+
+			nextGraphState(1);
+			generateString("opassign " + _temp + "DeclareVarList");
 
 			auto DecVarListRes = DeclareVarList(context, type);
 			if (!DecVarListRes) return false;
@@ -487,6 +514,11 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			if (it->first != "semicolon") return false;
 			nextToken();
 
+			nextGraphState(0);
+			generateString("semicolon");
+
+			rollbackGraphNode();
+			rollbackGraphNode();
 			return true;
 		} else {
 			return false;
@@ -494,21 +526,38 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 	} else {
 		addVar(name, context, type);
 
+		nextGraphState(1);
+		generateString("DeclareVarList");
+
 		if (!DeclareVarList(context, type)) return false;
 
 		if (it->first != "semicolon") return false;
 		nextToken();
 
+		nextGraphState(0);
+		generateString("semicolon");
+
+		rollbackGraphNode();
+		rollbackGraphNode();
 		return true;
 	}
 }
 
 bool LL::AssignOrCallOp(const std::string &context) {
+
+	nextGraphState(1);
+	generateString("AssignOrCall");
+
 	if (!AssignOrCall(context)) return false;
 
 	if (it->first != "semicolon") return false;
 	nextToken();
 
+	nextGraphState(0);
+	generateString("semicolon");
+
+	rollbackGraphNode();
+	rollbackGraphNode();
 	return true;
 }
 
@@ -517,8 +566,12 @@ bool LL::AssignOrCall(const std::string &context) {
 	auto temp = it->second;
 	nextToken();
 
+	nextGraphState(0);
+	generateString(temp + " AssignOrCall'");
+
 	if (!AssignOrCallList(context, temp)) return false;
 
+	rollbackGraphNode();
 	return true;
 }
 
@@ -526,17 +579,24 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 	if (it->first == "opassign") {
 		nextToken();
 
+		nextGraphState(0);
+		generateString("opassign E");
+
 		auto ERes = Expr(context);
 		if (!ERes.first) return false;
 
 		auto r = checkVar(context, name);
 		generateAtom(context, "MOV", ERes.second, "", r);
 
+		rollbackGraphNode();
 		return true;
 	}
 
 	if (it->first == "lpar") {
 		nextToken();
+
+		nextGraphState(1);
+		generateString("lpar ArgList");
 
 		auto ArgListRes = ArgList(context);
 		if (!ArgListRes.first) return false;
@@ -544,10 +604,15 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 		if (it->first != "rpar") return false;
 		nextToken();
 
+		nextGraphState(0);
+		generateString("rpar");
+
 		auto q = checkFunc(name, ArgListRes.second);
 		auto r = alloc(context);
 		generateAtom(context, "CALL", q, "", r);
 
+		rollbackGraphNode();
+		rollbackGraphNode();
 		return true;
 	}
 
@@ -564,6 +629,9 @@ bool LL::WhileOp(const std::string &context) {
 	if (it->first != "lpar") return false;
 	nextToken();
 
+	nextGraphState(1);
+	generateString("lpar E");
+
 	auto ERes = Expr(context);
 	if (!ERes.first) return false;
 
@@ -572,11 +640,15 @@ bool LL::WhileOp(const std::string &context) {
 	if (it->first != "rpar") return false;
 	nextToken();
 
+	nextGraphState(0);
+	generateString("rpar Stmt");
+
 	if (!Stmt(context)) return false;
 
 	generateAtom(context, "JMP", "", "", "L" + l1);
 	generateAtom(context, "LBL", "", "", "L" + l2);
 
+	rollbackGraphNode();
 	return true;
 }
 
@@ -772,6 +844,9 @@ bool LL::SwitchOp(const std::string &context) {
 	if (it->first != "lpar") return false;
 	nextToken();
 
+	nextGraphState(1);
+	generateString("lpar E");
+
 	auto ERes = Expr(context);
 	if (!ERes.first) return false;
 
@@ -781,6 +856,9 @@ bool LL::SwitchOp(const std::string &context) {
 	if (it->first != "lbrace") return false;
 	nextToken();
 
+	nextGraphState(1);
+	generateString("rpar lbrace Cases");
+
 	auto end = newLabel();
 	if (!Cases(context, ERes.second, end)) return false;
 
@@ -789,21 +867,36 @@ bool LL::SwitchOp(const std::string &context) {
 
 	generateAtom(context, "LBL", "", "", "L" + end);
 
+	nextGraphState(0);
+	generateString("rbrace");
+
+	rollbackGraphNode();
+	rollbackGraphNode();
 	return true;
 }
 
 bool LL::Cases(const std::string &context, const std::string &p, const std::string &end) {
+	nextGraphState(1);
+	generateString("ACase");
+
 	auto ACaseRes = ACase(context, p, end);
 	if (!ACaseRes.first) return false;
 
+	nextGraphState(0);
+	generateString("Cases'");
+
 	if (!CasesList(context, p, end, ACaseRes.second)) return false;
 
+	rollbackGraphNode();
 	return true;
 }
 
 bool LL::CasesList(const std::string &context, const std::string &p, const std::string &end, const std::string &def) {
 
 	if (it->first == "kwcase" || it->first == "kwdefault") {
+		nextGraphState(1);
+		generateString("ACase");
+
 		FT ACaseRes = ACase(context, p, end);
 		if (!ACaseRes.first) return false;
 
@@ -813,14 +906,19 @@ bool LL::CasesList(const std::string &context, const std::string &p, const std::
 
 		auto maxDef = stoi(def) < stoi(ACaseRes.second) ? ACaseRes.second : def;
 
+		nextGraphState(0);
+		generateString("Cases'");
+
 		if (!CasesList(context, p, end, maxDef)) return false;
 
+		rollbackGraphNode();
 		return true;
 	}
 
 	std::string q = stoi(def) >= 0 ? def : end;
 	generateAtom(context, "JMP", "", "", "L" + q);
 
+	rollbackGraphNode();
 	return true;
 }
 
@@ -838,11 +936,15 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 		if (it->first != "colon") return {false, ""};
 		nextToken();
 
+		nextGraphState(0);
+		generateString("kwcase " + _temp + "colon StmtList");
+
 		if (!StmtList(context)) return {false, ""};
 
 		generateAtom(context, "JMP", "", "", "L" + end);
 		generateAtom(context, "LBL", "", "", "L" + next);
 
+		rollbackGraphNode();
 		return {true, "-1"};
 	}
 
@@ -858,11 +960,15 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 		generateAtom(context, "JMP", "", "", "L" + next);
 		generateAtom(context, "LBL", "", "", "L" + def);
 
+		nextGraphState(0);
+		generateString("kwdefault colon StmtList");
+
 		if (!StmtList(context)) return {false, ""};
 
 		generateAtom(context, "JMP", "", "", "L" + end);
 		generateAtom(context, "LBL", "", "", "L" + next);
 
+		rollbackGraphNode();
 		return {true, def};
 	}
 
@@ -939,6 +1045,11 @@ FT LL::Type(const std::string &context) {
 		auto temp = it->first;
 		nextToken();
 
+		nextGraphState(0);
+		generateString(temp);
+
+		rollbackGraphNode();
+		rollbackGraphNode();
 		return {true, temp};
 	}
 
@@ -953,13 +1064,21 @@ bool LL::DeclareVarList(const std::string &context, const std::string &type) {
 
 		if (it->first != "id") return false;
 		auto temp = it->second;
+
+		nextGraphState(1);
+		generateString("comma " + it->second + " InitVar");
+
 		nextToken();
 
 		if (!InitVar(context, type, temp)) return false;
 
+		nextGraphState(0);
+		generateString("DeclareVarList");
+
 		if (!DeclareVarList(context, type)) return false;
 	}
 
+	rollbackGraphNode();
 	return true;
 }
 
@@ -972,8 +1091,14 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 		if (it->first == "num" || it->first == "char") {
 
 			addVar(s, context, r, it->second);
+
+			nextGraphState(0);
+			generateString("opassign " + it->second);
+
 			nextToken();
 
+			rollbackGraphNode();
+			rollbackGraphNode();
 			return true;
 		}
 
@@ -981,6 +1106,7 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 	}
 
 	addVar(s, context, r);
+	rollbackGraphNode();
 	return true;
 }
 
@@ -988,18 +1114,27 @@ FT LL::ParamList(const std::string &context) {
 	if (it->first == "eof") return {false, ""};
 
 	if (it->first == "kwint" || it->first == "kwchar") {
+		nextGraphState(1);
+		generateString("Type");
+
 		auto TypeResult = Type(context);
 
 		if (it->first != "id") return {false, ""};
 		addVar(it->second, context, TypeResult.second);
+
+		nextGraphState(0);
+		generateString(it->second + " ParamList'");
+
 		nextToken();
 
 		FT ParLLRes = ParamListList(context);
 		if (!ParLLRes.first) return {false, ""};
 
+		rollbackGraphNode();
 		return {true, std::to_string(stoi(ParLLRes.second) + 1)};
 	}
 
+	rollbackGraphNode();
 	return {true, "0"};
 }
 
@@ -1010,19 +1145,28 @@ FT LL::ParamListList(const std::string &context) {
 		nextToken();
 
 		if (it->first == "kwint" || it->first == "kwchar") {
+			nextGraphState(1);
+			generateString("comma Type");
+
 			auto TypeResult = Type(context);
 
 			if (it->first != "id") return {false, ""};
 			addVar(it->second, context, TypeResult.second);
+
+			nextGraphState(0);
+			generateString(it->second + " ParamList'");
+
 			nextToken();
 
 			FT ParLLRes = ParamListList(context);
 			if (!ParLLRes.first) return {false, ""};
 
+			rollbackGraphNode();
 			return {true, std::to_string(stoi(ParLLRes.second) + 1)};
 		}
 	}
 
+	rollbackGraphNode();
 	return {true, "0"};
 }
 
