@@ -70,7 +70,12 @@ private:
 	void isTranslated();
 	void printGraph();
 	bool printAtoms();
-	void printASMCode();
+	bool printASMCode();
+
+	// Entry point holder. If not found = "NoEntry"
+	std::string entryPoint = "NoEntry";
+	std::string currentContext = "-1";
+	bool doWeHaveLBL = false;
 
 	// Needful variables
 	std::string _atomsInput; // path to Atoms output file

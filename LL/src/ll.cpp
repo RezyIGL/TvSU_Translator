@@ -54,6 +54,7 @@ bool LL::printAtoms() {
 	std::sort(sortedAtomsVector.begin(), sortedAtomsVector.end(), customLess);
 
 	for (const auto &i: sortedAtomsVector) {
+		if (i.name == "main") entryPoint = std::to_string(i.cnt);
 		myStream << i.name << " : '" << i.cnt << "' : " << i.kind << " : " << i.type << " : " << i.init
 		         << " : " << i.scope << std::endl;
 	}
@@ -62,7 +63,10 @@ bool LL::printAtoms() {
 	return true;
 }
 
-void LL::printASMCode() {
+bool LL::printASMCode() {
+
+	if (entryPoint == "NoEntry") return false;
+
 	myStream.open(_asmOut);
 
 	myStream << "JMP START" << std::endl << std::endl;
@@ -70,11 +74,11 @@ void LL::printASMCode() {
 	for (const auto &i: sortedAtomsVector) {
 		if (i.kind == "var") {
 			if (i.type == "kwint") {
-				myStream << "int_" + i.name << ": db ";
+				myStream << sortedAtomsVector[stoi(i.scope)].name + "_int_" + i.name << ": db ";
 				if (i.init.empty()) myStream << "0" << std::endl;
 				else myStream << i.init << "" << std::endl;
 			} else {
-				myStream << "char_" + i.name << ": dw ";
+				myStream << sortedAtomsVector[stoi(i.scope)].name + "_char_" + i.name << ": dw ";
 				if (i.init.empty()) myStream << "\"\"" << std::endl;
 				else myStream << "\"" << i.init << "\"" << std::endl;
 			}
@@ -83,39 +87,51 @@ void LL::printASMCode() {
 
 	myStream << std::endl;
 
-	myStream << "START:" << std::endl << std::endl;
+	myStream << "START:" << std::endl;
+	myStream << "JMP main" << std::endl << std::endl;
 
 	for (const auto &atom: atoms) {
 
+		// TODO: Universal Function label name generator
+		if (stoi(atom.context) != stoi(currentContext)) {
+			doWeHaveLBL = false;
+			currentContext = atom.context;
+		}
+
+		if (!doWeHaveLBL && (stoi(currentContext) != -1)) {
+			doWeHaveLBL = true;
+			myStream << sortedAtomsVector[stoi(atom.context)].name + ":" << std::endl << std::endl;
+		}
+
 		// Atom translation functions
-
 		if (atom.text == "MOV") MOV(atom); // done
-		if (atom.text == "LBL") LBL(atom); // done
-		if (atom.text == "JMP") JMP(atom); // done
-		if (atom.text == "ADD") ADD(atom); // done
-		if (atom.text == "SUB") SUB(atom); // done
-		if (atom.text == "OR") OR(atom); // done
-		if (atom.text == "AND") AND(atom); // done
-		if (atom.text == "EQ") EQ(atom); // done
-		if (atom.text == "NE") NE(atom); // done
-		if (atom.text == "GT") GT(atom); // done
-		if (atom.text == "LT") LT(atom); // done
-		if (atom.text == "GE") GE(atom); // done
-		if (atom.text == "LE") LE(atom); // done
-		if (atom.text == "NOT") NOT(atom); // done
-		if (atom.text == "MUL") MUL(atom); // done
+		else if (atom.text == "LBL") LBL(atom); // done
+		else if (atom.text == "JMP") JMP(atom); // done
+		else if (atom.text == "ADD") ADD(atom); // done
+		else if (atom.text == "SUB") SUB(atom); // done
+		else if (atom.text == "OR") OR(atom); // done
+		else if (atom.text == "AND") AND(atom); // done
+		else if (atom.text == "EQ") EQ(atom); // done
+		else if (atom.text == "NE") NE(atom); // done
+		else if (atom.text == "GT") GT(atom); // done
+		else if (atom.text == "LT") LT(atom); // done
+		else if (atom.text == "GE") GE(atom); // done
+		else if (atom.text == "LE") LE(atom); // done
+		else if (atom.text == "NOT") NOT(atom); // done
+		else if (atom.text == "MUL") MUL(atom); // done
 
-		// It is really complicated or eliben.org/js8080/ didn't implement it
+		else if (atom.text == "IN") IN(atom);  // Not implemented on the eliben.org/js8080/
+		else if (atom.text == "OUT") OUT(atom);  // Not implemented on the eliben.org/js8080/
 
-		if (atom.text == "CALL") CALL(atom);  // I'm lazy for it for now
-		if (atom.text == "PARAM") PARAM(atom);  // I'm lazy for it for now
-		if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
-
-		if (atom.text == "IN") IN(atom);  // Not implemented on the site
-		if (atom.text == "OUT") OUT(atom);  // Not implemented on the site
+			// It is really complicated
+		else if (atom.text == "CALL") CALL(atom);  // I'm lazy for it for now
+		else if (atom.text == "PARAM") PARAM(atom);  // I'm lazy for it for now
+		else if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
 	}
 
+	myStream << "HLT" << std::endl;
 	myStream.close();
+	return true;
 }
 
 // Main logic functions
@@ -175,8 +191,9 @@ void LL::loadOp(const std::string &atom) {
 	std::string oper;
 	if (atom.starts_with('\'')) {
 		int SecondId = stoi(atom.substr(1, atom.size() - 1));
-		oper = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
-		            "_" + sortedAtomsVector[SecondId].name;
+		oper = sortedAtomsVector[stoi(sortedAtomsVector[SecondId].scope)].name + "_" +
+		       sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		       "_" + sortedAtomsVector[SecondId].name;
 
 		myStream << "LDA " + oper << std::endl;
 	} else {
@@ -187,7 +204,8 @@ void LL::loadOp(const std::string &atom) {
 
 void LL::saveOp(const std::string &atom) {
 	int TempVarId = stoi(atom.substr(1, atom.size() - 1));
-	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	std::string TempVar = sortedAtomsVector[stoi(sortedAtomsVector[TempVarId].scope)].name + "_" +
+	                      sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
 	                      "_" + sortedAtomsVector[TempVarId].name;
 
 	myStream << "STA " + TempVar << std::endl;
@@ -195,8 +213,8 @@ void LL::saveOp(const std::string &atom) {
 
 // ASM i8080 translation functions
 void LL::MOV(const Atom &atom) {
-    loadOp(atom.first);
-    saveOp(atom.third);
+	loadOp(atom.first);
+	saveOp(atom.third);
 	myStream << std::endl;
 }
 
