@@ -47,6 +47,7 @@ private:
 	void GE(const Atom&);
 	void LE(const Atom&);
 	void NOT(const Atom&);
+	void MUL(const Atom&);
 
 	// variables for (MUL)
 	std::string MUL_LABEL_START;
@@ -55,7 +56,6 @@ private:
 
 	// Not implemented, because we don't have good i8080 emulator
 	// You can do it yourself if you want to though
-	void MUL(const Atom&);
 	void CALL(const Atom&);
 	void PARAM(const Atom&);
 	void RET(const Atom&);

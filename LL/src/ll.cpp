@@ -103,10 +103,10 @@ void LL::printASMCode() {
 		if (atom.text == "GE") GE(atom); // done
 		if (atom.text == "LE") LE(atom); // done
 		if (atom.text == "NOT") NOT(atom); // done
+		if (atom.text == "MUL") MUL(atom); // done
 
 		// It is really complicated or eliben.org/js8080/ didn't implement it
 
-		if (atom.text == "MUL") MUL(atom); // I'm lazy for it for now
 		if (atom.text == "CALL") CALL(atom);  // I'm lazy for it for now
 		if (atom.text == "PARAM") PARAM(atom);  // I'm lazy for it for now
 		if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
@@ -577,8 +577,6 @@ void LL::NOT(const Atom &atom) {
 	myStream << std::endl;
 }
 
-// useless (as they're now) functions
-
 void LL::MUL(const Atom &atom) {
 	std::string LeftHand;
 	std::string RightHand;
@@ -638,6 +636,8 @@ void LL::MUL(const Atom &atom) {
 	myStream << "L" + MUL_LABEL_END + ":" << std::endl;
 	myStream << "STA " + TempVar << std::endl << std::endl;
 }
+
+// useless (as they're now) functions
 
 void LL::CALL(const Atom &atom) {
 	myStream << "; CALL IS NOT IMPLEMENTED" << std::endl << std::endl;
