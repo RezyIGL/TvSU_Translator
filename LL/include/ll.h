@@ -32,6 +32,10 @@ public:
 	void validate();
 private:
 
+	// ASM i8080 helpful functions
+	void loadOp(const std::string&);
+	void saveOp(const std::string&);
+
 	// ASM i8080 translating functions
 	void MOV(const Atom&);
 	void LBL(const Atom&);
