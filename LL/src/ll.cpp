@@ -142,13 +142,24 @@ void LL::isTranslated() {
 	if (!printAtoms()) return;
 	std::cout << "\n==========[Atoms printed.]=============" << std::endl;
 
-	printASMCode();
+	if (!printASMCode()) return;
 	std::cout << "\n==========[ASM code printed.]==========" << std::endl;
 
-	std::cout << "\n==========[All done!]==================" << std::endl;
+	std::cout << "\n**************[All done!]**************" << std::endl;
+}
+
+void LL::clearStream(const std::string &file) {
+	myStream.open(file);
+	myStream.clear();
+	myStream.close();
 }
 
 void LL::validate() {
+
+	clearStream(_graph);
+	clearStream(_atomsInput);
+	clearStream(_asmOut);
+
 	nextToken();
 	graphIterator = states.begin() + 1;
 

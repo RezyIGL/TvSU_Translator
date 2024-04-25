@@ -71,6 +71,7 @@ private:
 	void printGraph();
 	bool printAtoms();
 	bool printASMCode();
+	void clearStream(const std::string &);
 
 	// Entry point holder. If not found = "NoEntry"
 	std::string entryPoint = "NoEntry";
