@@ -229,114 +229,77 @@ void LL::JMP(const Atom &atom) {
 }
 
 void LL::ADD(const Atom &atom) {
-
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "ADD B" << std::endl;
-
 	saveOp(atom.third);
-
 	myStream << std::endl;
 }
 
 void LL::SUB(const Atom &atom) {
-
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "SUB B" << std::endl;
-
 	saveOp(atom.third);
-
 	myStream << std::endl;
 }
 
 void LL::OR(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "ORA B" << std::endl;
-
 	saveOp(atom.third);
-
 	myStream << std::endl;
 }
 
 void LL::AND(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "ANA B" << std::endl;
-
 	saveOp(atom.third);
-
 	myStream << std::endl;
 }
 
 void LL::EQ(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::NE(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JNZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::GT(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JP " + atom.third << std::endl << std::endl;
 }
 
 void LL::LT(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JM " + atom.third << std::endl << std::endl;
 }
 
 void LL::GE(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JP " + atom.third << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
@@ -344,68 +307,52 @@ void LL::GE(const Atom &atom) {
 
 void LL::LE(const Atom &atom) {
 	loadOp(atom.second);
-
 	myStream << "MOV B, A" << std::endl;
-
 	loadOp(atom.first);
-
 	myStream << "CMP B" << std::endl;
 	myStream << "JM " + atom.third << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::NOT(const Atom &atom) {
-	std::string LeftHand;
-
 	loadOp(atom.first);
-
 	myStream << "CMA" << std::endl;
-
 	saveOp(atom.third);
-
 	myStream << std::endl;
 }
 
 void LL::MUL(const Atom &atom) {
-	std::string LeftHand;
-	std::string RightHand;
+	MUL_LABEL_START = std::to_string(LabelCnt++);
+	MUL_LABEL_END = std::to_string(LabelCnt++);
 
+	// Start
 	loadOp(atom.second);
-
 	myStream << "MOV C, A" << std::endl;
 
 	loadOp(atom.first);
-
-	MUL_LABEL_START = std::to_string(LabelCnt++);
-	MUL_LABEL_END = std::to_string(LabelCnt++);
-	MUL_LABEL_ZERO = std::to_string(LabelCnt++);
-
-	// Start
 	myStream << "MOV B, A" << std::endl;
+
+	loadOp("0");
+
 	myStream << "DCR C" << std::endl;
-	myStream << "JC L" + MUL_LABEL_ZERO << std::endl;
+	myStream << "JC L" + MUL_LABEL_END << std::endl;
+
+	myStream << "INR C" << std::endl;
+	myStream << "JMP L" + MUL_LABEL_START << std::endl;
 	myStream << std::endl;
 
-	// Normal multiplication
+	// Multiplication
 	myStream << "L" + MUL_LABEL_START + ":" << std::endl;
 	myStream << "ADD B" << std::endl;
+
 	myStream << "DCR C" << std::endl;
 	myStream << "JZ L" + MUL_LABEL_END << std::endl;
-	myStream << "JMP L" + MUL_LABEL_START << std::endl;
 
-	// Zero multiplication
-	myStream << "L" + MUL_LABEL_ZERO + ":" << std::endl;
-	myStream << "MVI A, 0" << std::endl;
-
-	myStream << std::endl;
-
-	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
-	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
-	                      "_" + sortedAtomsVector[TempVarId].name;
+	myStream << "JMP L" + MUL_LABEL_START << std::endl << std::endl;
 
 	// End
 	myStream << "L" + MUL_LABEL_END + ":" << std::endl;
-	myStream << "STA " + TempVar << std::endl << std::endl;
+	saveOp(atom.third);
 }
 
 // useless (as they're now) functions

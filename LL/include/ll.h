@@ -36,6 +36,11 @@ private:
 	void loadOp(const std::string&);
 	void saveOp(const std::string&);
 
+	// variables for (MUL)
+	std::string MUL_LABEL_START;
+	std::string MUL_LABEL_END;
+	std::string MUL_LABEL_ZERO;
+
 	// ASM i8080 translating functions
 	void MOV(const Atom&);
 	void LBL(const Atom&);
@@ -52,11 +57,6 @@ private:
 	void LE(const Atom&);
 	void NOT(const Atom&);
 	void MUL(const Atom&);
-
-	// variables for (MUL)
-	std::string MUL_LABEL_START;
-	std::string MUL_LABEL_END;
-	std::string MUL_LABEL_ZERO;
 
 	// Not implemented, because we don't have good i8080 emulator
 	// You can do it yourself if you want to though
