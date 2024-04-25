@@ -195,8 +195,8 @@ void LL::saveOp(const std::string &atom) {
 
 // ASM i8080 translation functions
 void LL::MOV(const Atom &atom) {
- loadOp(atom.first);
- saveOp(atom.third);
+    loadOp(atom.first);
+    saveOp(atom.third);
 	myStream << std::endl;
 }
 
