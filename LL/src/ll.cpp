@@ -65,7 +65,10 @@ bool LL::printAtoms() {
 
 bool LL::printASMCode() {
 
-	if (entryPoint == "NoEntry") return false;
+	if (entryPoint == "NoEntry") {
+		std::cout << "\n==========[No Entry Point!]==========" << std::endl;
+		return false;
+	}
 
 	myStream.open(_asmOut);
 
