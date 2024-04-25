@@ -714,13 +714,19 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextGraphState(1);
 		generateString("lpar ParamList");
 
-		auto ParamListRes = ParamList(context);
+		std::string TC = addFunc(name, type);
+
+		auto ParamListRes = ParamList(TC);
 		if (!ParamListRes.first) return false;
+
+		for (auto &i : AtomicMap["-1"]) {
+			if (i.cnt == stoi(TC)) {
+				i.init = ParamListRes.second;
+			}
+		}
 
 		if (it->first != "rpar") return false;
 		nextToken();
-
-		auto TC = addFunc(name, type, ParamListRes.second);
 
 		if (it->first != "lbrace") return false;
 		nextToken();
