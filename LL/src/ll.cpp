@@ -195,26 +195,8 @@ void LL::saveOp(const std::string &atom) {
 
 // ASM i8080 translation functions
 void LL::MOV(const Atom &atom) {
-	if (atom.first.starts_with('\'')) {
-		int idFirst = stoi(atom.first.substr(1, atom.first.size() - 1));
-		std::string lh = sortedAtomsVector[idFirst].type.substr(2, sortedAtomsVector[idFirst].type.size()) +
-				"_" + sortedAtomsVector[idFirst].name;
-
-		int idSecond = stoi(atom.third.substr(1, atom.third.size() - 1));
-		std::string rh = sortedAtomsVector[idSecond].type.substr(2, sortedAtomsVector[idSecond].type.size()) +
-				"_" + sortedAtomsVector[idSecond].name;
-
-		myStream << "LDA " + lh << std::endl;
-		myStream << "STA " + rh << std::endl;
-	} else {
-		int idSecond = stoi(atom.third.substr(1, atom.third.size() - 1));
-		std::string rh = sortedAtomsVector[idSecond].type.substr(2, sortedAtomsVector[idSecond].type.size()) +
-				"_" + sortedAtomsVector[idSecond].name;
-
-		myStream << "MVI A, " + atom.first << std::endl;
-		myStream << "STA " + rh << std::endl;
-	}
-
+ loadOp(atom.first);
+ saveOp(atom.third);
 	myStream << std::endl;
 }
 
