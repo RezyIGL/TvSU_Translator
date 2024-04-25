@@ -580,7 +580,63 @@ void LL::NOT(const Atom &atom) {
 // useless (as they're now) functions
 
 void LL::MUL(const Atom &atom) {
-	myStream << "; MUL IS NOT IMPLEMENTED" << std::endl << std::endl;
+	std::string LeftHand;
+	std::string RightHand;
+
+	if (atom.second.starts_with('\'')) {
+		int SecondId = stoi(atom.second.substr(1, atom.second.size() - 1));
+		RightHand = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
+		            "_" + sortedAtomsVector[SecondId].name;
+
+		myStream << "LDA " + RightHand << std::endl;
+	} else {
+		RightHand = atom.second;
+		myStream << "MVI A, " << RightHand << std::endl;
+	}
+
+	myStream << "MOV C, A" << std::endl;
+
+	if (atom.first.starts_with('\'')) {
+		int FirstId = stoi(atom.first.substr(1, atom.first.size() - 1));
+		LeftHand = sortedAtomsVector[FirstId].type.substr(2, sortedAtomsVector[FirstId].type.size()) +
+		           "_" + sortedAtomsVector[FirstId].name;
+
+		myStream << "LDA " + LeftHand << std::endl;
+	} else {
+		LeftHand = atom.first;
+		myStream << "MVI A, " << LeftHand << std::endl;
+	}
+
+	MUL_LABEL_START = std::to_string(LabelCnt++);
+	MUL_LABEL_END = std::to_string(LabelCnt++);
+	MUL_LABEL_ZERO = std::to_string(LabelCnt++);
+
+	// Start
+	myStream << "MOV B, A" << std::endl;
+	myStream << "DCR C" << std::endl;
+	myStream << "JC L" + MUL_LABEL_ZERO << std::endl;
+	myStream << std::endl;
+
+	// Normal multiplication
+	myStream << "L" + MUL_LABEL_START + ":" << std::endl;
+	myStream << "ADD B" << std::endl;
+	myStream << "DCR C" << std::endl;
+	myStream << "JZ L" + MUL_LABEL_END << std::endl;
+	myStream << "JMP L" + MUL_LABEL_START << std::endl;
+
+	// Zero multiplication
+	myStream << "L" + MUL_LABEL_ZERO + ":" << std::endl;
+	myStream << "MVI A, 0" << std::endl;
+
+	myStream << std::endl;
+
+	int TempVarId = stoi(atom.third.substr(1, atom.third.size() - 1));
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
+	                      "_" + sortedAtomsVector[TempVarId].name;
+
+	// End
+	myStream << "L" + MUL_LABEL_END + ":" << std::endl;
+	myStream << "STA " + TempVar << std::endl << std::endl;
 }
 
 void LL::CALL(const Atom &atom) {

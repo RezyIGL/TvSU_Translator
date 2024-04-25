@@ -48,6 +48,11 @@ private:
 	void LE(const Atom&);
 	void NOT(const Atom&);
 
+	// variables for (MUL)
+	std::string MUL_LABEL_START;
+	std::string MUL_LABEL_END;
+	std::string MUL_LABEL_ZERO;
+
 	// Not implemented, because we don't have good i8080 emulator
 	// You can do it yourself if you want to though
 	void MUL(const Atom&);
