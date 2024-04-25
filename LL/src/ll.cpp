@@ -32,16 +32,6 @@ bool LL::printAtoms() {
 		return false;
 	}
 
-	for (const auto &i: atoms) {
-		myStream << i.context << ": ("
-		         << i.text << ","
-		         << i.first << ","
-		         << i.second << ","
-		         << i.third << ")" << std::endl;
-	}
-
-	myStream << "\n=============================================\nName : Code : Class : Type : Init : Scope \n\n";
-
 	for (const auto &i: AtomicMap) {
 		for (const auto &j: i.second) {
 			sortedAtomsVector.emplace_back(j);
@@ -53,8 +43,22 @@ bool LL::printAtoms() {
 	} customLess;
 	std::sort(sortedAtomsVector.begin(), sortedAtomsVector.end(), customLess);
 
+	for (const auto &o : sortedAtomsVector) {
+		if (o.name == "main") entryPoint = std::to_string(o.cnt);
+	}
+
+	for (const auto &i: atoms) {
+		if (i.context == entryPoint) isUsed = true;
+		myStream << i.context << ": ("
+		         << i.text << ","
+		         << i.first << ","
+		         << i.second << ","
+		         << i.third << ")" << std::endl;
+	}
+
+	myStream << "\n=============================================\nName : Code : Class : Type : Init : Scope \n\n";
+
 	for (const auto &i: sortedAtomsVector) {
-		if (i.name == "main") entryPoint = std::to_string(i.cnt);
 		myStream << i.name << " : '" << i.cnt << "' : " << i.kind << " : " << i.type << " : " << i.init
 		         << " : " << i.scope << std::endl;
 	}
@@ -94,8 +98,6 @@ bool LL::printASMCode() {
 	myStream << "JMP main" << std::endl << std::endl;
 
 	for (const auto &atom: atoms) {
-
-		// TODO: Universal Function label name generator
 		if (stoi(atom.context) != stoi(currentContext)) {
 			doWeHaveLBL = false;
 			currentContext = atom.context;
@@ -130,6 +132,10 @@ bool LL::printASMCode() {
 		else if (atom.text == "CALL") CALL(atom);  // I'm lazy for it for now
 		else if (atom.text == "PARAM") PARAM(atom);  // I'm lazy for it for now
 		else if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
+	}
+
+	if (!isUsed) {
+		myStream << "main:" << std::endl;
 	}
 
 	myStream << "HLT" << std::endl;

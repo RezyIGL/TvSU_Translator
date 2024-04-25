@@ -75,6 +75,7 @@ private:
 
 	// Entry point holder. If not found = "NoEntry"
 	std::string entryPoint = "NoEntry";
+	bool isUsed = false;
 	std::string currentContext = "-1";
 	bool doWeHaveLBL = false;
 
