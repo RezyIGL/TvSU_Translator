@@ -355,6 +355,17 @@ void LL::MUL(const Atom &atom) {
 	saveOp(atom.third);
 }
 
+void LL::IN(const Atom &atom) {
+	myStream << "IN 0" << std::endl;
+	saveOp(atom.third);
+	myStream << std::endl;
+}
+
+void LL::OUT(const Atom &atom) {
+	loadOp(atom.third);
+	myStream << "OUT 1" << std::endl << std::endl;
+}
+
 // useless (as they're now) functions
 
 void LL::CALL(const Atom &atom) {
@@ -367,14 +378,6 @@ void LL::PARAM(const Atom &atom) {
 
 void LL::RET(const Atom &atom) {
 	myStream << "; RET IS NOT IMPLEMENTED" << std::endl << std::endl;
-}
-
-void LL::IN(const Atom &atom) {
-	myStream << "; IN IS NOT IMPLEMENTED" << std::endl << std::endl;
-}
-
-void LL::OUT(const Atom &atom) {
-	myStream << "; OUT IS NOT IMPLEMENTED" << std::endl << std::endl;
 }
 
 // LL analyzer check functions

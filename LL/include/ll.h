@@ -57,14 +57,14 @@ private:
 	void LE(const Atom&);
 	void NOT(const Atom&);
 	void MUL(const Atom&);
+	void IN(const Atom&);
+	void OUT(const Atom&);
 
 	// Not implemented, because we don't have good i8080 emulator
 	// You can do it yourself if you want to though
 	void CALL(const Atom&);
 	void PARAM(const Atom&);
 	void RET(const Atom&);
-	void IN(const Atom&);
-	void OUT(const Atom&);
 
 	// Functions to print everything to files.
 	void isTranslated();
