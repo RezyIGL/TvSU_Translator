@@ -316,10 +316,9 @@ void LL::MUL(const Atom &atom) {
 
 	loadOp("0");
 
-	myStream << "DCR C" << std::endl;
-	myStream << "JC L" + MUL_LABEL_END << std::endl;
+	myStream << "CMP C" << std::endl;
+	myStream << "JZ L" + MUL_LABEL_END << std::endl;
 
-	myStream << "INR C" << std::endl;
 	myStream << "JMP L" + MUL_LABEL_START << std::endl;
 	myStream << std::endl;
 
