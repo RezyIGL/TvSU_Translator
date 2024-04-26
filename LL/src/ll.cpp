@@ -86,8 +86,8 @@ bool LL::printASMCode() {
 				else myStream << i.init << "" << std::endl;
 			} else {
 				myStream << sortedAtomsVector[stoi(i.scope)].name + "_char_" + i.name << ": dw ";
-				if (i.init.empty()) myStream << "\"\"" << std::endl;
-				else myStream << "\"" << i.init << "\"" << std::endl;
+				if (i.init.empty()) myStream << "0" << std::endl;
+				else myStream << (int)i.init[0] << std::endl;
 			}
 		}
 	}
@@ -382,7 +382,7 @@ void LL::IN(const Atom &atom) {
 
 void LL::OUT(const Atom &atom) {
 	loadOp(atom.third);
-	myStream << "OUT 1" << std::endl << std::endl;
+    // myStream << "OUT 1" << std::endl << std::endl;
 }
 
 // useless (as they're now) functions
