@@ -20,6 +20,7 @@ bool LL::generateAtoms() {
 
 	if (!atoms.empty() && atoms.front().text == "ERROR") {
 		AtomsGenerated = true;
+		SemanticError = true;
 
 		std::cout << "##########################" << std::endl;
 		std::cout << "      Semantic Error!     " << std::endl;

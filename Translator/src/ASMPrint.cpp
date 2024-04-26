@@ -2,6 +2,7 @@
 
 // Private function to print ASM i8080 code
 bool LL::_printASMCode() {
+	if (SemanticError) return false;
 	if (!generateAtoms()) return false;
 
 	if (entryPoint == "NoEntry") {

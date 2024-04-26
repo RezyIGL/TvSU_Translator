@@ -33,7 +33,7 @@ bool LL::checkIfCodeSyntaxIsCorrect() {
 		CodeIsCorrect = true;
 
 		std::cout << "*********************" << std::endl;
-		std::cout << "   Code is Correct!  " << std::endl;
+		std::cout << "  Syntax is Correct! " << std::endl;
 		std::cout << "*********************" << std::endl << std::endl;
 
 		return true;

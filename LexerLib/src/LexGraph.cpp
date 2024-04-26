@@ -41,7 +41,7 @@ std::map<int, std::vector<E>> TokenFSM = {
 				    {":", true, false, 0, "colon"},
 				    {",", true, false, 0, "comma"},
 				    {".", true, false, 0, "period"},
-				    {"*", true, false, 0, "opmul"},
+				    {"*", true, false, 27, ""},
 		    }},
 		{2, {
 				    {"=", false, false, 3, ""},
@@ -66,6 +66,7 @@ std::map<int, std::vector<E>> TokenFSM = {
 		    }},
 		{8, {
 				    {"+", false, false, 9, ""},
+				    {"=", false, false, 25, ""},
 				    {"", false, false, 0, "opplus"}
 		    }},
 		{9, {
@@ -117,6 +118,7 @@ std::map<int, std::vector<E>> TokenFSM = {
 		    }},
 		{22, {
 				    {"DIGIT", true, true, 23, ""},
+				    {"=", false, false, 26, "", true},
 				    {"", false, false, 0, "opminus", true}
 		    }},
 		{23, {
@@ -127,7 +129,20 @@ std::map<int, std::vector<E>> TokenFSM = {
 		{24, {
 				     {"=", true, false, 0, "opge"},
 				     {"", false, false, 0, "opgt"}
-		}}
+		}},
+		{25, {
+				     {"", true, false, 0, "opplusassign"}
+		}},
+		{26, {
+				     {"", true, false, 0, "opminusassign"}
+		}},
+		{27, {
+				     {"=", false, false, 28, ""},
+				     {"", true, false, 0, "opmul"},
+		}},
+		{28, {
+				     {"", true, false, 0, "opmulassign"}
+		}},
 };
 
 std::map<int, std::vector<E>> getGraph() {

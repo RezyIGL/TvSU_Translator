@@ -78,7 +78,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: Add feature to initialize var in ForInit
 	if (it->first == "kwfor") {
 		nextToken();
 
@@ -379,6 +378,63 @@ bool LL::AssignOrCallList(const std::string &name) {
 		return true;
 	}
 
+	if (it->first == "opmulassign") {
+		nextToken();
+
+		nextGraphState(0);
+		generateString("opmulassign E");
+
+		auto ERes = Expr();
+		if (!ERes.first) return false;
+
+		auto r = checkVar(name);
+		auto s = alloc(*contextVector.rbegin());
+
+		generateAtom(*contextVector.rbegin(), "MUL", r, ERes.second, s);
+		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+
+		rollbackGraphNode();
+		return true;
+	}
+
+	if (it->first == "opplusassign") {
+		nextToken();
+
+		nextGraphState(0);
+		generateString("opmulassign E");
+
+		auto ERes = Expr();
+		if (!ERes.first) return false;
+
+		auto r = checkVar(name);
+		auto s = alloc(*contextVector.rbegin());
+
+		generateAtom(*contextVector.rbegin(), "ADD", r, ERes.second, s);
+		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+
+		rollbackGraphNode();
+		return true;
+	}
+
+	if (it->first == "opminusassign") {
+		nextToken();
+
+		nextGraphState(0);
+		generateString("opmulassign E");
+
+		auto ERes = Expr();
+		if (!ERes.first) return false;
+
+		auto r = checkVar(name);
+		auto s = alloc(*contextVector.rbegin());
+
+		generateAtom(*contextVector.rbegin(), "SUB", r, ERes.second, s);
+		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+
+		rollbackGraphNode();
+		return true;
+	}
+
 	if (it->first == "lpar") {
 		nextToken();
 
@@ -493,7 +549,22 @@ bool LL::ForOp() {
 }
 
 bool LL::ForInit() {
-	if (it->first == "id") {
+
+	if (it->first == "kwint") {
+		nextToken();
+
+		if (it->first != "id") return false;
+
+		std::string _temp = addVar(it->second, *contextVector.rbegin(), "kwint");
+		if (_temp == "Error") return false;
+
+		nextGraphState(0);
+		generateString("AssignOrCall");
+
+		if (!AssignOrCall()) return false;
+	}
+
+	else if (it->first == "id") {
 		nextGraphState(0);
 		generateString("AssignOrCall");
 

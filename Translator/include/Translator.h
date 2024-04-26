@@ -50,6 +50,7 @@ private:
 	bool CodeIsChecked = false;
 	bool CodeIsCorrect = false;
 	bool AtomsGenerated = false;
+	bool SemanticError = false;
 
 	// clears files
 	void clearStream(const std::string &);
