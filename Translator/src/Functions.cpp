@@ -43,6 +43,10 @@ bool LL::generateAtoms() {
 		if (o.name == "main") entryPoint = std::to_string(o.cnt);
 	}
 
+	for (const auto &i : atoms) {
+		if (i.context == entryPoint) isUsed = true;
+	}
+
 	AtomsGenerated = true;
 
 	return true;

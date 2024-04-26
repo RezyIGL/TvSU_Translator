@@ -88,9 +88,9 @@ void LL::loadOp(const std::string &atom) {
 	std::string oper;
 	if (atom.starts_with('\'')) {
 		int SecondId = stoi(atom.substr(1, atom.size() - 1));
-		oper = sortedAtomsVector[stoi(sortedAtomsVector[SecondId].scope)].name + "_" +
-		       sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) +
-		       "_" + sortedAtomsVector[SecondId].name;
+		oper = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) + "_" +
+			   sortedAtomsVector[SecondId].scope + "_" +
+		       sortedAtomsVector[SecondId].name;
 
 		myStream << "LDA " + oper << std::endl;
 	} else {
@@ -101,9 +101,9 @@ void LL::loadOp(const std::string &atom) {
 
 void LL::saveOp(const std::string &atom) {
 	int TempVarId = stoi(atom.substr(1, atom.size() - 1));
-	std::string TempVar = sortedAtomsVector[stoi(sortedAtomsVector[TempVarId].scope)].name + "_" +
-	                      sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) +
-	                      "_" + sortedAtomsVector[TempVarId].name;
+	std::string TempVar = sortedAtomsVector[TempVarId].type.substr(2, sortedAtomsVector[TempVarId].type.size()) + "_" +
+	                      sortedAtomsVector[TempVarId].scope + "_" +
+	                      sortedAtomsVector[TempVarId].name;
 
 	myStream << "STA " + TempVar << std::endl;
 }

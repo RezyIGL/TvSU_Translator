@@ -10,7 +10,7 @@ JMP main
 main:
 
 MVI A, 1
-STA main_int_$T1
+STA int_0_$T1
 
 MVI A, 2
 MOV B, A
@@ -19,13 +19,13 @@ CMP B
 JM L1
 
 MVI A, 0
-STA main_int_$T1
+STA int_0_$T1
 
 L1:
 
 MVI A, 0
 MOV B, A
-LDA main_int_$T1
+LDA int_0_$T1
 CMP B
 JZ L2
 
@@ -37,5 +37,4 @@ L3:
 
 ; RET IS NOT IMPLEMENTED
 
-main:
 HLT
