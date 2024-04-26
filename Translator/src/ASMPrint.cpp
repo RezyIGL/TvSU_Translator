@@ -20,11 +20,11 @@ bool LL::_printASMCode() {
 	for (const auto &i: sortedAtomsVector) {
 		if (i.kind == "var") {
 			if (i.type == "kwint") {
-				myStream << sortedAtomsVector[stoi(i.scope)].name + "_int_" + i.name << ": db ";
+				myStream << "int_" + i.scope + "_" + i.name << ": db ";
 				if (i.init.empty()) myStream << "0" << std::endl;
 				else myStream << i.init << "" << std::endl;
 			} else {
-				myStream << sortedAtomsVector[stoi(i.scope)].name + "_char_" + i.name << ": dw ";
+				myStream << "char_" + i.scope + "_" + i.name << ": dw ";
 				if (i.init.empty()) myStream << "0" << std::endl;
 				else myStream << (int) i.init[0] << std::endl;
 			}

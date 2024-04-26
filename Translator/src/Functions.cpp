@@ -16,10 +16,15 @@ void LL::_printGraph() {
 
 // This thing generates Atoms
 bool LL::generateAtoms() {
+	if (AtomsGenerated) return true;
+
 	if (!atoms.empty() && atoms.front().text == "ERROR") {
+		AtomsGenerated = true;
+
 		std::cout << "##########################" << std::endl;
 		std::cout << "      Semantic Error!     " << std::endl;
 		std::cout << "##########################" << std::endl << std::endl;
+
 		return false;
 	}
 
@@ -37,6 +42,8 @@ bool LL::generateAtoms() {
 	for (const auto &o: sortedAtomsVector) {
 		if (o.name == "main") entryPoint = std::to_string(o.cnt);
 	}
+
+	AtomsGenerated = true;
 
 	return true;
 }

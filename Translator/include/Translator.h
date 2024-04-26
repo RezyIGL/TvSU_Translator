@@ -45,6 +45,7 @@ private:
 	// Checker Check
 	bool CodeIsChecked = false;
 	bool CodeIsCorrect = false;
+	bool AtomsGenerated = false;
 
 	// clears files
 	void clearStream(const std::string &);
