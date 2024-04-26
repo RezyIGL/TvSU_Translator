@@ -33,7 +33,6 @@ bool LL::StmtList() {
 bool LL::Stmt() {
 	if (it->first == "eof") return false;
 
-	// TODO: Change the way how we Initialize variable
 	if (it->first == "kwint" || it->first == "kwchar") {
 		nextGraphState(0);
 		generateString("DeclareStmt");
@@ -67,7 +66,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: Add new Context
 	if (it->first == "kwwhile") {
 		nextToken();
 
@@ -80,7 +78,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: Add new Context
 	// TODO: Add feature to initialize var in ForInit
 	if (it->first == "kwfor") {
 		nextToken();
@@ -94,7 +91,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: Add new Context
 	if (it->first == "kwif") {
 		nextToken();
 
@@ -107,7 +103,6 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	// TODO: Add new Context
 	if (it->first == "kwswitch") {
 		nextToken();
 
@@ -215,7 +210,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 	if (it->first == "eof") return false;
 
 	if (it->first == "lpar") {
-		if (stoi(*contextVector.rbegin()) > -1) return false;
+		if (*contextVector.rbegin() != "-1") return false;
 		nextToken();
 
 		nextGraphState(1);
@@ -228,7 +223,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		if (!ParamListRes.first) return false;
 
 		for (auto &i : AtomicMap["-1"]) {
-			if (i.cnt == stoi(TC)) {
+			if (std::to_string(i.cnt) == TC) {
 				i.init = ParamListRes.second;
 			}
 		}
@@ -242,6 +237,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		nextGraphState(1);
 		generateString("rpar lbrace StmtList");
 
+		generateAtom(*contextVector.rbegin(), "LBL", "", "", name);
 		if (!StmtList()) return false;
 
 		contextVector.pop_back();
@@ -434,7 +430,10 @@ bool LL::WhileOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
+	std::string TempContext = "_while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
+	contextVector.pop_back();
 
 	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
 	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
@@ -481,7 +480,10 @@ bool LL::ForOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
+	std::string TempContext = "_for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
+	contextVector.pop_back();
 
 	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
 	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l4);
@@ -593,7 +595,10 @@ bool LL::IfOp() {
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
+	std::string TempContext = "_if_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
+	contextVector.pop_back();
 
 	auto l2 = newLabel();
 	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
@@ -625,7 +630,10 @@ bool LL::ElsePart() {
 	nextGraphState(0);
 	generateString("kwelse Stmt");
 
+	std::string TempContext = "_else_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
+	contextVector.pop_back();
 
 	rollbackGraphNode();
 	return true;
@@ -730,7 +738,10 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwcase " + _temp + "colon StmtList");
 
+		std::string TempContext = "_switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+		contextVector.emplace_back(TempContext);
 		if (!StmtList()) return {false, ""};
+		contextVector.pop_back();
 
 		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
 		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);
@@ -754,7 +765,10 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 
+		std::string TempContext = "_for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+		contextVector.emplace_back(TempContext);
 		if (!StmtList()) return {false, ""};
+		contextVector.pop_back();
 
 		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
 		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);

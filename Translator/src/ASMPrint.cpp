@@ -37,16 +37,6 @@ bool LL::_printASMCode() {
 	myStream << "JMP main" << std::endl << std::endl;
 
 	for (const auto &atom: atoms) {
-		if (stoi(atom.context) != stoi(currentContext)) {
-			doWeHaveLBL = false;
-			currentContext = atom.context;
-		}
-
-		if (!doWeHaveLBL && (stoi(currentContext) != -1)) {
-			doWeHaveLBL = true;
-			myStream << sortedAtomsVector[stoi(atom.context)].name + ":" << std::endl << std::endl;
-		}
-
 		// Atom translation functions
 		if (atom.text == "MOV") MOV(atom); // done
 		else if (atom.text == "LBL") LBL(atom); // done
@@ -73,10 +63,6 @@ bool LL::_printASMCode() {
 		else if (atom.text == "RET") RET(atom);  // I'm lazy for it for now
 	}
 
-	if (!isUsed) {
-		myStream << "main:" << std::endl;
-	}
-
 	myStream << "HLT" << std::endl;
 	myStream.close();
 
@@ -89,7 +75,7 @@ void LL::loadOp(const std::string &atom) {
 	if (atom.starts_with('\'')) {
 		int SecondId = stoi(atom.substr(1, atom.size() - 1));
 		oper = sortedAtomsVector[SecondId].type.substr(2, sortedAtomsVector[SecondId].type.size()) + "_" +
-			   sortedAtomsVector[SecondId].scope + "_" +
+		       sortedAtomsVector[SecondId].scope + "_" +
 		       sortedAtomsVector[SecondId].name;
 
 		myStream << "LDA " + oper << std::endl;

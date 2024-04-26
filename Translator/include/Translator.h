@@ -44,6 +44,7 @@ public:
 private:
 	// context vector
 	std::vector<std::string> contextVector;
+	int extraContext = 0;
 
 	// Checker Check
 	bool CodeIsChecked = false;
@@ -99,8 +100,8 @@ private:
 
 	// Entry point holder. If not found = "NoEntry"
 	std::string entryPoint = "NoEntry";
-	bool isUsed = false;
 	std::string currentContext = "-1";
+	bool isUsed = false;
 	bool doWeHaveLBL = false;
 
 	// Needful variables

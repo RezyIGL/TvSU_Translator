@@ -27,7 +27,7 @@ bool LL::checkIfCodeSyntaxIsCorrect() {
 
 	contextVector.emplace_back("-1");
 
-	bool result = StmtList(contextVector[0]);
+	bool result = StmtList();
 	if (result && it->first == "eof") {
 		CodeIsChecked = true;
 		CodeIsCorrect = true;

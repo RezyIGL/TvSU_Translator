@@ -135,6 +135,8 @@ std::string LL::checkVar(const std::string &name) {
 			if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
 			else if (i.name == name && i.type != "var") return "ERROR";
 		}
+
+		contextIter++;
 	}
 
 	return "ERROR";
