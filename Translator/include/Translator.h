@@ -130,7 +130,7 @@ private:
 	std::string alloc(const std::string &scope);
 
 	std::string
-	addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "");
+	addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "0");
 
 	std::string addFunc(const std::string &name, const std::string &type, const std::string &length = "0");
 

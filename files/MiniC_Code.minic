@@ -1,6 +1,12 @@
 int main() {
-    int i = 0;
-    if (1 < 2) {
-        int a = 3;
+    int i, n = 11, s = 0;
+
+    for (i = 1; i <= n; ++i) {
+        int t = 0;
+        t = t + i;
+        t = t + s;
+        s = t;
     }
+
+    int t = 3;
 }

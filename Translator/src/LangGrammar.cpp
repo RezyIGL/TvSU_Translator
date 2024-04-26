@@ -33,6 +33,7 @@ bool LL::StmtList(const std::string &context) {
 bool LL::Stmt(const std::string &context) {
 	if (it->first == "eof") return false;
 
+	// TODO: Change the way how we Initialize variable
 	if (it->first == "kwint" || it->first == "kwchar") {
 		nextGraphState(0);
 		generateString("DeclareStmt");
@@ -66,6 +67,7 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
+	// TODO: Add new Context
 	if (it->first == "kwwhile") {
 		nextToken();
 
@@ -78,6 +80,8 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
+	// TODO: Add new Context
+	// TODO: Add feature to initialize var in ForInit
 	if (it->first == "kwfor") {
 		nextToken();
 
@@ -90,6 +94,7 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
+	// TODO: Add new Context
 	if (it->first == "kwif") {
 		nextToken();
 
@@ -102,6 +107,7 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
+	// TODO: Add new Context
 	if (it->first == "kwswitch") {
 		nextToken();
 
@@ -253,11 +259,16 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		auto _temp = it->second;
 
 		if (it->first == "num") {
-			addVar(name, context, type, _temp);
+			std::string newVar = "'" + addVar(name, context, type, _temp) + "'";
+
+			if (newVar == "'Error'") return false;
+
 			nextToken();
 
 			nextGraphState(1);
 			generateString("opassign " + _temp + " DeclareVarList");
+
+			generateAtom(context, "MOV", _temp, "", newVar);
 
 			auto DecVarListRes = DeclareVarList(context, type);
 			if (!DecVarListRes) return false;
@@ -272,11 +283,16 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			rollbackGraphNode();
 			return true;
 		} else if (it->first == "char") {
-			addVar(name, context, type, _temp);
+			std::string newVar = "'" + addVar(name, context, type, _temp) + "'";
+
+			if (newVar == "'Error'") return false;
+
 			nextToken();
 
 			nextGraphState(1);
 			generateString("opassign " + _temp + "DeclareVarList");
+
+			generateAtom(context, "MOV", _temp, "", newVar);
 
 			auto DecVarListRes = DeclareVarList(context, type);
 			if (!DecVarListRes) return false;
@@ -294,7 +310,9 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			return false;
 		}
 	} else {
-		addVar(name, context, type);
+		std::string _temp = addVar(name, context, type);
+
+		if (_temp == "'Error'") return false;
 
 		nextGraphState(1);
 		generateString("DeclareVarList");
@@ -860,10 +878,14 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 
 		if (it->first == "num" || it->first == "char") {
 
-			addVar(s, context, r, it->second);
+			std::string newVar = "'" + addVar(s, context, r, it->second) + "'";
+
+			if (newVar == "'Error'") return false;
 
 			nextGraphState(0);
 			generateString("opassign " + it->second);
+
+			generateAtom(context, "MOV", it->second, "", newVar);
 
 			nextToken();
 
@@ -875,7 +897,10 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 		return false;
 	}
 
-	addVar(s, context, r);
+	std::string _temp = addVar(s, context, r);
+
+	if (_temp == "'Error'") return false;
+
 	rollbackGraphNode();
 	return true;
 }
@@ -890,7 +915,9 @@ FT LL::ParamList(const std::string &context) {
 		auto TypeResult = Type(context);
 
 		if (it->first != "id") return {false, ""};
-		addVar(it->second, context, TypeResult.second);
+		std::string _temp = addVar(it->second, context, TypeResult.second);
+
+		if (_temp == "'Error'") return {false, ""};
 
 		nextGraphState(0);
 		generateString(it->second + " ParamList'");
@@ -921,7 +948,9 @@ FT LL::ParamListList(const std::string &context) {
 			auto TypeResult = Type(context);
 
 			if (it->first != "id") return {false, ""};
-			addVar(it->second, context, TypeResult.second);
+			std::string _temp = addVar(it->second, context, TypeResult.second);
+
+			if (_temp == "'Error'") return {false, ""};
 
 			nextGraphState(0);
 			generateString(it->second + " ParamList'");

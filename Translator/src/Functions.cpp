@@ -102,7 +102,7 @@ LL::addVar(const std::string &name, const std::string &scope, const std::string 
 	if (AtomicMap.count(scope)) {
 		for (const auto &i: AtomicMap[scope]) {
 			if (i.name == name) {
-				return "ERROR";
+				return "Error";
 			}
 		}
 	}
