@@ -4,7 +4,8 @@ int_0_n: db 11
 int_0_s: db 0
 int_0_i: db 0
 int_0_$T1: db 0
-int__for_0_0_$T2: db 0
+int_0_$T2: db 0
+int__for_0_0_$T3: db 0
 
 START:
 JMP main
@@ -51,6 +52,9 @@ MVI A, 1
 MOV B, A
 LDA int_0_i
 ADD B
+STA int_0_$T2
+
+LDA int_0_$T2
 STA int_0_i
 
 JMP L1
@@ -61,9 +65,9 @@ LDA int_0_i
 MOV B, A
 LDA int_0_s
 ADD B
-STA int__for_0_0_$T2
+STA int__for_0_0_$T3
 
-LDA int__for_0_0_$T2
+LDA int__for_0_0_$T3
 STA int_0_s
 
 JMP L2
