@@ -1,7 +1,8 @@
-#ifndef TVSU_TRANSLATOR_LL_H
-#define TVSU_TRANSLATOR_LL_H
+#ifndef TVSU_TRANSLATOR_TRANSLATOR_H
+#define TVSU_TRANSLATOR_TRANSLATOR_H
 
 #include "Lexer.h"
+#include <iostream>
 #include <fstream>
 
 using FT = std::pair<bool, std::string>;
@@ -28,13 +29,39 @@ public:
 	// Constructor.
 	explicit LL(std::istream&, const std::string&, const std::string&, const std::string&);
 
-	// Function to translate your input and generate output graph.
-	void validate();
+	// Function to say if your MiniC code contains Error
+	bool checkIfCodeSyntaxIsCorrect();
+
+	// Function to print graph of your code
+	void printOutputGraph();
+
+	// Function to print Atoms of your code
+	void printAtoms();
+
+	// Function to generate ASM i8080 code
+	void printASMCode();
+
 private:
+	// Checker Check
+	bool CodeIsChecked = false;
+	bool CodeIsCorrect = false;
+
+	// clears files
+	void clearStream(const std::string &);
+
+	// Private function to print Atoms
+	bool _printAtoms();
+	bool generateAtoms();
+
+	// Private function to print ASM i8080 code
+	bool _printASMCode();
+
+	// Private function to print Output Graph
+	void _printGraph();
 
 	// ASM i8080 helpful functions
-	void loadOp(const std::string&);
-	void saveOp(const std::string&);
+	void loadOp(const std::string &);
+	void saveOp(const std::string &);
 
 	// variables for (MUL)
 	std::string MUL_LABEL_START;
@@ -42,36 +69,29 @@ private:
 	std::string MUL_LABEL_ZERO;
 
 	// ASM i8080 translating functions
-	void MOV(const Atom&);
-	void LBL(const Atom&);
-	void JMP(const Atom&);
-	void ADD(const Atom&);
-	void SUB(const Atom&);
-	void OR(const Atom&);
-	void AND(const Atom&);
-	void EQ(const Atom&);
-	void NE(const Atom&);
-	void GT(const Atom&);
-	void LT(const Atom&);
-	void GE(const Atom&);
-	void LE(const Atom&);
-	void NOT(const Atom&);
-	void MUL(const Atom&);
-	void IN(const Atom&);
-	void OUT(const Atom&);
+	void MOV(const Atom &);
+	void LBL(const Atom &);
+	void JMP(const Atom &);
+	void ADD(const Atom &);
+	void SUB(const Atom &);
+	void OR(const Atom &);
+	void AND(const Atom &);
+	void EQ(const Atom &);
+	void NE(const Atom &);
+	void GT(const Atom &);
+	void LT(const Atom &);
+	void GE(const Atom &);
+	void LE(const Atom &);
+	void NOT(const Atom &);
+	void MUL(const Atom &);
+	void IN(const Atom &);
+	void OUT(const Atom &);
 
 	// Not implemented, because we don't have good i8080 emulator
 	// You can do it yourself if you want to though
-	void CALL(const Atom&);
-	void PARAM(const Atom&);
-	void RET(const Atom&);
-
-	// Functions to print everything to files.
-	void isTranslated();
-	void printGraph();
-	bool printAtoms();
-	bool printASMCode();
-	void clearStream(const std::string &);
+	void CALL(const Atom &);
+	void PARAM(const Atom &);
+	void RET(const Atom &);
 
 	// Entry point holder. If not found = "NoEntry"
 	std::string entryPoint = "NoEntry";
@@ -105,17 +125,25 @@ private:
 
 	// Translation to Atoms Language
 	std::string newLabel();
+
 	std::string alloc(const std::string &scope);
-	std::string addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init);
-	std::string addFunc(const std::string &name, const std::string &type, const std::string &length);
+
+	std::string
+	addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init = "");
+
+	std::string addFunc(const std::string &name, const std::string &type, const std::string &length = "0");
+
 	std::string checkVar(const std::string &scope, const std::string &name);
+
 	std::string checkFunc(const std::string &name, const std::string &len);
-	void generateAtom(const std::string &context, const std::string &text, const std::string &first, const std::string &second,const std::string &third);
+
+	void generateAtom(const std::string &context, const std::string &text, const std::string &first,
+	                  const std::string &second, const std::string &third);
 
 	// Creation of output graph
 	void nextGraphState(const int &a);
 	void rollbackGraphNode();
-	void generateString(const std::string&);
+	void generateString(const std::string &);
 
 	// Correct or not checker (everything under that)
 	Lexer lexer;
@@ -168,5 +196,4 @@ private:
 	FT ArgListList(const std::string &context);
 };
 
-
-#endif //TVSU_TRANSLATOR_LL_H
+#endif //TVSU_TRANSLATOR_TRANSLATOR_H

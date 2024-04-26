@@ -5,9 +5,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(LexerLib)
 add_subdirectory(ShuntingYardLib)
-add_subdirectory(LL)
+add_subdirectory(Translator)
 add_subdirectory(Google_test)
 
-add_executable(Lexer_run main.cpp)
+add_executable(run_exe main.cpp)
 
-target_link_libraries(Lexer_run LexerLib ShuntingYardLib LL)
+target_link_libraries(run_exe LexerLib ShuntingYardLib Translator)
