@@ -1,7 +1,7 @@
 #include "Translator.h"
 
 // MiniC grammar check
-bool LL::StmtList(const std::string &context) {
+bool LL::StmtList() {
 	if (it->first == "eof") return true;
 
 	auto _temp = it;
@@ -9,7 +9,7 @@ bool LL::StmtList(const std::string &context) {
 	nextGraphState(1);
 	generateString("Stmt");
 
-	bool result = Stmt(context);
+	bool result = Stmt();
 	if (!result) {
 		outputVector.pop_back();
 
@@ -23,14 +23,14 @@ bool LL::StmtList(const std::string &context) {
 	nextGraphState(0);
 	generateString("StmtList");
 
-	bool tailResult = StmtList(context);
+	bool tailResult = StmtList();
 	if (!tailResult) return false;
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::Stmt(const std::string &context) {
+bool LL::Stmt() {
 	if (it->first == "eof") return false;
 
 	// TODO: Change the way how we Initialize variable
@@ -38,7 +38,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("DeclareStmt");
 
-		if (!DeclareStmt(context)) return false;
+		if (!DeclareStmt()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -55,13 +55,13 @@ bool LL::Stmt(const std::string &context) {
 		return true;
 	}
 
-	if (context == "-1") return false;
+	if (*contextVector.rbegin() == "-1") return false;
 
 	if (it->first == "id") {
 		nextGraphState(0);
 		generateString("AssignOrCallOp");
 
-		if (!AssignOrCallOp(context)) return false;
+		if (!AssignOrCallOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -74,7 +74,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwwhile WhileOp");
 
-		if (!WhileOp(context)) return false;
+		if (!WhileOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -88,7 +88,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwfor ForOp");
 
-		if (!ForOp(context)) return false;
+		if (!ForOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -101,7 +101,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwif IfOp");
 
-		if (!IfOp(context)) return false;
+		if (!IfOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -114,7 +114,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwswitch SwitchOp");
 
-		if (!SwitchOp(context)) return false;
+		if (!SwitchOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -126,7 +126,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwin InOp");
 
-		if (!InOp(context)) return false;
+		if (!InOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -138,7 +138,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(0);
 		generateString("kwout OutOp");
 
-		if (!OutOp(context)) return false;
+		if (!OutOp()) return false;
 
 		rollbackGraphNode();
 		return true;
@@ -150,7 +150,7 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(1);
 		generateString("lbrace StmtList");
 
-		bool result = StmtList(context);
+		bool result = StmtList();
 		if (!result) return false;
 
 		if (it->first != "rbrace") return false;
@@ -170,10 +170,10 @@ bool LL::Stmt(const std::string &context) {
 		nextGraphState(1);
 		generateString("kwreturn E");
 
-		auto EResult = Expr(context);
+		auto EResult = Expr();
 		if (!EResult.first) return false;
 
-		generateAtom(context, "RET", "", "", EResult.second);
+		generateAtom(*contextVector.rbegin(), "RET", "", "", EResult.second);
 
 
 		if (it->first != "semicolon") return false;
@@ -190,12 +190,12 @@ bool LL::Stmt(const std::string &context) {
 	return false;
 }
 
-bool LL::DeclareStmt(const std::string &context) {
+bool LL::DeclareStmt() {
 
 	nextGraphState(1);
 	generateString("Type");
 
-	auto TypeResult = Type(context);
+	auto TypeResult = Type();
 	if (!TypeResult.first) return false;
 
 	if (it->first != "id") return false;
@@ -205,25 +205,26 @@ bool LL::DeclareStmt(const std::string &context) {
 	nextGraphState(0);
 	generateString(temp + " DeclareStmt'");
 
-	if (!DeclareStmtList(context, TypeResult.second, temp)) return false;
+	if (!DeclareStmtList(TypeResult.second, temp)) return false;
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::DeclareStmtList(const std::string &context, const std::string &type, const std::string &name) {
+bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 	if (it->first == "eof") return false;
 
 	if (it->first == "lpar") {
-		if (stoi(context) > -1) return false;
+		if (stoi(*contextVector.rbegin()) > -1) return false;
 		nextToken();
 
 		nextGraphState(1);
 		generateString("lpar ParamList");
 
 		std::string TC = addFunc(name, type);
+		contextVector.emplace_back(TC);
 
-		auto ParamListRes = ParamList(TC);
+		auto ParamListRes = ParamList();
 		if (!ParamListRes.first) return false;
 
 		for (auto &i : AtomicMap["-1"]) {
@@ -241,12 +242,14 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		nextGraphState(1);
 		generateString("rpar lbrace StmtList");
 
-		if (!StmtList(TC)) return false;
+		if (!StmtList()) return false;
+
+		contextVector.pop_back();
 
 		if (it->first != "rbrace") return false;
 		nextToken();
 
-		generateAtom(context, "RET", "", "", "0");
+		generateAtom(*contextVector.rbegin(), "RET", "", "", "0");
 
 		nextGraphState(0);
 		generateString("rbrace");
@@ -259,7 +262,7 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 		auto _temp = it->second;
 
 		if (it->first == "num") {
-			std::string newVar = "'" + addVar(name, context, type, _temp) + "'";
+			std::string newVar = "'" + addVar(name, *contextVector.rbegin(), type, _temp) + "'";
 
 			if (newVar == "'Error'") return false;
 
@@ -268,9 +271,9 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			nextGraphState(1);
 			generateString("opassign " + _temp + " DeclareVarList");
 
-			generateAtom(context, "MOV", _temp, "", newVar);
+			generateAtom(*contextVector.rbegin(), "MOV", _temp, "", newVar);
 
-			auto DecVarListRes = DeclareVarList(context, type);
+			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
 
 			if (it->first != "semicolon") return false;
@@ -283,7 +286,7 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			rollbackGraphNode();
 			return true;
 		} else if (it->first == "char") {
-			std::string newVar = "'" + addVar(name, context, type, _temp) + "'";
+			std::string newVar = "'" + addVar(name, *contextVector.rbegin(), type, _temp) + "'";
 
 			if (newVar == "'Error'") return false;
 
@@ -292,9 +295,9 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			nextGraphState(1);
 			generateString("opassign " + _temp + "DeclareVarList");
 
-			generateAtom(context, "MOV", _temp, "", newVar);
+			generateAtom(*contextVector.rbegin(), "MOV", _temp, "", newVar);
 
-			auto DecVarListRes = DeclareVarList(context, type);
+			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
 
 			if (it->first != "semicolon") return false;
@@ -310,14 +313,14 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 			return false;
 		}
 	} else {
-		std::string _temp = addVar(name, context, type);
+		std::string _temp = addVar(name, *contextVector.rbegin(), type);
 
 		if (_temp == "'Error'") return false;
 
 		nextGraphState(1);
 		generateString("DeclareVarList");
 
-		if (!DeclareVarList(context, type)) return false;
+		if (!DeclareVarList(type)) return false;
 
 		if (it->first != "semicolon") return false;
 		nextToken();
@@ -331,12 +334,12 @@ bool LL::DeclareStmtList(const std::string &context, const std::string &type, co
 	}
 }
 
-bool LL::AssignOrCallOp(const std::string &context) {
+bool LL::AssignOrCallOp() {
 
 	nextGraphState(1);
 	generateString("AssignOrCall");
 
-	if (!AssignOrCall(context)) return false;
+	if (!AssignOrCall()) return false;
 
 	if (it->first != "semicolon") return false;
 	nextToken();
@@ -349,7 +352,7 @@ bool LL::AssignOrCallOp(const std::string &context) {
 	return true;
 }
 
-bool LL::AssignOrCall(const std::string &context) {
+bool LL::AssignOrCall() {
 	if (it->first != "id") return false;
 	auto temp = it->second;
 	nextToken();
@@ -357,24 +360,24 @@ bool LL::AssignOrCall(const std::string &context) {
 	nextGraphState(0);
 	generateString(temp + " AssignOrCall'");
 
-	if (!AssignOrCallList(context, temp)) return false;
+	if (!AssignOrCallList(temp)) return false;
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
+bool LL::AssignOrCallList(const std::string &name) {
 	if (it->first == "opassign") {
 		nextToken();
 
 		nextGraphState(0);
 		generateString("opassign E");
 
-		auto ERes = Expr(context);
+		auto ERes = Expr();
 		if (!ERes.first) return false;
 
-		auto r = checkVar(context, name);
-		generateAtom(context, "MOV", ERes.second, "", r);
+		auto r = checkVar(name);
+		generateAtom(*contextVector.rbegin(), "MOV", ERes.second, "", r);
 
 		rollbackGraphNode();
 		return true;
@@ -386,7 +389,7 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 		nextGraphState(1);
 		generateString("lpar ArgList");
 
-		auto ArgListRes = ArgList(context);
+		auto ArgListRes = ArgList();
 		if (!ArgListRes.first) return false;
 
 		if (it->first != "rpar") return false;
@@ -396,8 +399,8 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 		generateString("rpar");
 
 		auto q = checkFunc(name, ArgListRes.second);
-		auto r = alloc(context);
-		generateAtom(context, "CALL", q, "", r);
+		auto r = alloc(*contextVector.rbegin());
+		generateAtom(*contextVector.rbegin(), "CALL", q, "", r);
 
 		rollbackGraphNode();
 		rollbackGraphNode();
@@ -407,12 +410,12 @@ bool LL::AssignOrCallList(const std::string &context, const std::string &name) {
 	return false;
 }
 
-bool LL::WhileOp(const std::string &context) {
+bool LL::WhileOp() {
 
 	auto l1 = newLabel();
 	auto l2 = newLabel();
 
-	generateAtom(context, "LBL", "", "", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
 
 	if (it->first != "lpar") return false;
 	nextToken();
@@ -420,10 +423,10 @@ bool LL::WhileOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("lpar E");
 
-	auto ERes = Expr(context);
+	auto ERes = Expr();
 	if (!ERes.first) return false;
 
-	generateAtom(context, "EQ", ERes.second, "0", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "EQ", ERes.second, "0", "L" + l2);
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -431,16 +434,16 @@ bool LL::WhileOp(const std::string &context) {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	if (!Stmt(context)) return false;
+	if (!Stmt()) return false;
 
-	generateAtom(context, "JMP", "", "", "L" + l1);
-	generateAtom(context, "LBL", "", "", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::ForOp(const std::string &context) {
+bool LL::ForOp() {
 
 	auto l1 = newLabel();
 	auto l2 = newLabel();
@@ -453,46 +456,46 @@ bool LL::ForOp(const std::string &context) {
 	nextGraphState(1);
 	generateString("lpar ForInit");
 
-	if (!ForInit(context)) return false;
+	if (!ForInit()) return false;
 
-	generateAtom(context, "LBL", "", "", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
 
 	nextGraphState(1);
 	generateString("semicolon ForExp");
 
-	FT ForExpRes = ForExp(context);
+	FT ForExpRes = ForExp();
 	if (!ForExpRes.first) return false;
 
-	generateAtom(context, "EQ", ForExpRes.second, "0", "L" + l4);
-	generateAtom(context, "JMP", "", "", "L" + l3);
-	generateAtom(context, "LBL", "", "", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "EQ", ForExpRes.second, "0", "L" + l4);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l3);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
 
 	nextGraphState(1);
 	generateString("semicolon ForLoop");
 
-	if (!ForLoop(context)) return false;
+	if (!ForLoop()) return false;
 
-	generateAtom(context, "JMP", "", "", "L" + l1);
-	generateAtom(context, "LBL", "", "", "L" + l3);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l3);
 
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	if (!Stmt(context)) return false;
+	if (!Stmt()) return false;
 
-	generateAtom(context, "JMP", "", "", "L" + l2);
-	generateAtom(context, "LBL", "", "", "L" + l4);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l4);
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::ForInit(const std::string &context) {
+bool LL::ForInit() {
 	if (it->first == "id") {
 		nextGraphState(0);
 		generateString("AssignOrCall");
 
-		if (!AssignOrCall(context)) return false;
+		if (!AssignOrCall()) return false;
 	}
 
 	if (it->first != "semicolon") return false;
@@ -502,7 +505,7 @@ bool LL::ForInit(const std::string &context) {
 	return true;
 }
 
-FT LL::ForExp(const std::string &context) {
+FT LL::ForExp() {
 	bool oneFlag = false;
 	std::string _temp;
 
@@ -510,7 +513,7 @@ FT LL::ForExp(const std::string &context) {
 		nextGraphState(0);
 		generateString("E");
 
-		FT ERes = Expr(context);
+		FT ERes = Expr();
 
 		if (!ERes.first) oneFlag = true;
 		else oneFlag = false;
@@ -529,7 +532,7 @@ FT LL::ForExp(const std::string &context) {
 	return {false, ""};
 }
 
-bool LL::ForLoop(const std::string &context) {
+bool LL::ForLoop() {
 	if (it->first == "opinc") {
 		nextToken();
 
@@ -537,8 +540,8 @@ bool LL::ForLoop(const std::string &context) {
 		std::string _temp = it->second;
 		nextToken();
 
-		auto p = checkVar(context, _temp);
-		generateAtom(context, "ADD", p, "1", p);
+		auto p = checkVar(_temp);
+		generateAtom(*contextVector.rbegin(), "ADD", p, "1", p);
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -555,7 +558,7 @@ bool LL::ForLoop(const std::string &context) {
 		nextGraphState(1);
 		generateString("AssignOrCall");
 
-		if (!AssignOrCall(context)) return false;
+		if (!AssignOrCall()) return false;
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -571,71 +574,71 @@ bool LL::ForLoop(const std::string &context) {
 	return true;
 }
 
-bool LL::IfOp(const std::string &context) {
+bool LL::IfOp() {
 	if (it->first != "lpar") return false;
 	nextToken();
 
 	nextGraphState(1);
 	generateString("lpar E");
 
-	auto ERes = Expr(context);
+	auto ERes = Expr();
 	if (!ERes.first) return false;
 
 	if (it->first != "rpar") return false;
 	nextToken();
 
 	auto l1 = newLabel();
-	generateAtom(context, "EQ", ERes.second, "0", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "EQ", ERes.second, "0", "L" + l1);
 
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
-	if (!Stmt(context)) return false;
+	if (!Stmt()) return false;
 
 	auto l2 = newLabel();
-	generateAtom(context, "JMP", "", "", "L" + l2);
-	generateAtom(context, "LBL", "", "", "L" + l1);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
 
 	nextGraphState(0);
 	generateString("ElsePart");
 
 	if (it->first == "kwelse") {
-		if (!ElsePart(context)) return false;
+		if (!ElsePart()) return false;
 
-		generateAtom(context, "LBL", "", "", "L" + l2);
+		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
 
 		rollbackGraphNode();
 		return true;
 	}
 
-	generateAtom(context, "LBL", "", "", "L" + l2);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
 
 	rollbackGraphNode();
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::ElsePart(const std::string &context) {
+bool LL::ElsePart() {
 
 	nextToken();
 
 	nextGraphState(0);
 	generateString("kwelse Stmt");
 
-	if (!Stmt(context)) return false;
+	if (!Stmt()) return false;
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::SwitchOp(const std::string &context) {
+bool LL::SwitchOp() {
 	if (it->first != "lpar") return false;
 	nextToken();
 
 	nextGraphState(1);
 	generateString("lpar E");
 
-	auto ERes = Expr(context);
+	auto ERes = Expr();
 	if (!ERes.first) return false;
 
 	if (it->first != "rpar") return false;
@@ -648,12 +651,12 @@ bool LL::SwitchOp(const std::string &context) {
 	generateString("rpar lbrace Cases");
 
 	auto end = newLabel();
-	if (!Cases(context, ERes.second, end)) return false;
+	if (!Cases(ERes.second, end)) return false;
 
 	if (it->first != "rbrace") return false;
 	nextToken();
 
-	generateAtom(context, "LBL", "", "", "L" + end);
+	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + end);
 
 	nextGraphState(0);
 	generateString("rbrace");
@@ -663,29 +666,29 @@ bool LL::SwitchOp(const std::string &context) {
 	return true;
 }
 
-bool LL::Cases(const std::string &context, const std::string &p, const std::string &end) {
+bool LL::Cases(const std::string &p, const std::string &end) {
 	nextGraphState(1);
 	generateString("ACase");
 
-	auto ACaseRes = ACase(context, p, end);
+	auto ACaseRes = ACase(p, end);
 	if (!ACaseRes.first) return false;
 
 	nextGraphState(0);
 	generateString("Cases'");
 
-	if (!CasesList(context, p, end, ACaseRes.second)) return false;
+	if (!CasesList(p, end, ACaseRes.second)) return false;
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::CasesList(const std::string &context, const std::string &p, const std::string &end, const std::string &def) {
+bool LL::CasesList(const std::string &p, const std::string &end, const std::string &def) {
 
 	if (it->first == "kwcase" || it->first == "kwdefault") {
 		nextGraphState(1);
 		generateString("ACase");
 
-		FT ACaseRes = ACase(context, p, end);
+		FT ACaseRes = ACase(p, end);
 		if (!ACaseRes.first) return false;
 
 		if ((stoi(def) >= 0) && (stoi(ACaseRes.second) >= 0)) {
@@ -697,20 +700,20 @@ bool LL::CasesList(const std::string &context, const std::string &p, const std::
 		nextGraphState(0);
 		generateString("Cases'");
 
-		if (!CasesList(context, p, end, maxDef)) return false;
+		if (!CasesList(p, end, maxDef)) return false;
 
 		rollbackGraphNode();
 		return true;
 	}
 
 	std::string q = stoi(def) >= 0 ? def : end;
-	generateAtom(context, "JMP", "", "", "L" + q);
+	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + q);
 
 	rollbackGraphNode();
 	return true;
 }
 
-FT LL::ACase(const std::string &context, const std::string &p, const std::string &end) {
+FT LL::ACase(const std::string &p, const std::string &end) {
 	if (it->first == "kwcase") {
 		nextToken();
 
@@ -719,7 +722,7 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 		nextToken();
 
 		std::string next = newLabel();
-		generateAtom(context, "NE", p, _temp, "L" + next);
+		generateAtom(*contextVector.rbegin(), "NE", p, _temp, "L" + next);
 
 		if (it->first != "colon") return {false, ""};
 		nextToken();
@@ -727,10 +730,10 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 		nextGraphState(0);
 		generateString("kwcase " + _temp + "colon StmtList");
 
-		if (!StmtList(context)) return {false, ""};
+		if (!StmtList()) return {false, ""};
 
-		generateAtom(context, "JMP", "", "", "L" + end);
-		generateAtom(context, "LBL", "", "", "L" + next);
+		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
+		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);
 
 		rollbackGraphNode();
 		return {true, "-1"};
@@ -745,16 +748,16 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 		auto next = newLabel();
 		auto def = newLabel();
 
-		generateAtom(context, "JMP", "", "", "L" + next);
-		generateAtom(context, "LBL", "", "", "L" + def);
+		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + next);
+		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + def);
 
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 
-		if (!StmtList(context)) return {false, ""};
+		if (!StmtList()) return {false, ""};
 
-		generateAtom(context, "JMP", "", "", "L" + end);
-		generateAtom(context, "LBL", "", "", "L" + next);
+		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
+		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);
 
 		rollbackGraphNode();
 		return {true, def};
@@ -763,7 +766,7 @@ FT LL::ACase(const std::string &context, const std::string &p, const std::string
 	return {false, ""};
 }
 
-bool LL::InOp(const std::string &context) {
+bool LL::InOp() {
 	if (it->first != "id") return false;
 	std::string _temp = it->second;
 	nextToken();
@@ -771,8 +774,8 @@ bool LL::InOp(const std::string &context) {
 	if (it->first != "semicolon") return false;
 	nextToken();
 
-	auto p = checkVar(context, _temp);
-	generateAtom(context, "IN", "", "", p);
+	auto p = checkVar(_temp);
+	generateAtom(*contextVector.rbegin(), "IN", "", "", p);
 
 	nextGraphState(0);
 	generateString(_temp + " semicolon");
@@ -782,12 +785,12 @@ bool LL::InOp(const std::string &context) {
 	return true;
 }
 
-bool LL::OutOp(const std::string &context) {
+bool LL::OutOp() {
 
 	nextGraphState(1);
 	generateString("OutOp'");
 
-	if (!OutOpList(context)) return false;
+	if (!OutOpList()) return false;
 
 	if (it->first != "semicolon") return false;
 	nextToken();
@@ -800,7 +803,7 @@ bool LL::OutOp(const std::string &context) {
 	return true;
 }
 
-bool LL::OutOpList(const std::string &context) {
+bool LL::OutOpList() {
 	if (it->first == "str") {
 		std::string _temp = it->second;
 		nextToken();
@@ -808,24 +811,24 @@ bool LL::OutOpList(const std::string &context) {
 		nextGraphState(0);
 		generateString("\"" + _temp + "\"");
 
-		generateAtom(context, "OUT", "", "", "\"" + _temp + "\"");
+		generateAtom(*contextVector.rbegin(), "OUT", "", "", "\"" + _temp + "\"");
 		rollbackGraphNode();
 	} else {
 
 		nextGraphState(0);
 		generateString("E");
 
-		auto ERes = Expr(context);
+		auto ERes = Expr();
 		if (!ERes.first) return false;
 
-		generateAtom(context, "OUT", "", "", ERes.second);
+		generateAtom(*contextVector.rbegin(), "OUT", "", "", ERes.second);
 	}
 
 	rollbackGraphNode();
 	return true;
 }
 
-FT LL::Type(const std::string &context) {
+FT LL::Type() {
 	if (it->first == "eof") return {false, ""};
 
 	if (it->first == "kwint" || it->first == "kwchar") {
@@ -844,7 +847,7 @@ FT LL::Type(const std::string &context) {
 	return {false, ""};
 }
 
-bool LL::DeclareVarList(const std::string &context, const std::string &type) {
+bool LL::DeclareVarList(const std::string &type) {
 	if (it->first == "eof") return false;
 
 	if (it->first == "comma") {
@@ -858,19 +861,19 @@ bool LL::DeclareVarList(const std::string &context, const std::string &type) {
 
 		nextToken();
 
-		if (!InitVar(context, type, temp)) return false;
+		if (!InitVar(type, temp)) return false;
 
 		nextGraphState(0);
 		generateString("DeclareVarList");
 
-		if (!DeclareVarList(context, type)) return false;
+		if (!DeclareVarList(type)) return false;
 	}
 
 	rollbackGraphNode();
 	return true;
 }
 
-bool LL::InitVar(const std::string &context, const std::string &r, const std::string &s) {
+bool LL::InitVar(const std::string &r, const std::string &s) {
 	if (it->first == "eof") return false;
 
 	if (it->first == "opassign") {
@@ -878,14 +881,14 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 
 		if (it->first == "num" || it->first == "char") {
 
-			std::string newVar = "'" + addVar(s, context, r, it->second) + "'";
+			std::string newVar = "'" + addVar(s, *contextVector.rbegin(), r, it->second) + "'";
 
 			if (newVar == "'Error'") return false;
 
 			nextGraphState(0);
 			generateString("opassign " + it->second);
 
-			generateAtom(context, "MOV", it->second, "", newVar);
+			generateAtom(*contextVector.rbegin(), "MOV", it->second, "", newVar);
 
 			nextToken();
 
@@ -897,7 +900,7 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 		return false;
 	}
 
-	std::string _temp = addVar(s, context, r);
+	std::string _temp = addVar(s, *contextVector.rbegin(), r);
 
 	if (_temp == "'Error'") return false;
 
@@ -905,17 +908,17 @@ bool LL::InitVar(const std::string &context, const std::string &r, const std::st
 	return true;
 }
 
-FT LL::ParamList(const std::string &context) {
+FT LL::ParamList() {
 	if (it->first == "eof") return {false, ""};
 
 	if (it->first == "kwint" || it->first == "kwchar") {
 		nextGraphState(1);
 		generateString("Type");
 
-		auto TypeResult = Type(context);
+		auto TypeResult = Type();
 
 		if (it->first != "id") return {false, ""};
-		std::string _temp = addVar(it->second, context, TypeResult.second);
+		std::string _temp = addVar(it->second, *contextVector.rbegin(), TypeResult.second);
 
 		if (_temp == "'Error'") return {false, ""};
 
@@ -924,7 +927,7 @@ FT LL::ParamList(const std::string &context) {
 
 		nextToken();
 
-		FT ParLLRes = ParamListList(context);
+		FT ParLLRes = ParamListList();
 		if (!ParLLRes.first) return {false, ""};
 
 		rollbackGraphNode();
@@ -935,7 +938,7 @@ FT LL::ParamList(const std::string &context) {
 	return {true, "0"};
 }
 
-FT LL::ParamListList(const std::string &context) {
+FT LL::ParamListList() {
 	if (it->first == "eof") return {false, ""};
 
 	if (it->first == "comma") {
@@ -945,10 +948,10 @@ FT LL::ParamListList(const std::string &context) {
 			nextGraphState(1);
 			generateString("comma Type");
 
-			auto TypeResult = Type(context);
+			auto TypeResult = Type();
 
 			if (it->first != "id") return {false, ""};
-			std::string _temp = addVar(it->second, context, TypeResult.second);
+			std::string _temp = addVar(it->second, *contextVector.rbegin(), TypeResult.second);
 
 			if (_temp == "'Error'") return {false, ""};
 
@@ -957,7 +960,7 @@ FT LL::ParamListList(const std::string &context) {
 
 			nextToken();
 
-			FT ParLLRes = ParamListList(context);
+			FT ParLLRes = ParamListList();
 			if (!ParLLRes.first) return {false, ""};
 
 			rollbackGraphNode();

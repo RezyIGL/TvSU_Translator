@@ -42,6 +42,9 @@ public:
 	void printASMCode();
 
 private:
+	// context vector
+	std::vector<std::string> contextVector;
+
 	// Checker Check
 	bool CodeIsChecked = false;
 	bool CodeIsCorrect = false;
@@ -134,7 +137,7 @@ private:
 
 	std::string addFunc(const std::string &name, const std::string &type, const std::string &length = "0");
 
-	std::string checkVar(const std::string &scope, const std::string &name);
+	std::string checkVar(const std::string &name);
 
 	std::string checkFunc(const std::string &name, const std::string &len);
 
@@ -151,50 +154,50 @@ private:
 	void nextToken();
 
 	// MiniC grammar checker
-	bool StmtList(const std::string &context);
-	bool Stmt(const std::string &context);
-	bool DeclareStmt(const std::string &context);
-	bool DeclareStmtList(const std::string &context, const std::string &q, const std::string &r);
-	bool AssignOrCallOp(const std::string &context);
-	bool AssignOrCall(const std::string &context);
-	bool AssignOrCallList(const std::string &context, const std::string &name);
-	bool WhileOp(const std::string &context);
-	bool ForOp(const std::string &context);
-	bool ForInit(const std::string &context);
-	FT ForExp(const std::string &context);
-	bool ForLoop(const std::string &context);
-	bool IfOp(const std::string &context);
-	bool ElsePart(const std::string &context);
-	bool SwitchOp(const std::string &context);
-	bool Cases(const std::string &context, const std::string &p, const std::string &end);
-	bool CasesList(const std::string &context, const std::string &p, const std::string &end, const std::string &def);
-	FT ACase(const std::string &context, const std::string &p, const std::string &end);
-	bool InOp(const std::string &context);
-	bool OutOp(const std::string &context);
-	bool OutOpList(const std::string &context);
-	FT Type(const std::string &context);
-	bool DeclareVarList(const std::string &context, const std::string &type);
-	bool InitVar(const std::string &context, const std::string &r, const std::string &s);
-	FT ParamList(const std::string &context);
-	FT ParamListList(const std::string &context);
+	bool StmtList();
+	bool Stmt();
+	bool DeclareStmt();
+	bool DeclareStmtList(const std::string &q, const std::string &r);
+	bool AssignOrCallOp();
+	bool AssignOrCall();
+	bool AssignOrCallList(const std::string &name);
+	bool WhileOp();
+	bool ForOp();
+	bool ForInit();
+	FT ForExp();
+	bool ForLoop();
+	bool IfOp();
+	bool ElsePart();
+	bool SwitchOp();
+	bool Cases(const std::string &p, const std::string &end);
+	bool CasesList(const std::string &p, const std::string &end, const std::string &def);
+	FT ACase(const std::string &p, const std::string &end);
+	bool InOp();
+	bool OutOp();
+	bool OutOpList();
+	FT Type();
+	bool DeclareVarList(const std::string &type);
+	bool InitVar(const std::string &r, const std::string &s);
+	FT ParamList();
+	FT ParamListList();
 
 	// Expression checker
-	FT Expr(const std::string &context);
-	FT Expr7(const std::string &context);
-	FT Expr7List(const std::string &context, const std::string &funcID);
-	FT Expr6(const std::string &context);
-	FT Expr6List(const std::string &context, const std::string &funcID);
-	FT Expr5(const std::string &context);
-	FT Expr5List(const std::string &context, const std::string &funcID);
-	FT Expr4(const std::string &context);
-	FT Expr4List(const std::string &context, const std::string &funcID);
-	FT Expr3(const std::string &context);
-	FT Expr3List(const std::string &context, const std::string &funcID);
-	FT Expr2(const std::string &context);
-	FT Expr1(const std::string &context);
-	FT Expr1List(const std::string &context, const std::string &funcID);
-	FT ArgList(const std::string &context);
-	FT ArgListList(const std::string &context);
+	FT Expr();
+	FT Expr7();
+	FT Expr7List(const std::string &funcID);
+	FT Expr6();
+	FT Expr6List(const std::string &funcID);
+	FT Expr5();
+	FT Expr5List(const std::string &funcID);
+	FT Expr4();
+	FT Expr4List(const std::string &funcID);
+	FT Expr3();
+	FT Expr3List(const std::string &funcID);
+	FT Expr2();
+	FT Expr1();
+	FT Expr1List(const std::string &funcID);
+	FT ArgList();
+	FT ArgListList();
 };
 
 #endif //TVSU_TRANSLATOR_TRANSLATOR_H

@@ -1,0 +1,37 @@
+Context: Atom
+
+0: (MOV,11,,'2')
+0: (MOV,0,,'3')
+0: (MOV,1,,'1')
+0: (LBL,,,L1)
+0: (MOV,1,,'4')
+0: (LE,'1','2',L5)
+0: (MOV,0,,'4')
+0: (LBL,,,L5)
+0: (EQ,'4',0,L4)
+0: (JMP,,,L3)
+0: (LBL,,,L2)
+0: (ADD,'1',1,'1')
+0: (JMP,,,L1)
+0: (LBL,,,L3)
+0: (MOV,0,,'5')
+0: (ADD,'5','1','6')
+0: (MOV,'6',,'5')
+0: (ADD,'5','3','7')
+0: (MOV,'7',,'5')
+0: (MOV,'5',,'3')
+0: (JMP,,,L2)
+0: (LBL,,,L4)
+-1: (RET,,,0)
+
+=============================================
+Name : Code : Class : Type : Init : Scope 
+
+main : '0' : func : kwint : 0 : -1
+i : '1' : var : kwint : 0 : 0
+n : '2' : var : kwint : 11 : 0
+s : '3' : var : kwint : 0 : 0
+$T1 : '4' : var : kwint : 0 : 0
+t : '5' : var : kwint : 0 : 0
+$T2 : '6' : var : kwint : 0 : 0
+$T3 : '7' : var : kwint : 0 : 0

@@ -25,9 +25,9 @@ bool LL::checkIfCodeSyntaxIsCorrect() {
 	nextToken();
 	graphIterator = states.begin() + 1;
 
-	std::string StartContext = "-1";
+	contextVector.emplace_back("-1");
 
-	bool result = StmtList(StartContext);
+	bool result = StmtList(contextVector[0]);
 	if (result && it->first == "eof") {
 		CodeIsChecked = true;
 		CodeIsCorrect = true;

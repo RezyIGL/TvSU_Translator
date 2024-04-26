@@ -126,15 +126,15 @@ std::string LL::addFunc(const std::string &name, const std::string &type, const 
 	return std::to_string(temp.cnt);
 }
 
-std::string LL::checkVar(const std::string &scope, const std::string &name) {
-	for (const auto &i: AtomicMap[scope]) {
-		if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
-		else if (i.name == name && i.type != "var") return "ERROR";
-	}
+std::string LL::checkVar(const std::string &name) {
 
-	for (const auto &i: AtomicMap["-1"]) {
-		if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
-		else if (i.name == name && i.type != "var") return "ERROR";
+	auto contextIter = contextVector.rbegin();
+
+	while (contextIter != contextVector.rend()) {
+		for (const auto &i: AtomicMap[*contextIter]) {
+			if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
+			else if (i.name == name && i.type != "var") return "ERROR";
+		}
 	}
 
 	return "ERROR";

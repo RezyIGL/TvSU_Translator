@@ -7,6 +7,4 @@ int main() {
         t = t + s;
         s = t;
     }
-
-    int t = 3;
 }
