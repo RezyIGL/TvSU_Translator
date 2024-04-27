@@ -486,7 +486,7 @@ bool LL::WhileOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "_while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	std::string TempContext = "while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
 	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
 	contextVector.pop_back();
@@ -536,7 +536,7 @@ bool LL::ForOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "_for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	std::string TempContext = "for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
 	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
 	contextVector.pop_back();
@@ -666,7 +666,7 @@ bool LL::IfOp() {
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "_if_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	std::string TempContext = "if_" + *contextVector.rbegin() + "_" + std::to_string(extraContext);
 	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
 	contextVector.pop_back();
@@ -689,6 +689,8 @@ bool LL::IfOp() {
 
 	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
 
+	extraContext++;
+
 	rollbackGraphNode();
 	rollbackGraphNode();
 	return true;
@@ -701,7 +703,7 @@ bool LL::ElsePart() {
 	nextGraphState(0);
 	generateString("kwelse Stmt");
 
-	std::string TempContext = "_else_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	std::string TempContext = "else_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
 	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
 	contextVector.pop_back();
@@ -809,7 +811,7 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwcase " + _temp + "colon StmtList");
 
-		std::string TempContext = "_switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+		std::string TempContext = "switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
 		contextVector.emplace_back(TempContext);
 		if (!StmtList()) return {false, ""};
 		contextVector.pop_back();
@@ -836,7 +838,7 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 
-		std::string TempContext = "_for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+		std::string TempContext = "switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
 		contextVector.emplace_back(TempContext);
 		if (!StmtList()) return {false, ""};
 		contextVector.pop_back();
