@@ -511,6 +511,8 @@ bool LL::ForOp() {
 	nextGraphState(1);
 	generateString("lpar ForInit");
 
+	std::string TempContext = "for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	contextVector.emplace_back(TempContext);
 	if (!ForInit()) return false;
 
 	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
@@ -536,13 +538,12 @@ bool LL::ForOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
-	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
-	contextVector.pop_back();
 
 	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
 	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l4);
+
+	contextVector.pop_back();
 
 	rollbackGraphNode();
 	return true;
