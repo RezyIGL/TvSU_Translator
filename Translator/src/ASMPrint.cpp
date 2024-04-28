@@ -246,7 +246,7 @@ void LL::IN(const Atom &atom) {
 
 void LL::OUT(const Atom &atom) {
 	loadOp(atom.third);
-	// myStream << "OUT 1" << std::endl << std::endl;
+	 myStream << "OUT 1" << std::endl << std::endl;
 }
 
 // useless (as they're now) functions
