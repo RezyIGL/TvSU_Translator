@@ -1,0 +1,56 @@
+Context: Atom
+
+0: (LBL,,,main)
+0: (MOV,11,,'1')
+0: (MOV,0,,'2')
+0: (MOV,12,,'3')
+for_0_0: (MOV,0,,'4')
+for_0_0: (LBL,,,L1)
+for_0_0: (MOV,1,,'5')
+for_0_0: (LE,'4','1',L5)
+for_0_0: (MOV,0,,'5')
+for_0_0: (LBL,,,L5)
+for_0_0: (EQ,'5',0,L4)
+for_0_0: (JMP,,,L3)
+for_0_0: (LBL,,,L2)
+for_0_0: (ADD,'4',1,'6')
+for_0_0: (MOV,'6',,'4')
+for_0_0: (JMP,,,L1)
+for_0_0: (LBL,,,L3)
+for_0_0: (ADD,'2','4','7')
+for_0_0: (MOV,'7',,'2')
+for_0_0: (MOV,'4',,'3')
+for_0_0: (JMP,,,L2)
+for_0_0: (LBL,,,L4)
+0: (MOV,12,,'8')
+for_0_1: (MOV,0,,'9')
+for_0_1: (LBL,,,L6)
+for_0_1: (MOV,1,,'10')
+for_0_1: (LE,'8',12,L10)
+for_0_1: (MOV,0,,'10')
+for_0_1: (LBL,,,L10)
+for_0_1: (EQ,'10',0,L9)
+for_0_1: (JMP,,,L8)
+for_0_1: (LBL,,,L7)
+for_0_1: (ADD,'8',1,'8')
+for_0_1: (JMP,,,L6)
+for_0_1: (LBL,,,L8)
+for_0_1: (JMP,,,L7)
+for_0_1: (LBL,,,L9)
+0: (OUT,,,'2')
+-1: (RET,,,0)
+
+=============================================
+Name : Code : Class : Type : Init : Scope 
+
+main : '0' : func : kwint : 0 : -1
+n : '1' : var : kwint : 11 : 0
+s : '2' : var : kwint : 0 : 0
+T1 : '3' : var : kwint : 12 : 0
+i : '4' : var : kwint : 0 : for_0_0
+$T1 : '5' : var : kwint : 0 : for_0_0
+$T2 : '6' : var : kwint : 0 : for_0_0
+$T3 : '7' : var : kwint : 0 : for_0_0
+i : '8' : var : kwint : 12 : 0
+j : '9' : var : kwint : 0 : for_0_1
+$T4 : '10' : var : kwint : 0 : for_0_1
