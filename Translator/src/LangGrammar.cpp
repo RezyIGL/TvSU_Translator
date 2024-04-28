@@ -486,9 +486,10 @@ bool LL::WhileOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
+	std::string TempContext = "while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext);
 	contextVector.emplace_back(TempContext);
 	if (!Stmt()) return false;
+	extraContext++;
 	contextVector.pop_back();
 
 	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
@@ -498,6 +499,7 @@ bool LL::WhileOp() {
 	return true;
 }
 
+// TODO: add local context...
 bool LL::ForOp() {
 
 	auto l1 = newLabel();
@@ -550,14 +552,18 @@ bool LL::ForOp() {
 }
 
 bool LL::ForInit() {
-
 	if (it->first == "kwint") {
 		nextToken();
 
 		if (it->first != "id") return false;
 
-		std::string _temp = addVar(it->second, *contextVector.rbegin(), "kwint");
+		std::string _temp = addVar(it->second, *(contextVector.rbegin() + 1), "kwint");
 		if (_temp == "Error") return false;
+
+		AtomicMap[*(contextVector.rbegin() + 1)].pop_back();
+		AtomicMapCnt--;
+
+		addVar(it->second, *contextVector.rbegin(), "kwint");
 
 		nextGraphState(0);
 		generateString("AssignOrCall");
