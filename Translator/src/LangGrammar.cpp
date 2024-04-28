@@ -499,7 +499,6 @@ bool LL::WhileOp() {
 	return true;
 }
 
-// TODO: add local context...
 bool LL::ForOp() {
 
 	auto l1 = newLabel();
@@ -594,7 +593,7 @@ FT LL::ForExp() {
 	bool oneFlag = false;
 	std::string _temp;
 
-	if (it->first == "lpar" || it->first == "opinc" || it->first == "num" || it->first == "char" || it->first == "id") {
+	if (it->first == "lpar" || it->first == "opdec" || it->first == "opinc" || it->first == "num" || it->first == "char" || it->first == "id") {
 		nextGraphState(0);
 		generateString("E");
 
@@ -633,6 +632,27 @@ bool LL::ForLoop() {
 
 		nextGraphState(0);
 		generateString("opinc " + _temp);
+
+		rollbackGraphNode();
+		rollbackGraphNode();
+		return true;
+	}
+
+	if (it->first == "opdec") {
+		nextToken();
+
+		if (it->first != "id") return false;
+		std::string _temp = it->second;
+		nextToken();
+
+		auto p = checkVar(_temp);
+		generateAtom(*contextVector.rbegin(), "SUB", p, "1", p);
+
+		if (it->first != "rpar") return false;
+		nextToken();
+
+		nextGraphState(0);
+		generateString("opdec " + _temp);
 
 		rollbackGraphNode();
 		rollbackGraphNode();

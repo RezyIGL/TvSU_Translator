@@ -383,7 +383,22 @@ FT LL::Expr2() {
 }
 
 FT LL::Expr1() {
-	if (it->first == "opinc") {
+	if (it->first == "opdec") {
+		nextToken();
+
+		if (it->first != "id") return {false, ""};
+
+		auto q = checkVar(it->second);
+		generateAtom(*contextVector.rbegin(), "SUB", q, "1", q);
+
+		nextGraphState(0);
+		generateString("opdec " + it->second);
+		nextToken();
+
+		rollbackGraphNode();
+		rollbackGraphNode();
+		return {true, q};
+	} else if (it->first == "opinc") {
 		nextToken();
 
 		if (it->first != "id") return {false, ""};
@@ -496,6 +511,22 @@ FT LL::Expr1List(const std::string &funcID) {
 		return {true, r};
 	}
 
+	if (it->first == "opdec") {
+		nextToken();
+
+		auto s = checkVar(funcID);
+		auto r = alloc(*contextVector.rbegin());
+
+		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+		generateAtom(*contextVector.rbegin(), "SUB", s, "1", s);
+
+		nextGraphState(0);
+		generateString("opdec");
+		rollbackGraphNode();
+		rollbackGraphNode();
+		return {true, r};
+	}
+
 	auto q = checkVar(funcID);
 
 	rollbackGraphNode();
@@ -503,7 +534,7 @@ FT LL::Expr1List(const std::string &funcID) {
 }
 
 FT LL::ArgList() {
-	if (it->first == "lpar" || it->first == "opinc" || it->first == "num" || it->first == "char" || it->first == "id") {
+	if (it->first == "lpar" || it->first == "opdec" || it->first == "opinc" || it->first == "num" || it->first == "char" || it->first == "id") {
 
 		nextGraphState(1);
 		generateString(it->first + " E");
@@ -531,7 +562,7 @@ FT LL::ArgListList() {
 	if (it->first == "comma") {
 		nextToken();
 
-		if (it->first == "lpar" || it->first == "opinc" || it->first == "num" || it->first == "char" ||
+		if (it->first == "lpar" || it->first == "opdec" || it->first == "opinc" || it->first == "num" || it->first == "char" ||
 		    it->first == "id") {
 
 			nextGraphState(1);

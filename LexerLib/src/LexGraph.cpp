@@ -119,6 +119,7 @@ std::map<int, std::vector<E>> TokenFSM = {
 		{22, {
 				    {"DIGIT", true, true, 23, ""},
 				    {"=", false, false, 26, "", true},
+				     {"-", false, false, 29, "", true},
 				    {"", false, false, 0, "opminus", true}
 		    }},
 		{23, {
@@ -142,6 +143,9 @@ std::map<int, std::vector<E>> TokenFSM = {
 		}},
 		{28, {
 				     {"", true, false, 0, "opmulassign"}
+		}},
+		{29, {
+				     {"", true, false, 0, "opdec"}
 		}},
 };
 
