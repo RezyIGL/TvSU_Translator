@@ -8,5 +8,6 @@ int main() {
 
 	LL Translator(INPUT_PATH, GRAPH_PATH, ATOMS_PATH, ASM_PATH);
 
+	Translator.printOutputGraph();
 	Translator.printASMCode();
 }

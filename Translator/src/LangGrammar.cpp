@@ -401,7 +401,7 @@ bool LL::AssignOrCallList(const std::string &name) {
 		nextToken();
 
 		nextGraphState(0);
-		generateString("opmulassign E");
+		generateString("opplusassign E");
 
 		auto ERes = Expr();
 		if (!ERes.first) return false;
@@ -420,7 +420,7 @@ bool LL::AssignOrCallList(const std::string &name) {
 		nextToken();
 
 		nextGraphState(0);
-		generateString("opmulassign E");
+		generateString("opminusassign E");
 
 		auto ERes = Expr();
 		if (!ERes.first) return false;
@@ -553,6 +553,11 @@ bool LL::ForOp() {
 
 bool LL::ForInit() {
 	if (it->first == "kwint") {
+
+		nextGraphState(1);
+		generateString("kwint");
+		rollbackGraphNode();
+
 		nextToken();
 
 		if (it->first != "id") return false;
@@ -635,7 +640,7 @@ bool LL::ForLoop() {
 	}
 
 	if (it->first == "id") {
-		nextGraphState(1);
+		nextGraphState(0);
 		generateString("AssignOrCall");
 
 		if (!AssignOrCall()) return false;
