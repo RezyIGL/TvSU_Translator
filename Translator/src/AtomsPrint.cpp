@@ -9,7 +9,6 @@ bool LL::_printAtoms() {
 	myStream << "Context: Atom\n" << std::endl;
 
 	for (const auto &i: atoms) {
-		if (i.context == entryPoint) isUsed = true;
 		myStream << i.context << ": ("
 		         << i.text << ","
 		         << i.first << ","

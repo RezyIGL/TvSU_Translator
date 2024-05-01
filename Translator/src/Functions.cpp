@@ -44,10 +44,6 @@ bool LL::generateAtoms() {
 		if (o.name == "main") entryPoint = std::to_string(o.cnt);
 	}
 
-	for (const auto &i : atoms) {
-		if (i.context == entryPoint) isUsed = true;
-	}
-
 	AtomsGenerated = true;
 
 	return true;
@@ -129,18 +125,36 @@ std::string LL::addFunc(const std::string &name, const std::string &type, const 
 
 std::string LL::checkVar(const std::string &name) {
 
-	auto contextIter = contextVector.rbegin();
+    std::string result;
+    std::stack<std::string> _shadowStack;
 
-	while (contextIter != contextVector.rend()) {
-		for (const auto &i: AtomicMap[*contextIter]) {
-			if (i.name == name && i.kind == "var") return "'" + std::to_string(i.cnt) + "'";
-			else if (i.name == name && i.type != "var") return "ERROR";
-		}
+    while (!contextStack.empty()) {
+        for (const auto &i: AtomicMap[contextStack.top()]) {
+            if (i.name == name && i.kind == "var") {
+                result = "'" + std::to_string(i.cnt) + "'";
+                goto end;
+            } else if (i.name == name && i.type != "var") {
+                result = "ERROR";
+                goto end;
+            }
+        }
 
-		contextIter++;
-	}
+        _shadowStack.push(contextStack.top());
+        contextStack.pop();
+    }
 
-	return "ERROR";
+    end:
+
+    while (!_shadowStack.empty()) {
+        contextStack.push(_shadowStack.top());
+        _shadowStack.pop();
+    }
+
+    if (result == "ERROR" || result.empty()) {
+        return "ERROR";
+    } else {
+        return result;
+    }
 }
 
 std::string LL::checkFunc(const std::string &name, const std::string &len) {

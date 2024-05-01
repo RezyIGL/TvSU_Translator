@@ -25,7 +25,7 @@ bool LL::checkIfCodeSyntaxIsCorrect() {
 	nextToken();
 	graphIterator = states.begin() + 1;
 
-	contextVector.emplace_back("-1");
+	contextStack.push(currentContext);
 
 	bool result = StmtList();
 	if (result && it->first == "eof") {

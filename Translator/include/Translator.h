@@ -2,6 +2,7 @@
 #define TVSU_TRANSLATOR_TRANSLATOR_H
 
 #include "Lexer.h"
+#include <stack>
 #include <iostream>
 #include <fstream>
 
@@ -43,8 +44,7 @@ public:
 
 private:
 	// context vector
-	std::vector<std::string> contextVector;
-	int extraContext = 0;
+	std::stack<std::string> contextStack;
 
 	// Checker Check
 	bool CodeIsChecked = false;
@@ -102,8 +102,6 @@ private:
 	// Entry point holder. If not found = "NoEntry"
 	std::string entryPoint = "NoEntry";
 	std::string currentContext = "-1";
-	bool isUsed = false;
-	bool doWeHaveLBL = false;
 
 	// Needful variables
 	std::string _atomsInput; // path to Atoms output file

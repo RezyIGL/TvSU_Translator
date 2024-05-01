@@ -54,7 +54,7 @@ bool LL::Stmt() {
 		return true;
 	}
 
-	if (*contextVector.rbegin() == "-1") return false;
+	if (contextStack.top() == "-1") return false;
 
 	if (it->first == "id") {
 		nextGraphState(0);
@@ -167,7 +167,7 @@ bool LL::Stmt() {
 		auto EResult = Expr();
 		if (!EResult.first) return false;
 
-		generateAtom(*contextVector.rbegin(), "RET", "", "", EResult.second);
+		generateAtom(contextStack.top(), "RET", "", "", EResult.second);
 
 
 		if (it->first != "semicolon") return false;
@@ -209,20 +209,21 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 	if (it->first == "eof") return false;
 
 	if (it->first == "lpar") {
-		if (*contextVector.rbegin() != "-1") return false;
+		if (contextStack.top() != "-1") return false;
 		nextToken();
 
 		nextGraphState(1);
 		generateString("lpar ParamList");
 
+        currentContext = std::to_string(stoi(currentContext) + 1);
 		std::string TC = addFunc(name, type);
-		contextVector.emplace_back(TC);
+		contextStack.push(currentContext);
 
 		auto ParamListRes = ParamList();
 		if (!ParamListRes.first) return false;
 
 		for (auto &i : AtomicMap["-1"]) {
-			if (std::to_string(i.cnt) == TC) {
+			if (std::to_string(i.cnt) == currentContext) {
 				i.init = ParamListRes.second;
 			}
 		}
@@ -236,15 +237,15 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		nextGraphState(1);
 		generateString("rpar lbrace StmtList");
 
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", name);
+		generateAtom("-1", "LBL", "", "", name);
 		if (!StmtList()) return false;
 
-		contextVector.pop_back();
+        contextStack.pop();
 
 		if (it->first != "rbrace") return false;
 		nextToken();
 
-		generateAtom(*contextVector.rbegin(), "RET", "", "", "0");
+		generateAtom(contextStack.top(), "RET", "", "", "0");
 
 		nextGraphState(0);
 		generateString("rbrace");
@@ -257,7 +258,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		auto _temp = it->second;
 
 		if (it->first == "num") {
-			std::string newVar = "'" + addVar(name, *contextVector.rbegin(), type, _temp) + "'";
+			std::string newVar = "'" + addVar(name, contextStack.top(), type, _temp) + "'";
 
 			if (newVar == "'Error'") return false;
 
@@ -266,7 +267,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			nextGraphState(1);
 			generateString("opassign " + _temp + " DeclareVarList");
 
-			generateAtom(*contextVector.rbegin(), "MOV", _temp, "", newVar);
+			generateAtom(contextStack.top(), "MOV", _temp, "", newVar);
 
 			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
@@ -281,7 +282,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			rollbackGraphNode();
 			return true;
 		} else if (it->first == "char") {
-			std::string newVar = "'" + addVar(name, *contextVector.rbegin(), type, _temp) + "'";
+			std::string newVar = "'" + addVar(name, contextStack.top(), type, _temp) + "'";
 
 			if (newVar == "'Error'") return false;
 
@@ -290,7 +291,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			nextGraphState(1);
 			generateString("opassign " + _temp + "DeclareVarList");
 
-			generateAtom(*contextVector.rbegin(), "MOV", _temp, "", newVar);
+			generateAtom(contextStack.top(), "MOV", _temp, "", newVar);
 
 			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
@@ -308,7 +309,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			return false;
 		}
 	} else {
-		std::string _temp = addVar(name, *contextVector.rbegin(), type);
+		std::string _temp = addVar(name, contextStack.top(), type);
 
 		if (_temp == "'Error'") return false;
 
@@ -372,7 +373,7 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		generateAtom(*contextVector.rbegin(), "MOV", ERes.second, "", r);
+		generateAtom(contextStack.top(), "MOV", ERes.second, "", r);
 
 		rollbackGraphNode();
 		return true;
@@ -388,10 +389,10 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "MUL", r, ERes.second, s);
-		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "MUL", r, ERes.second, s);
+		generateAtom(contextStack.top(), "MOV", s, "", r);
 
 		rollbackGraphNode();
 		return true;
@@ -407,10 +408,10 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "ADD", r, ERes.second, s);
-		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "ADD", r, ERes.second, s);
+		generateAtom(contextStack.top(), "MOV", s, "", r);
 
 		rollbackGraphNode();
 		return true;
@@ -426,10 +427,10 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "SUB", r, ERes.second, s);
-		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "SUB", r, ERes.second, s);
+		generateAtom(contextStack.top(), "MOV", s, "", r);
 
 		rollbackGraphNode();
 		return true;
@@ -451,8 +452,8 @@ bool LL::AssignOrCallList(const std::string &name) {
 		generateString("rpar");
 
 		auto q = checkFunc(name, ArgListRes.second);
-		auto r = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "CALL", q, "", r);
+		auto r = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "CALL", q, "", r);
 
 		rollbackGraphNode();
 		rollbackGraphNode();
@@ -467,7 +468,7 @@ bool LL::WhileOp() {
 	auto l1 = newLabel();
 	auto l2 = newLabel();
 
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l1);
 
 	if (it->first != "lpar") return false;
 	nextToken();
@@ -478,7 +479,7 @@ bool LL::WhileOp() {
 	auto ERes = Expr();
 	if (!ERes.first) return false;
 
-	generateAtom(*contextVector.rbegin(), "EQ", ERes.second, "0", "L" + l2);
+	generateAtom(contextStack.top(), "EQ", ERes.second, "0", "L" + l2);
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -486,14 +487,14 @@ bool LL::WhileOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "while_" + *contextVector.rbegin() + "_" + std::to_string(extraContext);
-	contextVector.emplace_back(TempContext);
+    currentContext = std::to_string(stoi(currentContext) + 1);
+	std::string TempContext = currentContext;
+	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	extraContext++;
-	contextVector.pop_back();
+	contextStack.pop();
 
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + l1);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
 
 	rollbackGraphNode();
 	return true;
@@ -512,11 +513,12 @@ bool LL::ForOp() {
 	nextGraphState(1);
 	generateString("lpar ForInit");
 
-	std::string TempContext = "for_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
-	contextVector.emplace_back(TempContext);
+    currentContext = std::to_string(stoi(currentContext) + 1);
+	contextStack.push(currentContext);
+
 	if (!ForInit()) return false;
 
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l1);
 
 	nextGraphState(1);
 	generateString("semicolon ForExp");
@@ -524,27 +526,27 @@ bool LL::ForOp() {
 	FT ForExpRes = ForExp();
 	if (!ForExpRes.first) return false;
 
-	generateAtom(*contextVector.rbegin(), "EQ", ForExpRes.second, "0", "L" + l4);
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l3);
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
+	generateAtom(contextStack.top(), "EQ", ForExpRes.second, "0", "L" + l4);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + l3);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
 
 	nextGraphState(1);
 	generateString("semicolon ForLoop");
 
 	if (!ForLoop()) return false;
 
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l1);
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l3);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + l1);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l3);
 
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
 	if (!Stmt()) return false;
 
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l4);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + l2);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l4);
 
-	contextVector.pop_back();
+	contextStack.pop();
 
 	rollbackGraphNode();
 	return true;
@@ -561,13 +563,19 @@ bool LL::ForInit() {
 
 		if (it->first != "id") return false;
 
-		std::string _temp = addVar(it->second, *(contextVector.rbegin() + 1), "kwint");
+        std::string currContext = contextStack.top();
+        contextStack.pop();
+
+        std::string prevContext = contextStack.top();
+        contextStack.push(currContext);
+
+		std::string _temp = addVar(it->second, prevContext, "kwint");
 		if (_temp == "Error") return false;
 
-		AtomicMap[*(contextVector.rbegin() + 1)].pop_back();
+		AtomicMap[prevContext].pop_back();
 		AtomicMapCnt--;
 
-		addVar(it->second, *contextVector.rbegin(), "kwint");
+		addVar(it->second, contextStack.top(), "kwint");
 
 		nextGraphState(0);
 		generateString("AssignOrCall");
@@ -625,7 +633,7 @@ bool LL::ForLoop() {
 		nextToken();
 
 		auto p = checkVar(_temp);
-		generateAtom(*contextVector.rbegin(), "ADD", p, "1", p);
+		generateAtom(contextStack.top(), "ADD", p, "1", p);
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -646,7 +654,7 @@ bool LL::ForLoop() {
 		nextToken();
 
 		auto p = checkVar(_temp);
-		generateAtom(*contextVector.rbegin(), "SUB", p, "1", p);
+		generateAtom(contextStack.top(), "SUB", p, "1", p);
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -693,19 +701,20 @@ bool LL::IfOp() {
 	nextToken();
 
 	auto l1 = newLabel();
-	generateAtom(*contextVector.rbegin(), "EQ", ERes.second, "0", "L" + l1);
+	generateAtom(contextStack.top(), "EQ", ERes.second, "0", "L" + l1);
 
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
-	std::string TempContext = "if_" + *contextVector.rbegin() + "_" + std::to_string(extraContext);
-	contextVector.emplace_back(TempContext);
+    currentContext = std::to_string(stoi(currentContext) + 1);
+	std::string TempContext = currentContext;
+	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	contextVector.pop_back();
+	contextStack.pop();
 
 	auto l2 = newLabel();
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + l2);
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l1);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + l2);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l1);
 
 	nextGraphState(0);
 	generateString("ElsePart");
@@ -713,15 +722,13 @@ bool LL::IfOp() {
 	if (it->first == "kwelse") {
 		if (!ElsePart()) return false;
 
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
 
 		rollbackGraphNode();
 		return true;
 	}
 
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l2);
-
-	extraContext++;
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
 
 	rollbackGraphNode();
 	rollbackGraphNode();
@@ -735,10 +742,11 @@ bool LL::ElsePart() {
 	nextGraphState(0);
 	generateString("kwelse Stmt");
 
-	std::string TempContext = "else_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
-	contextVector.emplace_back(TempContext);
+    currentContext = std::to_string(stoi(currentContext) + 1);
+	std::string TempContext = currentContext;
+	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	contextVector.pop_back();
+	contextStack.pop();
 
 	rollbackGraphNode();
 	return true;
@@ -769,7 +777,7 @@ bool LL::SwitchOp() {
 	if (it->first != "rbrace") return false;
 	nextToken();
 
-	generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + end);
+	generateAtom(contextStack.top(), "LBL", "", "", "L" + end);
 
 	nextGraphState(0);
 	generateString("rbrace");
@@ -820,7 +828,7 @@ bool LL::CasesList(const std::string &p, const std::string &end, const std::stri
 	}
 
 	std::string q = stoi(def) >= 0 ? def : end;
-	generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + q);
+	generateAtom(contextStack.top(), "JMP", "", "", "L" + q);
 
 	rollbackGraphNode();
 	return true;
@@ -835,7 +843,7 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextToken();
 
 		std::string next = newLabel();
-		generateAtom(*contextVector.rbegin(), "NE", p, _temp, "L" + next);
+		generateAtom(contextStack.top(), "NE", p, _temp, "L" + next);
 
 		if (it->first != "colon") return {false, ""};
 		nextToken();
@@ -843,13 +851,14 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwcase " + _temp + "colon StmtList");
 
-		std::string TempContext = "switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
-		contextVector.emplace_back(TempContext);
+        currentContext = std::to_string(stoi(currentContext) + 1);
+		std::string TempContext = currentContext;
+		contextStack.push(TempContext);
 		if (!StmtList()) return {false, ""};
-		contextVector.pop_back();
+		contextStack.pop();
 
-		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);
+		generateAtom(contextStack.top(), "JMP", "", "", "L" + end);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + next);
 
 		rollbackGraphNode();
 		return {true, "-1"};
@@ -864,19 +873,20 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		auto next = newLabel();
 		auto def = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + next);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + def);
+		generateAtom(contextStack.top(), "JMP", "", "", "L" + next);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + def);
 
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 
-		std::string TempContext = "switch_" + *contextVector.rbegin() + "_" + std::to_string(extraContext++);
-		contextVector.emplace_back(TempContext);
+        currentContext = std::to_string(stoi(currentContext) + 1);
+		std::string TempContext = currentContext;
+		contextStack.push(TempContext);
 		if (!StmtList()) return {false, ""};
-		contextVector.pop_back();
+		contextStack.pop();
 
-		generateAtom(*contextVector.rbegin(), "JMP", "", "", "L" + end);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + next);
+		generateAtom(contextStack.top(), "JMP", "", "", "L" + end);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + next);
 
 		rollbackGraphNode();
 		return {true, def};
@@ -894,7 +904,7 @@ bool LL::InOp() {
 	nextToken();
 
 	auto p = checkVar(_temp);
-	generateAtom(*contextVector.rbegin(), "IN", "", "", p);
+	generateAtom(contextStack.top(), "IN", "", "", p);
 
 	nextGraphState(0);
 	generateString(_temp + " semicolon");
@@ -930,7 +940,7 @@ bool LL::OutOpList() {
 		nextGraphState(0);
 		generateString("\"" + _temp + "\"");
 
-		generateAtom(*contextVector.rbegin(), "OUT", "", "", "\"" + _temp + "\"");
+		generateAtom(contextStack.top(), "OUT", "", "", "\"" + _temp + "\"");
 		rollbackGraphNode();
 	} else {
 
@@ -940,7 +950,7 @@ bool LL::OutOpList() {
 		auto ERes = Expr();
 		if (!ERes.first) return false;
 
-		generateAtom(*contextVector.rbegin(), "OUT", "", "", ERes.second);
+		generateAtom(contextStack.top(), "OUT", "", "", ERes.second);
 	}
 
 	rollbackGraphNode();
@@ -1000,14 +1010,14 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 
 		if (it->first == "num" || it->first == "char") {
 
-			std::string newVar = "'" + addVar(s, *contextVector.rbegin(), r, it->second) + "'";
+			std::string newVar = "'" + addVar(s, contextStack.top(), r, it->second) + "'";
 
 			if (newVar == "'Error'") return false;
 
 			nextGraphState(0);
 			generateString("opassign " + it->second);
 
-			generateAtom(*contextVector.rbegin(), "MOV", it->second, "", newVar);
+			generateAtom(contextStack.top(), "MOV", it->second, "", newVar);
 
 			nextToken();
 
@@ -1019,7 +1029,7 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 		return false;
 	}
 
-	std::string _temp = addVar(s, *contextVector.rbegin(), r);
+	std::string _temp = addVar(s, contextStack.top(), r);
 
 	if (_temp == "'Error'") return false;
 
@@ -1037,7 +1047,7 @@ FT LL::ParamList() {
 		auto TypeResult = Type();
 
 		if (it->first != "id") return {false, ""};
-		std::string _temp = addVar(it->second, *contextVector.rbegin(), TypeResult.second);
+		std::string _temp = addVar(it->second, contextStack.top(), TypeResult.second);
 
 		if (_temp == "'Error'") return {false, ""};
 
@@ -1070,7 +1080,7 @@ FT LL::ParamListList() {
 			auto TypeResult = Type();
 
 			if (it->first != "id") return {false, ""};
-			std::string _temp = addVar(it->second, *contextVector.rbegin(), TypeResult.second);
+			std::string _temp = addVar(it->second, contextStack.top(), TypeResult.second);
 
 			if (_temp == "'Error'") return {false, ""};
 

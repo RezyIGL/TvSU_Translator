@@ -41,8 +41,8 @@ FT LL::Expr7List(const std::string &funcID) {
 		auto E6Result = Expr6();
 		if (!E6Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "OR", funcID, E6Result.second, s);
+		auto s = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "OR", funcID, E6Result.second, s);
 
 		nextGraphState(0);
 		generateString("E7'");
@@ -85,8 +85,8 @@ FT LL::Expr6List(const std::string &funcID) {
 		auto E5Result = Expr5();
 		if (!E5Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "AND", funcID, E5Result.second, s);
+		auto s = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "AND", funcID, E5Result.second, s);
 
 		nextGraphState(0);
 		generateString("E6'");
@@ -130,13 +130,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "EQ", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "EQ", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -150,13 +150,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "NE", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "NE", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -169,13 +169,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "LE", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "LE", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -188,13 +188,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "GT", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "GT", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -207,13 +207,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "GE", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "GE", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -226,13 +226,13 @@ FT LL::Expr5List(const std::string &funcID) {
 		auto E4Result = Expr4();
 		if (!E4Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
+		auto s = alloc(contextStack.top());
 		auto l = newLabel();
 
-		generateAtom(*contextVector.rbegin(), "MOV", "1", "", s);
-		generateAtom(*contextVector.rbegin(), "LT", funcID, E4Result.second, "L" + l);
-		generateAtom(*contextVector.rbegin(), "MOV", "0", "", s);
-		generateAtom(*contextVector.rbegin(), "LBL", "", "", "L" + l);
+		generateAtom(contextStack.top(), "MOV", "1", "", s);
+		generateAtom(contextStack.top(), "LT", funcID, E4Result.second, "L" + l);
+		generateAtom(contextStack.top(), "MOV", "0", "", s);
+		generateAtom(contextStack.top(), "LBL", "", "", "L" + l);
 
 		rollbackGraphNode();
 		return {true, s};
@@ -270,8 +270,8 @@ FT LL::Expr4List(const std::string &funcID) {
 		auto E3Result = Expr3();
 		if (!E3Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "ADD", funcID, E3Result.second, s);
+		auto s = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "ADD", funcID, E3Result.second, s);
 
 		nextGraphState(0);
 		generateString("E4'");
@@ -291,8 +291,8 @@ FT LL::Expr4List(const std::string &funcID) {
 		auto E3Result = Expr3();
 		if (!E3Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "SUB", funcID, E3Result.second, s);
+		auto s = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "SUB", funcID, E3Result.second, s);
 
 		nextGraphState(0);
 		generateString("E4'");
@@ -337,8 +337,8 @@ FT LL::Expr3List(const std::string &funcID) {
 		auto E2Result = Expr2();
 		if (!E2Result.first) return {false, ""};
 
-		auto s = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "MUL", funcID, E2Result.second, s);
+		auto s = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "MUL", funcID, E2Result.second, s);
 
 		nextGraphState(0);
 		generateString("E3'");
@@ -364,8 +364,8 @@ FT LL::Expr2() {
 		auto E1Result = Expr1();
 		if (!E1Result.first) return {false, ""};
 
-		auto r = alloc(*contextVector.rbegin());
-		generateAtom(*contextVector.rbegin(), "NOT", E1Result.second, "", r);
+		auto r = alloc(contextStack.top());
+		generateAtom(contextStack.top(), "NOT", E1Result.second, "", r);
 
 		rollbackGraphNode();
 		return {true, r};
@@ -389,7 +389,7 @@ FT LL::Expr1() {
 		if (it->first != "id") return {false, ""};
 
 		auto q = checkVar(it->second);
-		generateAtom(*contextVector.rbegin(), "SUB", q, "1", q);
+		generateAtom(contextStack.top(), "SUB", q, "1", q);
 
 		nextGraphState(0);
 		generateString("opdec " + it->second);
@@ -404,7 +404,7 @@ FT LL::Expr1() {
 		if (it->first != "id") return {false, ""};
 
 		auto q = checkVar(it->second);
-		generateAtom(*contextVector.rbegin(), "ADD", q, "1", q);
+		generateAtom(contextStack.top(), "ADD", q, "1", q);
 
 		nextGraphState(0);
 		generateString("opinc " + it->second);
@@ -486,9 +486,9 @@ FT LL::Expr1List(const std::string &funcID) {
 		nextToken();
 
 		auto s = checkFunc(funcID, ArgListResult.second);
-		auto r = alloc(*contextVector.rbegin());
+		auto r = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "CALL", s, "", r);
+		generateAtom(contextStack.top(), "CALL", s, "", r);
 
 		rollbackGraphNode();
 		rollbackGraphNode();
@@ -499,10 +499,10 @@ FT LL::Expr1List(const std::string &funcID) {
 		nextToken();
 
 		auto s = checkVar(funcID);
-		auto r = alloc(*contextVector.rbegin());
+		auto r = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
-		generateAtom(*contextVector.rbegin(), "ADD", s, "1", s);
+		generateAtom(contextStack.top(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "ADD", s, "1", s);
 
 		nextGraphState(0);
 		generateString("opinc");
@@ -515,10 +515,10 @@ FT LL::Expr1List(const std::string &funcID) {
 		nextToken();
 
 		auto s = checkVar(funcID);
-		auto r = alloc(*contextVector.rbegin());
+		auto r = alloc(contextStack.top());
 
-		generateAtom(*contextVector.rbegin(), "MOV", s, "", r);
-		generateAtom(*contextVector.rbegin(), "SUB", s, "1", s);
+		generateAtom(contextStack.top(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "SUB", s, "1", s);
 
 		nextGraphState(0);
 		generateString("opdec");
@@ -548,7 +548,7 @@ FT LL::ArgList() {
 		FT ArgListListResult = ArgListList();
 		if (!ArgListListResult.first) return {false, ""};
 
-		generateAtom(*contextVector.rbegin(), "PARAM", "", "", ERes.second);
+		generateAtom(contextStack.top(), "PARAM", "", "", ERes.second);
 
 		rollbackGraphNode();
 		return {true, std::to_string(stoi(ArgListListResult.second) + 1)};
@@ -577,7 +577,7 @@ FT LL::ArgListList() {
 			FT ArgListListResult = ArgListList();
 			if (!ArgListListResult.first) return {false, ""};
 
-			generateAtom(*contextVector.rbegin(), "PARAM", "", "", ERes.second);
+			generateAtom(contextStack.top(), "PARAM", "", "", ERes.second);
 
 			rollbackGraphNode();
 			return {true, std::to_string(stoi(ArgListListResult.second) + 1)};
