@@ -12,9 +12,6 @@ bool LL::StmtList() {
 	bool result = Stmt();
 	if (!result) {
 		outputVector.pop_back();
-
-		it = _temp;
-
 		rollbackGraphNode();
 		rollbackGraphNode();
 		return true;

@@ -7,197 +7,162 @@ StmtList
 │   ├lpar ParamList
 │   ├rpar lbrace StmtList
 │   │ ├Stmt
-│   │ │ └DeclareStmt
-│   │ │  ├Type
-│   │ │  │ └kwint
-│   │ │  └n DeclareStmt'
-│   │ │   ├opassign 11 DeclareVarList
-│   │ │   └semicolon
+│   │ │ └kwfor ForOp
+│   │ │  ├lpar ForInit
+│   │ │  │ ├kwint
+│   │ │  │ └AssignOrCall
+│   │ │  │  └i AssignOrCall'
+│   │ │  │   └opassign E
+│   │ │  │    └E7
+│   │ │  │     ├E6
+│   │ │  │     │ ├E5
+│   │ │  │     │ │ ├E4
+│   │ │  │     │ │ │ ├E3
+│   │ │  │     │ │ │ │ ├E2
+│   │ │  │     │ │ │ │ │ └E1
+│   │ │  │     │ │ │ │ │  └0
+│   │ │  │     │ │ │ │ └E3'
+│   │ │  │     │ │ │ └E4'
+│   │ │  │     │ │ └E5'
+│   │ │  │     │ └E6'
+│   │ │  │     └E7'
+│   │ │  ├semicolon ForExp
+│   │ │  │ └E
+│   │ │  │  └E7
+│   │ │  │   ├E6
+│   │ │  │   │ ├E5
+│   │ │  │   │ │ ├E4
+│   │ │  │   │ │ │ ├E3
+│   │ │  │   │ │ │ │ ├E2
+│   │ │  │   │ │ │ │ │ └E1
+│   │ │  │   │ │ │ │ │  └i E1'
+│   │ │  │   │ │ │ │ └E3'
+│   │ │  │   │ │ │ └E4'
+│   │ │  │   │ │ └E5'
+│   │ │  │   │ │  └oplt E4
+│   │ │  │   │ │   ├E3
+│   │ │  │   │ │   │ ├E2
+│   │ │  │   │ │   │ │ └E1
+│   │ │  │   │ │   │ │  └10
+│   │ │  │   │ │   │ └E3'
+│   │ │  │   │ │   └E4'
+│   │ │  │   │ └E6'
+│   │ │  │   └E7'
+│   │ │  ├semicolon ForLoop
+│   │ │  │ └AssignOrCall
+│   │ │  │  └i AssignOrCall'
+│   │ │  │   └opplusassign E
+│   │ │  │    └E7
+│   │ │  │     ├E6
+│   │ │  │     │ ├E5
+│   │ │  │     │ │ ├E4
+│   │ │  │     │ │ │ ├E3
+│   │ │  │     │ │ │ │ ├E2
+│   │ │  │     │ │ │ │ │ └E1
+│   │ │  │     │ │ │ │ │  └1
+│   │ │  │     │ │ │ │ └E3'
+│   │ │  │     │ │ │ └E4'
+│   │ │  │     │ │ └E5'
+│   │ │  │     │ └E6'
+│   │ │  │     └E7'
+│   │ │  └rpar Stmt
+│   │ │   ├lbrace StmtList
+│   │ │   │ ├Stmt
+│   │ │   │ │ └kwfor ForOp
+│   │ │   │ │  ├lpar ForInit
+│   │ │   │ │  │ ├kwint
+│   │ │   │ │  │ └AssignOrCall
+│   │ │   │ │  │  └j AssignOrCall'
+│   │ │   │ │  │   └opassign E
+│   │ │   │ │  │    └E7
+│   │ │   │ │  │     ├E6
+│   │ │   │ │  │     │ ├E5
+│   │ │   │ │  │     │ │ ├E4
+│   │ │   │ │  │     │ │ │ ├E3
+│   │ │   │ │  │     │ │ │ │ ├E2
+│   │ │   │ │  │     │ │ │ │ │ └E1
+│   │ │   │ │  │     │ │ │ │ │  └1
+│   │ │   │ │  │     │ │ │ │ └E3'
+│   │ │   │ │  │     │ │ │ └E4'
+│   │ │   │ │  │     │ │ └E5'
+│   │ │   │ │  │     │ └E6'
+│   │ │   │ │  │     └E7'
+│   │ │   │ │  ├semicolon ForExp
+│   │ │   │ │  │ └E
+│   │ │   │ │  │  └E7
+│   │ │   │ │  │   ├E6
+│   │ │   │ │  │   │ ├E5
+│   │ │   │ │  │   │ │ ├E4
+│   │ │   │ │  │   │ │ │ ├E3
+│   │ │   │ │  │   │ │ │ │ ├E2
+│   │ │   │ │  │   │ │ │ │ │ └E1
+│   │ │   │ │  │   │ │ │ │ │  └j E1'
+│   │ │   │ │  │   │ │ │ │ └E3'
+│   │ │   │ │  │   │ │ │ └E4'
+│   │ │   │ │  │   │ │ └E5'
+│   │ │   │ │  │   │ │  └oplt E4
+│   │ │   │ │  │   │ │   ├E3
+│   │ │   │ │  │   │ │   │ ├E2
+│   │ │   │ │  │   │ │   │ │ └E1
+│   │ │   │ │  │   │ │   │ │  └10
+│   │ │   │ │  │   │ │   │ └E3'
+│   │ │   │ │  │   │ │   └E4'
+│   │ │   │ │  │   │ └E6'
+│   │ │   │ │  │   └E7'
+│   │ │   │ │  ├semicolon ForLoop
+│   │ │   │ │  │ └AssignOrCall
+│   │ │   │ │  │  └j AssignOrCall'
+│   │ │   │ │  │   └opplusassign E
+│   │ │   │ │  │    └E7
+│   │ │   │ │  │     ├E6
+│   │ │   │ │  │     │ ├E5
+│   │ │   │ │  │     │ │ ├E4
+│   │ │   │ │  │     │ │ │ ├E3
+│   │ │   │ │  │     │ │ │ │ ├E2
+│   │ │   │ │  │     │ │ │ │ │ └E1
+│   │ │   │ │  │     │ │ │ │ │  └1
+│   │ │   │ │  │     │ │ │ │ └E3'
+│   │ │   │ │  │     │ │ │ └E4'
+│   │ │   │ │  │     │ │ └E5'
+│   │ │   │ │  │     │ └E6'
+│   │ │   │ │  │     └E7'
+│   │ │   │ │  └rpar Stmt
+│   │ │   │ │   ├lbrace StmtList
+│   │ │   │ │   │ ├Stmt
+│   │ │   │ │   │ │ └DeclareStmt
+│   │ │   │ │   │ │  ├Type
+│   │ │   │ │   │ │  │ └kwint
+│   │ │   │ │   │ │  └a DeclareStmt'
+│   │ │   │ │   │ │   ├DeclareVarList
+│   │ │   │ │   │ │   └semicolon
+│   │ │   │ │   │ └StmtList
+│   │ │   │ │   │  ├Stmt
+│   │ │   │ │   │  │ └AssignOrCallOp
+│   │ │   │ │   │  │  ├AssignOrCall
+│   │ │   │ │   │  │  │ └a AssignOrCall'
+│   │ │   │ │   │  │  │  └opassign E
+│   │ │   │ │   │  │  │   └E7
+│   │ │   │ │   │  │  │    ├E6
+│   │ │   │ │   │  │  │    │ ├E5
+│   │ │   │ │   │  │  │    │ │ ├E4
+│   │ │   │ │   │  │  │    │ │ │ ├E3
+│   │ │   │ │   │  │  │    │ │ │ │ ├E2
+│   │ │   │ │   │  │  │    │ │ │ │ │ └E1
+│   │ │   │ │   │  │  │    │ │ │ │ │  └i E1'
+│   │ │   │ │   │  │  │    │ │ │ │ └E3'
+│   │ │   │ │   │  │  │    │ │ │ │  ├opmul E2
+│   │ │   │ │   │  │  │    │ │ │ │  │ └E1
+│   │ │   │ │   │  │  │    │ │ │ │  │  └j E1'
+│   │ │   │ │   │  │  │    │ │ │ │  └E3'
+│   │ │   │ │   │  │  │    │ │ │ └E4'
+│   │ │   │ │   │  │  │    │ │ └E5'
+│   │ │   │ │   │  │  │    │ └E6'
+│   │ │   │ │   │  │  │    └E7'
+│   │ │   │ │   │  │  └semicolon
+│   │ │   │ │   │  └StmtList
+│   │ │   │ │   └rbrace
+│   │ │   │ └StmtList
+│   │ │   └rbrace
 │   │ └StmtList
-│   │  ├Stmt
-│   │  │ └DeclareStmt
-│   │  │  ├Type
-│   │  │  │ └kwint
-│   │  │  └s1 DeclareStmt'
-│   │  │   ├opassign 0 DeclareVarList
-│   │  │   │ ├comma s2 InitVar
-│   │  │   │ │ └opassign 0
-│   │  │   │ └DeclareVarList
-│   │  │   └semicolon
-│   │  └StmtList
-│   │   ├Stmt
-│   │   │ └kwfor ForOp
-│   │   │  ├lpar ForInit
-│   │   │  │ ├kwint
-│   │   │  │ └AssignOrCall
-│   │   │  │  └i AssignOrCall'
-│   │   │  │   └opassign E
-│   │   │  │    └E7
-│   │   │  │     ├E6
-│   │   │  │     │ ├E5
-│   │   │  │     │ │ ├E4
-│   │   │  │     │ │ │ ├E3
-│   │   │  │     │ │ │ │ ├E2
-│   │   │  │     │ │ │ │ │ └E1
-│   │   │  │     │ │ │ │ │  └1
-│   │   │  │     │ │ │ │ └E3'
-│   │   │  │     │ │ │ └E4'
-│   │   │  │     │ │ └E5'
-│   │   │  │     │ └E6'
-│   │   │  │     └E7'
-│   │   │  ├semicolon ForExp
-│   │   │  │ └E
-│   │   │  │  └E7
-│   │   │  │   ├E6
-│   │   │  │   │ ├E5
-│   │   │  │   │ │ ├E4
-│   │   │  │   │ │ │ ├E3
-│   │   │  │   │ │ │ │ ├E2
-│   │   │  │   │ │ │ │ │ └E1
-│   │   │  │   │ │ │ │ │  └i E1'
-│   │   │  │   │ │ │ │ └E3'
-│   │   │  │   │ │ │ └E4'
-│   │   │  │   │ │ └E5'
-│   │   │  │   │ │  └ople E4
-│   │   │  │   │ │   ├E3
-│   │   │  │   │ │   │ ├E2
-│   │   │  │   │ │   │ │ └E1
-│   │   │  │   │ │   │ │  └n E1'
-│   │   │  │   │ │   │ └E3'
-│   │   │  │   │ │   └E4'
-│   │   │  │   │ └E6'
-│   │   │  │   └E7'
-│   │   │  ├semicolon ForLoop
-│   │   │  │ └opinc i
-│   │   │  └rpar Stmt
-│   │   │   ├lbrace StmtList
-│   │   │   │ ├Stmt
-│   │   │   │ │ └AssignOrCallOp
-│   │   │   │ │  ├AssignOrCall
-│   │   │   │ │  │ └s1 AssignOrCall'
-│   │   │   │ │  │  └opplusassign E
-│   │   │   │ │  │   └E7
-│   │   │   │ │  │    ├E6
-│   │   │   │ │  │    │ ├E5
-│   │   │   │ │  │    │ │ ├E4
-│   │   │   │ │  │    │ │ │ ├E3
-│   │   │   │ │  │    │ │ │ │ ├E2
-│   │   │   │ │  │    │ │ │ │ │ └E1
-│   │   │   │ │  │    │ │ │ │ │  └i E1'
-│   │   │   │ │  │    │ │ │ │ └E3'
-│   │   │   │ │  │    │ │ │ └E4'
-│   │   │   │ │  │    │ │ └E5'
-│   │   │   │ │  │    │ └E6'
-│   │   │   │ │  │    └E7'
-│   │   │   │ │  └semicolon
-│   │   │   │ └StmtList
-│   │   │   └rbrace
-│   │   └StmtList
-│   │    ├Stmt
-│   │    │ └kwfor ForOp
-│   │    │  ├lpar ForInit
-│   │    │  │ ├kwint
-│   │    │  │ └AssignOrCall
-│   │    │  │  └i AssignOrCall'
-│   │    │  │   └opassign E
-│   │    │  │    └E7
-│   │    │  │     ├E6
-│   │    │  │     │ ├E5
-│   │    │  │     │ │ ├E4
-│   │    │  │     │ │ │ ├E3
-│   │    │  │     │ │ │ │ ├E2
-│   │    │  │     │ │ │ │ │ └E1
-│   │    │  │     │ │ │ │ │  └n E1'
-│   │    │  │     │ │ │ │ └E3'
-│   │    │  │     │ │ │ └E4'
-│   │    │  │     │ │ └E5'
-│   │    │  │     │ └E6'
-│   │    │  │     └E7'
-│   │    │  ├semicolon ForExp
-│   │    │  │ └E
-│   │    │  │  └E7
-│   │    │  │   ├E6
-│   │    │  │   │ ├E5
-│   │    │  │   │ │ ├E4
-│   │    │  │   │ │ │ ├E3
-│   │    │  │   │ │ │ │ ├E2
-│   │    │  │   │ │ │ │ │ └E1
-│   │    │  │   │ │ │ │ │  └i E1'
-│   │    │  │   │ │ │ │ └E3'
-│   │    │  │   │ │ │ └E4'
-│   │    │  │   │ │ └E5'
-│   │    │  │   │ │  └opgt E4
-│   │    │  │   │ │   ├E3
-│   │    │  │   │ │   │ ├E2
-│   │    │  │   │ │   │ │ └E1
-│   │    │  │   │ │   │ │  └0
-│   │    │  │   │ │   │ └E3'
-│   │    │  │   │ │   └E4'
-│   │    │  │   │ └E6'
-│   │    │  │   └E7'
-│   │    │  ├semicolon ForLoop
-│   │    │  │ └opdec i
-│   │    │  └rpar Stmt
-│   │    │   ├lbrace StmtList
-│   │    │   │ ├Stmt
-│   │    │   │ │ └AssignOrCallOp
-│   │    │   │ │  ├AssignOrCall
-│   │    │   │ │  │ └s2 AssignOrCall'
-│   │    │   │ │  │  └opplusassign E
-│   │    │   │ │  │   └E7
-│   │    │   │ │  │    ├E6
-│   │    │   │ │  │    │ ├E5
-│   │    │   │ │  │    │ │ ├E4
-│   │    │   │ │  │    │ │ │ ├E3
-│   │    │   │ │  │    │ │ │ │ ├E2
-│   │    │   │ │  │    │ │ │ │ │ └E1
-│   │    │   │ │  │    │ │ │ │ │  └i E1'
-│   │    │   │ │  │    │ │ │ │ └E3'
-│   │    │   │ │  │    │ │ │ └E4'
-│   │    │   │ │  │    │ │ └E5'
-│   │    │   │ │  │    │ └E6'
-│   │    │   │ │  │    └E7'
-│   │    │   │ │  └semicolon
-│   │    │   │ └StmtList
-│   │    │   └rbrace
-│   │    └StmtList
-│   │     ├Stmt
-│   │     │ └kwout OutOp
-│   │     │  ├OutOp'
-│   │     │  │ └E
-│   │     │  │  └E7
-│   │     │  │   ├E6
-│   │     │  │   │ ├E5
-│   │     │  │   │ │ ├E4
-│   │     │  │   │ │ │ ├E3
-│   │     │  │   │ │ │ │ ├E2
-│   │     │  │   │ │ │ │ │ └E1
-│   │     │  │   │ │ │ │ │  └s1 E1'
-│   │     │  │   │ │ │ │ └E3'
-│   │     │  │   │ │ │ └E4'
-│   │     │  │   │ │ └E5'
-│   │     │  │   │ └E6'
-│   │     │  │   └E7'
-│   │     │  └semicolon
-│   │     └StmtList
-│   │      ├Stmt
-│   │      │ └kwout OutOp
-│   │      │  ├OutOp'
-│   │      │  │ └E
-│   │      │  │  └E7
-│   │      │  │   ├E6
-│   │      │  │   │ ├E5
-│   │      │  │   │ │ ├E4
-│   │      │  │   │ │ │ ├E3
-│   │      │  │   │ │ │ │ ├E2
-│   │      │  │   │ │ │ │ │ └E1
-│   │      │  │   │ │ │ │ │  └s2 E1'
-│   │      │  │   │ │ │ │ └E3'
-│   │      │  │   │ │ │ └E4'
-│   │      │  │   │ │ └E5'
-│   │      │  │   │ └E6'
-│   │      │  │   └E7'
-│   │      │  └semicolon
-│   │      └StmtList
 │   └rbrace
 └StmtList
