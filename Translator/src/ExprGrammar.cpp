@@ -571,13 +571,13 @@ FT LL::ArgListList() {
 			auto ERes = Expr();
 			if (!ERes.first) return {false, ""};
 
+            generateAtom(contextStack.top(), "PARAM", "", "", ERes.second);
+
 			nextGraphState(0);
 			generateString("ArgList'");
 
 			FT ArgListListResult = ArgListList();
 			if (!ArgListListResult.first) return {false, ""};
-
-			generateAtom(contextStack.top(), "PARAM", "", "", ERes.second);
 
 			rollbackGraphNode();
 			return {true, std::to_string(stoi(ArgListListResult.second) + 1)};

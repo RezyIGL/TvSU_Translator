@@ -43,8 +43,15 @@ public:
 	void printASMCode();
 
 private:
+
+    // Kostil
+    std::map<std::string, std::string> ficha = {
+            {"-1", "0"}
+    };
+
 	// context vector
 	std::stack<std::string> contextStack;
+    std::stack<std::string> paramStack;
 
 	// Checker Check
 	bool CodeIsChecked = false;

@@ -252,13 +252,53 @@ void LL::OUT(const Atom &atom) {
 // useless (as they're now) functions
 
 void LL::CALL(const Atom &atom) {
-	myStream << "; CALL IS NOT IMPLEMENTED" << std::endl << std::endl;
+    /* (CALL, p ,, r)
+     * а) PUSH B                  ; Выделяем место под возвращаемое значение
+     * б) PUSH B
+     *    ...                     ; n раз - выделяем место под аргументы
+     *    PUSH B
+     * в) Для i = 1 до n:
+     *      - снимаем операнд Op с программного стека (paramStack)
+     *      - loadOp(Op^(+2n + 2)) # loadOp(std::to_string(stoi(Op) + 2 * n + 2)) # только для локальных переменных
+     * г) CALL p
+     * д) POP B
+     *    ...                     ; n раз - очищаем стек
+     *    POP B
+     * е) POP B                   ; снимаем результат
+     * ж) MOV A, C
+     *    saveOp(r)               ; сохраняем результат в r
+     * */
 }
 
 void LL::PARAM(const Atom &atom) {
-	myStream << "; PARAM IS NOT IMPLEMENTED" << std::endl << std::endl;
+	paramStack.push(atom.third);
 }
 
 void LL::RET(const Atom &atom) {
-	myStream << "; RET IS NOT IMPLEMENTED" << std::endl << std::endl;
+
+    loadOp(atom.third);
+
+    // TODO: generate res
+    std::string res;
+
+    myStream << "LXI H, " << res << std::endl;
+    myStream << "DAD SP" << std::endl;
+    myStream << "MOV M, A" << std::endl << std::endl;
+
+    int m = 0;
+    int n = ficha[atom.context].empty() ? 0 : stoi(ficha[atom.context]);
+    int cnt = 0;
+
+    for (const auto &a: AtomicMap[atom.context]) {
+        if (a.kind == "var") cnt++;
+    }
+
+    m = cnt - n > 0 ? cnt - n : 0;
+    for (int i = 0; i < m; i++) {
+        myStream << "POP B" << std::endl;
+    }
+
+    std::cout << "m: " << m << "\nn: " << n << "\ncnt: " << cnt << std::endl;
+
+    myStream << std::endl << "RET" << std::endl << std::endl;
 }

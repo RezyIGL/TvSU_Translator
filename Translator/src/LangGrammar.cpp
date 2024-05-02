@@ -252,11 +252,11 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		std::string TC = addFunc(name, type);
 		contextStack.push(currentContext);
 
-		auto ParamListRes = ParamList();
+		FT ParamListRes = ParamList();
 		if (!ParamListRes.first) return false;
 
 		for (auto &i : AtomicMap["-1"]) {
-			if (std::to_string(i.cnt) == currentContext) {
+			if (std::to_string(i.cnt) == contextStack.top()) {
 				i.init = ParamListRes.second;
 			}
 		}
@@ -271,14 +271,17 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		generateString("rpar lbrace StmtList");
 
 		generateAtom("-1", "LBL", "", "", name);
-		if (!StmtList()) return false;
 
-        contextStack.pop();
+        // m раз сделать push, где m - кол-во аргументов
+        if (!StmtList()) return false;
+
+        ficha[contextStack.top()] = ParamListRes.second;
 
 		if (it->first != "rbrace") return false;
 		nextToken();
 
 		generateAtom(contextStack.top(), "RET", "", "", "0");
+        contextStack.pop();
 
 		nextGraphState(0);
 		generateString("rbrace");

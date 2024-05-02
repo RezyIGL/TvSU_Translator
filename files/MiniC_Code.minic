@@ -1,13 +1,16 @@
-int fib(int n) {
-    if (n == 0 || n == 1) return 1;
-    return fib(n - 1) + fib(n - 2);
+int func(int x, int y) {
+    int tmp = 0;
+    tmp = (x + y) * 2;
+    if (tmp < y) tmp = y;
+    return tmp;
 }
 
 int main() {
-    int inp, res;
-
-    in inp;
-    res = fib(inp);
-
-    out res;
+    int a;
+    int b;
+    in a; in b;
+    int result;
+    result = func(a, b);
+    out result;
+    return 0;
 }
