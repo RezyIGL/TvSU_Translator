@@ -22,6 +22,7 @@ struct VarOrFunc {
 	std::string type;
 	std::string init;
 	std::string kind;
+    std::string length;
 	int cnt;
 };
 
@@ -43,11 +44,6 @@ public:
 	void printASMCode();
 
 private:
-
-    // Kostil
-    std::map<std::string, std::string> ficha = {
-            {"-1", "0"}
-    };
 
 	// context vector
 	std::stack<std::string> contextStack;
@@ -73,8 +69,8 @@ private:
 	void _printGraph();
 
 	// ASM i8080 helpful functions
-	void loadOp(const std::string &);
-	void saveOp(const std::string &);
+	void loadOp(const std::string &, int);
+	void saveOp(const std::string &, int);
 
 	// variables for (MUL)
 	std::string MUL_LABEL_START;

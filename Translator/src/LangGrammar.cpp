@@ -248,16 +248,15 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		nextGraphState(1);
 		generateString("lpar ParamList");
 
-        currentContext = std::to_string(stoi(currentContext) + 1);
 		std::string TC = addFunc(name, type);
-		contextStack.push(currentContext);
+		contextStack.push(TC);
 
 		FT ParamListRes = ParamList();
 		if (!ParamListRes.first) return false;
 
 		for (auto &i : AtomicMap["-1"]) {
 			if (std::to_string(i.cnt) == contextStack.top()) {
-				i.init = ParamListRes.second;
+				i.length = ParamListRes.second;
 			}
 		}
 
@@ -270,12 +269,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		nextGraphState(1);
 		generateString("rpar lbrace StmtList");
 
-		generateAtom(contextStack.top(), "LBL", "", "", name);
-
-        // m раз сделать push, где m - кол-во аргументов
         if (!StmtList()) return false;
-
-        ficha[contextStack.top()] = ParamListRes.second;
 
 		if (it->first != "rbrace") return false;
 		nextToken();
@@ -303,8 +297,6 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			nextGraphState(1);
 			generateString("opassign " + _temp + " DeclareVarList");
 
-			generateAtom(contextStack.top(), "MOV", _temp, "", newVar);
-
 			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
 
@@ -326,8 +318,6 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 
 			nextGraphState(1);
 			generateString("opassign " + _temp + "DeclareVarList");
-
-			generateAtom(contextStack.top(), "MOV", _temp, "", newVar);
 
 			auto DecVarListRes = DeclareVarList(type);
 			if (!DecVarListRes) return false;
@@ -557,11 +547,7 @@ bool LL::WhileOp() {
 	nextGraphState(0);
 	generateString("rpar Stmt");
 
-    currentContext = std::to_string(stoi(currentContext) + 1);
-	std::string TempContext = currentContext;
-	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	contextStack.pop();
 
 	generateAtom(contextStack.top(), "JMP", "", "", "L" + l1);
 	generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
@@ -582,9 +568,6 @@ bool LL::ForOp() {
 
 	nextGraphState(1);
 	generateString("lpar ForInit");
-
-    currentContext = std::to_string(stoi(currentContext) + 1);
-	contextStack.push(currentContext);
 
 	if (!ForInit()) return false;
 
@@ -616,8 +599,6 @@ bool LL::ForOp() {
 	generateAtom(contextStack.top(), "JMP", "", "", "L" + l2);
 	generateAtom(contextStack.top(), "LBL", "", "", "L" + l4);
 
-	contextStack.pop();
-
 	rollbackGraphNode();
 	return true;
 }
@@ -633,16 +614,10 @@ bool LL::ForInit() {
 
 		if (it->first != "id") return false;
 
-        std::string currContext = contextStack.top();
-        contextStack.pop();
-
-        std::string prevContext = contextStack.top();
-        contextStack.push(currContext);
-
-		std::string _temp = addVar(it->second, prevContext, "kwint");
+		std::string _temp = addVar(it->second, contextStack.top(), "kwint");
 		if (_temp == "Error") return false;
 
-		AtomicMap[prevContext].pop_back();
+		AtomicMap[contextStack.top()].pop_back();
 		AtomicMapCnt--;
 
 		addVar(it->second, contextStack.top(), "kwint");
@@ -776,11 +751,7 @@ bool LL::IfOp() {
 	nextGraphState(1);
 	generateString("rpar Stmt");
 
-    currentContext = std::to_string(stoi(currentContext) + 1);
-	std::string TempContext = currentContext;
-	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	contextStack.pop();
 
 	auto l2 = newLabel();
 	generateAtom(contextStack.top(), "JMP", "", "", "L" + l2);
@@ -812,11 +783,7 @@ bool LL::ElsePart() {
 	nextGraphState(0);
 	generateString("kwelse Stmt");
 
-    currentContext = std::to_string(stoi(currentContext) + 1);
-	std::string TempContext = currentContext;
-	contextStack.push(TempContext);
 	if (!Stmt()) return false;
-	contextStack.pop();
 
 	rollbackGraphNode();
 	return true;
@@ -921,11 +888,7 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwcase " + _temp + "colon StmtList");
 
-        currentContext = std::to_string(stoi(currentContext) + 1);
-		std::string TempContext = currentContext;
-		contextStack.push(TempContext);
 		if (!StmtList()) return {false, ""};
-		contextStack.pop();
 
 		generateAtom(contextStack.top(), "JMP", "", "", "L" + end);
 		generateAtom(contextStack.top(), "LBL", "", "", "L" + next);
@@ -949,11 +912,7 @@ FT LL::ACase(const std::string &p, const std::string &end) {
 		nextGraphState(0);
 		generateString("kwdefault colon StmtList");
 
-        currentContext = std::to_string(stoi(currentContext) + 1);
-		std::string TempContext = currentContext;
-		contextStack.push(TempContext);
 		if (!StmtList()) return {false, ""};
-		contextStack.pop();
 
 		generateAtom(contextStack.top(), "JMP", "", "", "L" + end);
 		generateAtom(contextStack.top(), "LBL", "", "", "L" + next);

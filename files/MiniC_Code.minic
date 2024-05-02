@@ -6,7 +6,6 @@ int func(int x, int y) {
 }
 
 int a;
-
 int main() {
     int b;
     in a; in b;

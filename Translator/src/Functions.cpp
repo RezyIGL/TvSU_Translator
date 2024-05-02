@@ -104,7 +104,7 @@ LL::addVar(const std::string &name, const std::string &scope, const std::string 
 		}
 	}
 
-	VarOrFunc temp = {name, scope, type, init, "var", AtomicMapCnt++};
+	VarOrFunc temp = {name, scope, type, init, "var", "-", AtomicMapCnt++};
 	AtomicMap[scope].emplace_back(temp);
 
 	return std::to_string(temp.cnt);
@@ -117,7 +117,7 @@ std::string LL::addFunc(const std::string &name, const std::string &type, const 
 		}
 	}
 
-	VarOrFunc temp = {name, "-1", type, length.empty() ? "0" : length, "func", AtomicMapCnt++};
+	VarOrFunc temp = {name, "-1", type, "-", "func", length.empty() ? "0" : length, AtomicMapCnt++};
 	AtomicMap["-1"].emplace_back(temp);
 
 	return std::to_string(temp.cnt);
@@ -159,7 +159,7 @@ std::string LL::checkVar(const std::string &name) {
 
 std::string LL::checkFunc(const std::string &name, const std::string &len) {
 	for (const auto &i: AtomicMap["-1"]) {
-		if (i.name == name && i.kind == "func" && i.init == len) return "'" + std::to_string(i.cnt) + "'";
+		if (i.name == name && i.kind == "func" && i.length == len) return "'" + std::to_string(i.cnt) + "'";
 		else if (i.name == name && i.type != "func") return "ERROR";
 	}
 

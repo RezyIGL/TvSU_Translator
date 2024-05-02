@@ -1,33 +1,43 @@
-JMP START
+ORG 8000H
 
-int_0_x: db 0
-int_0_y: db 0
-int_0_tmp: db 0
-int_0_$T1: db 0
-int_0_$T2: db 0
-int_0_$T3: db 0
-int_-1_a: db 0
-int_2_b: db 0
-int_2_result: db 0
-int_2_$T4: db 0
+int_dev_a: db 0
 
-START:
-JMP main
+ORG 0
+
+LXI H, 0
+SPHL
+PUSH B
+CALL main
+END
+
+@ MULT ...
+@ DIV ...
+@ PRINT ...
 
 func:
 
-MVI A, 0
-STA int_0_tmp
+PUSH B
+PUSH B
+PUSH B
+PUSH B
 
-LDA int_0_y
+LXI H, 18
+DAD SP
+MOV A, M
 MOV B, A
-LDA int_0_x
+LXI H, 20
+DAD SP
+MOV A, M
 ADD B
-STA int_0_$T1
+LXI H, 14
+DAD SP
+MOV M, A
 
 MVI A, 2
 MOV C, A
-LDA int_0_$T1
+LXI H, 14
+DAD SP
+MOV A, M
 MOV B, A
 MVI A, 0
 CMP C
@@ -41,32 +51,52 @@ JZ L5
 JMP L4
 
 L5:
-STA int_0_$T2
-LDA int_0_$T2
-STA int_0_tmp
+LXI H, 12
+DAD SP
+MOV M, A
+LXI H, 12
+DAD SP
+MOV A, M
+LXI H, 16
+DAD SP
+MOV M, A
 
 MVI A, 1
-STA int_0_$T3
+LXI H, 10
+DAD SP
+MOV M, A
 
-LDA int_0_y
+LXI H, 18
+DAD SP
+MOV A, M
 MOV B, A
-LDA int_0_tmp
+LXI H, 16
+DAD SP
+MOV A, M
 CMP B
 JM L1
 
 MVI A, 0
-STA int_0_$T3
+LXI H, 10
+DAD SP
+MOV M, A
 
 L1:
 
 MVI A, 0
 MOV B, A
-LDA int_0_$T3
+LXI H, 10
+DAD SP
+MOV A, M
 CMP B
 JZ L2
 
-LDA int_0_y
-STA int_0_tmp
+LXI H, 18
+DAD SP
+MOV A, M
+LXI H, 16
+DAD SP
+MOV M, A
 
 JMP L3
 
@@ -74,11 +104,9 @@ L2:
 
 L3:
 
-LDA int_0_tmp
-LXI H, 
+LXI H, 16
 DAD SP
-MOV M, A
-
+MOV A, M
 POP B
 POP B
 POP B
@@ -87,10 +115,6 @@ POP B
 RET
 
 MVI A, 0
-LXI H, 
-DAD SP
-MOV M, A
-
 POP B
 POP B
 POP B
@@ -100,23 +124,53 @@ RET
 
 main:
 
-IN 0
-STA int_-1_a
+PUSH B
+PUSH B
+PUSH B
 
 IN 0
-STA int_2_b
+STA int_dev_a
 
-LDA int_2_$T4
-STA int_2_result
+IN 0
+LXI H, 4
+DAD SP
+MOV M, A
 
-LDA int_2_result
+PUSH B
+PUSH B
+PUSH B
+
+LXI H, 6
+DAD SP
+MOV A, M
+
+LDA int_dev_a
+
+
+CALL func
+
+POP B
+POP B
+POP B
+
+MOV A, C
+
+LXI H, 0
+DAD SP
+MOV M, A
+LXI H, 0
+DAD SP
+MOV A, M
+LXI H, 2
+DAD SP
+MOV M, A
+
+LXI H, 2
+DAD SP
+MOV A, M
 OUT 1
 
 MVI A, 0
-LXI H, 
-DAD SP
-MOV M, A
-
 POP B
 POP B
 POP B
@@ -124,14 +178,9 @@ POP B
 RET
 
 MVI A, 0
-LXI H, 
-DAD SP
-MOV M, A
-
 POP B
 POP B
 POP B
 
 RET
 
-HLT
