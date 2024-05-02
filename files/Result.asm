@@ -1,135 +1,114 @@
 JMP START
 
-int_0_n: db 10
-int_0_s: db 0
-int_1_i: db 0
-int_1_$T1: db 0
-int_1_$T2: db 0
-int_1_$T3: db 0
-int_2_i: db 0
-int_2_$T4: db 0
-int_2_$T5: db 0
+int_0_n: db 0
+int_0_$T1: db 0
+int_0_$T2: db 0
+int_0_$T3: db 0
+int_0_$T4: db 0
+int_0_$T5: db 0
+int_0_$T6: db 0
+int_0_$T7: db 0
+int_0_$T8: db 0
+int_2_inp: db 0
+int_2_res: db 0
+int_2_$T9: db 0
 
 START:
 JMP main
 
-main:
+fib:
 
-MVI A, 10
-STA int_0_n
-
-MVI A, 0
-STA int_0_s
+MVI A, 1
+STA int_0_$T1
 
 MVI A, 0
-STA int_1_i
+MOV B, A
+LDA int_0_n
+CMP B
+JZ L1
+
+MVI A, 0
+STA int_0_$T1
 
 L1:
 
 MVI A, 1
-STA int_1_$T1
+STA int_0_$T2
 
+MVI A, 1
+MOV B, A
 LDA int_0_n
-MOV B, A
-LDA int_1_i
 CMP B
-JM L5
-JZ L5
+JZ L2
 
 MVI A, 0
-STA int_1_$T1
-
-L5:
-
-MVI A, 0
-MOV B, A
-LDA int_1_$T1
-CMP B
-JZ L4
-
-JMP L3
+STA int_0_$T2
 
 L2:
 
-LDA int_1_i
-STA int_1_$T2
-
-MVI A, 1
+LDA int_0_$T2
 MOV B, A
-LDA int_1_i
-ADD B
-STA int_1_i
+LDA int_0_$T1
+ORA B
+STA int_0_$T3
 
-JMP L1
+MVI A, 0
+MOV B, A
+LDA int_0_$T3
+CMP B
+JZ L3
+
+; RET IS NOT IMPLEMENTED
+
+JMP L4
 
 L3:
 
-LDA int_1_i
-MOV B, A
-LDA int_0_s
-ADD B
-STA int_1_$T3
-
-LDA int_1_$T3
-STA int_0_s
-
-JMP L2
-
 L4:
-
-MVI A, 0
-STA int_2_i
-
-L6:
-
-MVI A, 1
-STA int_2_$T4
-
-MVI A, 10
-MOV B, A
-LDA int_2_i
-CMP B
-JM L10
-
-MVI A, 0
-STA int_2_$T4
-
-L10:
-
-MVI A, 0
-MOV B, A
-LDA int_2_$T4
-CMP B
-JZ L9
-
-JMP L8
-
-L7:
-
-MVI A, 1
-MOV B, A
-LDA int_2_i
-ADD B
-STA int_2_$T5
-
-LDA int_2_$T5
-STA int_2_i
-
-JMP L6
-
-L8:
 
 MVI A, 1
 MOV B, A
 LDA int_0_n
 SUB B
-STA int_0_n
+STA int_0_$T4
 
-JMP L7
+; PARAM IS NOT IMPLEMENTED
 
-L9:
+; CALL IS NOT IMPLEMENTED
 
-LDA int_0_s
+MVI A, 2
+MOV B, A
+LDA int_0_n
+SUB B
+STA int_0_$T6
+
+; PARAM IS NOT IMPLEMENTED
+
+; CALL IS NOT IMPLEMENTED
+
+LDA int_0_$T7
+MOV B, A
+LDA int_0_$T5
+ADD B
+STA int_0_$T8
+
+; RET IS NOT IMPLEMENTED
+
+; RET IS NOT IMPLEMENTED
+
+main:
+
+IN 0
+STA int_2_inp
+
+; PARAM IS NOT IMPLEMENTED
+
+; CALL IS NOT IMPLEMENTED
+
+LDA int_2_$T9
+STA int_2_res
+
+LDA int_2_res
 OUT 1
 
 ; RET IS NOT IMPLEMENTED
