@@ -178,6 +178,42 @@ bool LL::Stmt() {
 		return true;
 	}
 
+    if (it->first == "opinc") {
+        nextToken();
+
+        if (it->first != "id") return false;
+
+        nextGraphState(0);
+        generateString("opinc " + it->second);
+
+        auto q = checkVar(it->second);
+        generateAtom(contextStack.top(), "ADD", q, "1", q);
+
+        nextToken();
+
+        rollbackGraphNode();
+        rollbackGraphNode();
+        return true;
+    }
+
+    if (it->first == "opdec") {
+        nextToken();
+
+        if (it->first != "id") return false;
+
+        nextGraphState(0);
+        generateString("opdec " + it->second);
+
+        auto q = checkVar(it->second);
+        generateAtom(contextStack.top(), "SUB", q, "1", q);
+
+        nextToken();
+
+        rollbackGraphNode();
+        rollbackGraphNode();
+        return true;
+    }
+
 	return false;
 }
 
