@@ -376,6 +376,40 @@ bool LL::AssignOrCallList(const std::string &name) {
 		return true;
 	}
 
+    if (it->first == "opinc") {
+        nextToken();
+
+        nextGraphState(0);
+        generateString("opinc");
+
+        auto s = checkVar(name);
+        auto r = alloc(contextStack.top());
+
+        generateAtom(contextStack.top(), "MOV", s, "", r);
+        generateAtom(contextStack.top(), "ADD", s, "1", s);
+
+        rollbackGraphNode();
+        rollbackGraphNode();
+        return true;
+    }
+
+    if (it->first == "opdec") {
+        nextToken();
+
+        nextGraphState(0);
+        generateString("opdec");
+
+        auto s = checkVar(name);
+        auto r = alloc(contextStack.top());
+
+        generateAtom(contextStack.top(), "MOV", s, "", r);
+        generateAtom(contextStack.top(), "SUB", s, "1", s);
+
+        rollbackGraphNode();
+        rollbackGraphNode();
+        return true;
+    }
+
 	if (it->first == "opmulassign") {
 		nextToken();
 
