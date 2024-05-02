@@ -6,7 +6,7 @@ int_0_tmp: db 0
 int_0_$T1: db 0
 int_0_$T2: db 0
 int_0_$T3: db 0
-int_2_a: db 0
+int_-1_a: db 0
 int_2_b: db 0
 int_2_result: db 0
 int_2_$T4: db 0
@@ -101,7 +101,7 @@ RET
 main:
 
 IN 0
-STA int_2_a
+STA int_-1_a
 
 IN 0
 STA int_2_b
@@ -120,7 +120,6 @@ MOV M, A
 POP B
 POP B
 POP B
-POP B
 
 RET
 
@@ -129,7 +128,6 @@ LXI H,
 DAD SP
 MOV M, A
 
-POP B
 POP B
 POP B
 POP B

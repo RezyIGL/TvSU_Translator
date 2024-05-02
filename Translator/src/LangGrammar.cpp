@@ -270,7 +270,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		nextGraphState(1);
 		generateString("rpar lbrace StmtList");
 
-		generateAtom("-1", "LBL", "", "", name);
+		generateAtom(contextStack.top(), "LBL", "", "", name);
 
         // m раз сделать push, где m - кол-во аргументов
         if (!StmtList()) return false;

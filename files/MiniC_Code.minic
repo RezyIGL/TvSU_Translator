@@ -5,8 +5,9 @@ int func(int x, int y) {
     return tmp;
 }
 
+int a;
+
 int main() {
-    int a;
     int b;
     in a; in b;
     int result;

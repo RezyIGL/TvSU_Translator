@@ -131,128 +131,128 @@ StmtList
  │ └DeclareStmt
  │  ├Type
  │  │ └kwint
- │  └main DeclareStmt'
- │   ├lpar ParamList
- │   ├rpar lbrace StmtList
- │   │ ├Stmt
- │   │ │ └DeclareStmt
- │   │ │  ├Type
- │   │ │  │ └kwint
- │   │ │  └a DeclareStmt'
- │   │ │   ├DeclareVarList
- │   │ │   └semicolon
- │   │ └StmtList
- │   │  ├Stmt
- │   │  │ └DeclareStmt
- │   │  │  ├Type
- │   │  │  │ └kwint
- │   │  │  └b DeclareStmt'
- │   │  │   ├DeclareVarList
- │   │  │   └semicolon
- │   │  └StmtList
- │   │   ├Stmt
- │   │   │ └kwin InOp
- │   │   │  └a semicolon
- │   │   └StmtList
- │   │    ├Stmt
- │   │    │ └kwin InOp
- │   │    │  └b semicolon
- │   │    └StmtList
- │   │     ├Stmt
- │   │     │ └DeclareStmt
- │   │     │  ├Type
- │   │     │  │ └kwint
- │   │     │  └result DeclareStmt'
- │   │     │   ├DeclareVarList
- │   │     │   └semicolon
- │   │     └StmtList
- │   │      ├Stmt
- │   │      │ └AssignOrCallOp
- │   │      │  ├AssignOrCall
- │   │      │  │ └result AssignOrCall'
- │   │      │  │  └opassign E
- │   │      │  │   └E7
- │   │      │  │    ├E6
- │   │      │  │    │ ├E5
- │   │      │  │    │ │ ├E4
- │   │      │  │    │ │ │ ├E3
- │   │      │  │    │ │ │ │ ├E2
- │   │      │  │    │ │ │ │ │ └E1
- │   │      │  │    │ │ │ │ │  └func E1'
- │   │      │  │    │ │ │ │ │   ├lpar ArgList
- │   │      │  │    │ │ │ │ │   │ ├id E
- │   │      │  │    │ │ │ │ │   │ │ └E7
- │   │      │  │    │ │ │ │ │   │ │  ├E6
- │   │      │  │    │ │ │ │ │   │ │  │ ├E5
- │   │      │  │    │ │ │ │ │   │ │  │ │ ├E4
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ ├E3
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ │ ├E2
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ │ │ └E1
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ │ │  └a E1'
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ │ └E3'
- │   │      │  │    │ │ │ │ │   │ │  │ │ │ └E4'
- │   │      │  │    │ │ │ │ │   │ │  │ │ └E5'
- │   │      │  │    │ │ │ │ │   │ │  │ └E6'
- │   │      │  │    │ │ │ │ │   │ │  └E7'
- │   │      │  │    │ │ │ │ │   │ └ArgList'
- │   │      │  │    │ │ │ │ │   │  ├comma E
- │   │      │  │    │ │ │ │ │   │  │ └E7
- │   │      │  │    │ │ │ │ │   │  │  ├E6
- │   │      │  │    │ │ │ │ │   │  │  │ ├E5
- │   │      │  │    │ │ │ │ │   │  │  │ │ ├E4
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ ├E3
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ │ ├E2
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ │ │ └E1
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ │ │  └b E1'
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ │ └E3'
- │   │      │  │    │ │ │ │ │   │  │  │ │ │ └E4'
- │   │      │  │    │ │ │ │ │   │  │  │ │ └E5'
- │   │      │  │    │ │ │ │ │   │  │  │ └E6'
- │   │      │  │    │ │ │ │ │   │  │  └E7'
- │   │      │  │    │ │ │ │ │   │  └ArgList'
- │   │      │  │    │ │ │ │ │   └rpar
- │   │      │  │    │ │ │ │ └E3'
- │   │      │  │    │ │ │ └E4'
- │   │      │  │    │ │ └E5'
- │   │      │  │    │ └E6'
- │   │      │  │    └E7'
- │   │      │  └semicolon
- │   │      └StmtList
- │   │       ├Stmt
- │   │       │ └kwout OutOp
- │   │       │  ├OutOp'
- │   │       │  │ └E
- │   │       │  │  └E7
- │   │       │  │   ├E6
- │   │       │  │   │ ├E5
- │   │       │  │   │ │ ├E4
- │   │       │  │   │ │ │ ├E3
- │   │       │  │   │ │ │ │ ├E2
- │   │       │  │   │ │ │ │ │ └E1
- │   │       │  │   │ │ │ │ │  └result E1'
- │   │       │  │   │ │ │ │ └E3'
- │   │       │  │   │ │ │ └E4'
- │   │       │  │   │ │ └E5'
- │   │       │  │   │ └E6'
- │   │       │  │   └E7'
- │   │       │  └semicolon
- │   │       └StmtList
- │   │        ├Stmt
- │   │        │ ├kwreturn E
- │   │        │ │ └E7
- │   │        │ │  ├E6
- │   │        │ │  │ ├E5
- │   │        │ │  │ │ ├E4
- │   │        │ │  │ │ │ ├E3
- │   │        │ │  │ │ │ │ ├E2
- │   │        │ │  │ │ │ │ │ └E1
- │   │        │ │  │ │ │ │ │  └0
- │   │        │ │  │ │ │ │ └E3'
- │   │        │ │  │ │ │ └E4'
- │   │        │ │  │ │ └E5'
- │   │        │ │  │ └E6'
- │   │        │ │  └E7'
- │   │        │ └semicolon
- │   │        └StmtList
- │   └rbrace
+ │  └a DeclareStmt'
+ │   ├DeclareVarList
+ │   └semicolon
  └StmtList
+  ├Stmt
+  │ └DeclareStmt
+  │  ├Type
+  │  │ └kwint
+  │  └main DeclareStmt'
+  │   ├lpar ParamList
+  │   ├rpar lbrace StmtList
+  │   │ ├Stmt
+  │   │ │ └DeclareStmt
+  │   │ │  ├Type
+  │   │ │  │ └kwint
+  │   │ │  └b DeclareStmt'
+  │   │ │   ├DeclareVarList
+  │   │ │   └semicolon
+  │   │ └StmtList
+  │   │  ├Stmt
+  │   │  │ └kwin InOp
+  │   │  │  └a semicolon
+  │   │  └StmtList
+  │   │   ├Stmt
+  │   │   │ └kwin InOp
+  │   │   │  └b semicolon
+  │   │   └StmtList
+  │   │    ├Stmt
+  │   │    │ └DeclareStmt
+  │   │    │  ├Type
+  │   │    │  │ └kwint
+  │   │    │  └result DeclareStmt'
+  │   │    │   ├DeclareVarList
+  │   │    │   └semicolon
+  │   │    └StmtList
+  │   │     ├Stmt
+  │   │     │ └AssignOrCallOp
+  │   │     │  ├AssignOrCall
+  │   │     │  │ └result AssignOrCall'
+  │   │     │  │  └opassign E
+  │   │     │  │   └E7
+  │   │     │  │    ├E6
+  │   │     │  │    │ ├E5
+  │   │     │  │    │ │ ├E4
+  │   │     │  │    │ │ │ ├E3
+  │   │     │  │    │ │ │ │ ├E2
+  │   │     │  │    │ │ │ │ │ └E1
+  │   │     │  │    │ │ │ │ │  └func E1'
+  │   │     │  │    │ │ │ │ │   ├lpar ArgList
+  │   │     │  │    │ │ │ │ │   │ ├id E
+  │   │     │  │    │ │ │ │ │   │ │ └E7
+  │   │     │  │    │ │ │ │ │   │ │  ├E6
+  │   │     │  │    │ │ │ │ │   │ │  │ ├E5
+  │   │     │  │    │ │ │ │ │   │ │  │ │ ├E4
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ ├E3
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ │ ├E2
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ │ │ └E1
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ │ │  └a E1'
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ │ └E3'
+  │   │     │  │    │ │ │ │ │   │ │  │ │ │ └E4'
+  │   │     │  │    │ │ │ │ │   │ │  │ │ └E5'
+  │   │     │  │    │ │ │ │ │   │ │  │ └E6'
+  │   │     │  │    │ │ │ │ │   │ │  └E7'
+  │   │     │  │    │ │ │ │ │   │ └ArgList'
+  │   │     │  │    │ │ │ │ │   │  ├comma E
+  │   │     │  │    │ │ │ │ │   │  │ └E7
+  │   │     │  │    │ │ │ │ │   │  │  ├E6
+  │   │     │  │    │ │ │ │ │   │  │  │ ├E5
+  │   │     │  │    │ │ │ │ │   │  │  │ │ ├E4
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ ├E3
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ │ ├E2
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ │ │ └E1
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ │ │  └b E1'
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ │ └E3'
+  │   │     │  │    │ │ │ │ │   │  │  │ │ │ └E4'
+  │   │     │  │    │ │ │ │ │   │  │  │ │ └E5'
+  │   │     │  │    │ │ │ │ │   │  │  │ └E6'
+  │   │     │  │    │ │ │ │ │   │  │  └E7'
+  │   │     │  │    │ │ │ │ │   │  └ArgList'
+  │   │     │  │    │ │ │ │ │   └rpar
+  │   │     │  │    │ │ │ │ └E3'
+  │   │     │  │    │ │ │ └E4'
+  │   │     │  │    │ │ └E5'
+  │   │     │  │    │ └E6'
+  │   │     │  │    └E7'
+  │   │     │  └semicolon
+  │   │     └StmtList
+  │   │      ├Stmt
+  │   │      │ └kwout OutOp
+  │   │      │  ├OutOp'
+  │   │      │  │ └E
+  │   │      │  │  └E7
+  │   │      │  │   ├E6
+  │   │      │  │   │ ├E5
+  │   │      │  │   │ │ ├E4
+  │   │      │  │   │ │ │ ├E3
+  │   │      │  │   │ │ │ │ ├E2
+  │   │      │  │   │ │ │ │ │ └E1
+  │   │      │  │   │ │ │ │ │  └result E1'
+  │   │      │  │   │ │ │ │ └E3'
+  │   │      │  │   │ │ │ └E4'
+  │   │      │  │   │ │ └E5'
+  │   │      │  │   │ └E6'
+  │   │      │  │   └E7'
+  │   │      │  └semicolon
+  │   │      └StmtList
+  │   │       ├Stmt
+  │   │       │ ├kwreturn E
+  │   │       │ │ └E7
+  │   │       │ │  ├E6
+  │   │       │ │  │ ├E5
+  │   │       │ │  │ │ ├E4
+  │   │       │ │  │ │ │ ├E3
+  │   │       │ │  │ │ │ │ ├E2
+  │   │       │ │  │ │ │ │ │ └E1
+  │   │       │ │  │ │ │ │ │  └0
+  │   │       │ │  │ │ │ │ └E3'
+  │   │       │ │  │ │ │ └E4'
+  │   │       │ │  │ │ └E5'
+  │   │       │ │  │ └E6'
+  │   │       │ │  └E7'
+  │   │       │ └semicolon
+  │   │       └StmtList
+  │   └rbrace
+  └StmtList
