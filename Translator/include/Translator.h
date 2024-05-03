@@ -71,6 +71,7 @@ private:
 	// ASM i8080 helpful functions
 	void loadOp(const std::string &, int);
 	void saveOp(const std::string &, int);
+    void saveRegm(const std::string &, int);
 
 	// variables for (MUL)
 	std::string MUL_LABEL_START;

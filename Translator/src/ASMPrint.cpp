@@ -44,6 +44,9 @@ bool LL::_printASMCode() {
 
     std::string prevCont = "-1";
 
+    // TODO: Temp
+    int atomsCount = 0;
+
 	for (const auto &atom: atoms) {
 
         if (prevCont != atom.context) {
@@ -106,44 +109,51 @@ bool LL::_printASMCode() {
 
 // ASM i8080 helpful functions
 void LL::loadOp(const std::string &atom, int shift = 0) {
-	if (atom.starts_with('\'')) {
 
-        std::string oper;
+    if (atom.starts_with("'")) {
+        myStream << "MVI A, " << atom.substr(1, atom.size() - 2) << std::endl;
+    } else {
+        std::string operand;
 
-        auto iter = sortedAtomsVector.rbegin();
-        while (("'" + std::to_string(iter->cnt) + "'") != atom) {
+        auto iterator = sortedAtomsVector.rbegin();
+        while (std::to_string(iterator->cnt) != atom) {
             shift += 2;
-            iter++;
+            iterator++;
         }
 
-        oper = iter->type.substr(2, iter->type.size()) + "_dev_" + iter->name;
+        operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
 
-        if (iter->scope == "-1") {
-            myStream << "LDA " + oper << std::endl;
+        if (iterator->scope == "-1") {
+            myStream << "LDA " << operand << std::endl;
         } else {
             myStream << "LXI H, " << shift << std::endl;
             myStream << "DAD SP" << std::endl;
             myStream << "MOV A, M" << std::endl;
         }
-	} else {
-		myStream << "MVI A, " << atom << std::endl;
-	}
+    }
+}
+
+void LL::saveRegm(const std::string &atom, int shift = 0) {
+    // TODO: todo
 }
 
 void LL::saveOp(const std::string &atom, int shift = 0) {
 
-    std::string oper;
+    bool OK = true;
+    if (shift != 0) OK = false;
 
-    auto iter = sortedAtomsVector.rbegin();
-    while (("'" + std::to_string(iter->cnt) + "'") != atom) {
-        shift += 2;
-        iter++;
+    std::string operand;
+
+    auto iterator = sortedAtomsVector.rbegin();
+    while (std::to_string(iterator->cnt) != atom) {
+        if (OK) shift += 2;
+        iterator++;
     }
 
-    oper = iter->type.substr(2, iter->type.size()) + "_dev_" + iter->name;
+    operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
 
-    if (iter->scope == "-1") {
-        myStream << "STA " + oper << std::endl;
+    if (iterator->scope == "-1") {
+        myStream << "STA " << operand << std::endl;
     } else {
         myStream << "LXI H, " << shift << std::endl;
         myStream << "DAD SP" << std::endl;
@@ -159,8 +169,7 @@ void LL::MOV(const Atom &atom) {
 }
 
 void LL::LBL(const Atom &atom) {
-	myStream << atom.third + ":" << std::endl;
-	myStream << std::endl;
+	myStream << atom.third + ":" << std::endl << std::endl;
 }
 
 void LL::JMP(const Atom &atom) {
@@ -313,7 +322,7 @@ void LL::CALL(const Atom &atom) {
      *    PUSH B
      * в) Для i = 1 до n:
      *      - снимаем операнд Op с программного стека (paramStack)
-     *      - loadOp(Op^(+2n + 2)) # loadOp(std::to_string(stoi(Op) + 2 * n + 2)) # только для локальных переменных
+     *      - loadOp(Op^(+2n + 2)) # только для локальных переменных
      * г) CALL p
      * д) POP B
      *    ...                     ; n раз - очищаем стек
@@ -323,17 +332,14 @@ void LL::CALL(const Atom &atom) {
      *    saveOp(r)               ; сохраняем результат в r
      * */
 
-    myStream << "PUSH B" << std::endl;
-
-    int n;
-    std::string fnToCall;
-    for (const auto &i : AtomicMap["-1"]) {
-        if (i.cnt == stoi(atom.first.substr(1, atom.first.size() - 2))) {
-            n = stoi(i.length);
-            fnToCall = i.name;
-            break;
-        }
+    auto iterator = AtomicMap["-1"].begin();
+    while (std::to_string(iterator->cnt) != atom.first) {
+        iterator++;
     }
+
+    int n = stoi(iterator->length);
+
+    myStream << "PUSH B" << std::endl;
 
     for (int i = 0; i < n; i++) {
         myStream << "PUSH B" << std::endl;
@@ -341,18 +347,32 @@ void LL::CALL(const Atom &atom) {
 
     myStream << std::endl;
 
-    // TODO: FIX
     for (int i = 0; i < n; i++) {
         std::string Op = paramStack.top();
-
-        loadOp(Op, 2 * i + 2);
-
         paramStack.pop();
+
+        // TODO: Add current shift to this shift
+        int shift = 2 * i + 2;
+
+        auto inner_iterator = sortedAtomsVector.rbegin();
+        while (std::to_string(inner_iterator->cnt) != Op) {
+            if (inner_iterator->scope == atom.context) {
+                shift += 2;
+            }
+
+            inner_iterator++;
+        }
+
+        loadOp(Op, shift);
+
+        myStream << "LXI H, " << 2 * i << std::endl;
+        myStream << "DAD SP" << std::endl;
+        myStream << "MOV M, A" << std::endl;
 
         myStream << std::endl;
     }
 
-    myStream << std::endl << "CALL " << fnToCall << std::endl << std::endl;
+    myStream << "CALL " << iterator->name << std::endl << std::endl;
 
     for (int i = 0; i < n; i++) {
         myStream << "POP B" << std::endl;
@@ -361,17 +381,15 @@ void LL::CALL(const Atom &atom) {
     myStream << "POP B" << std::endl << std::endl;
     myStream << "MOV A, C" << std::endl << std::endl;
     saveOp(atom.third);
+
+    myStream << std::endl;
 }
 
 void LL::PARAM(const Atom &atom) {
 	paramStack.push(atom.third);
 }
 
-// TODO: Fix
 void LL::RET(const Atom &atom) {
-
-    loadOp(atom.third);
-
     int m;
 
     auto iterator = AtomicMap["-1"].begin();
@@ -388,9 +406,20 @@ void LL::RET(const Atom &atom) {
 
     m = cnt - n;
 
-
-    // TODO: Generate res
     int res = m * 2 + 2;
+
+    if (atom.third.starts_with("'")) {
+        myStream << "LXI H, " << res << std::endl;
+        myStream << "DAD SP" << std::endl;
+        myStream << "MVI M, " << atom.third.substr(1, atom.third.size() - 2) << std::endl;
+    } else {
+        loadOp(atom.third, cnt * 2 + 2);
+        myStream << "LXI H, " << res << std::endl;
+        myStream << "DAD SP" << std::endl;
+        myStream << "MOV M, A" << std::endl;
+    }
+
+    myStream << std::endl;
 
     for (int i = 0; i < m; i++) {
         myStream << "POP B" << std::endl;

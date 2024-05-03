@@ -39,7 +39,7 @@ LXI H, 14
 DAD SP
 MOV A, M
 MOV B, A
-MVI A, 0
+LDA int_dev_func
 CMP C
 JZ L5
 JMP L4
@@ -104,9 +104,13 @@ L2:
 
 L3:
 
-LXI H, 16
+LXI H, 30
 DAD SP
 MOV A, M
+LXI H, 10
+DAD SP
+MOV M, A
+
 POP B
 POP B
 POP B
@@ -114,7 +118,10 @@ POP B
 
 RET
 
-MVI A, 0
+LXI H, 10
+DAD SP
+MVI M, 0
+
 POP B
 POP B
 POP B
@@ -140,12 +147,17 @@ PUSH B
 PUSH B
 PUSH B
 
-LXI H, 6
+LXI H, 10
 DAD SP
 MOV A, M
+LXI H, 0
+DAD SP
+MOV M, A
 
 LDA int_dev_a
-
+LXI H, 2
+DAD SP
+MOV M, A
 
 CALL func
 
@@ -158,6 +170,7 @@ MOV A, C
 LXI H, 0
 DAD SP
 MOV M, A
+
 LXI H, 0
 DAD SP
 MOV A, M
@@ -170,14 +183,20 @@ DAD SP
 MOV A, M
 OUT 1
 
-MVI A, 0
+LXI H, 8
+DAD SP
+MVI M, 0
+
 POP B
 POP B
 POP B
 
 RET
 
-MVI A, 0
+LXI H, 8
+DAD SP
+MVI M, 0
+
 POP B
 POP B
 POP B

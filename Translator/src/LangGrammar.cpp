@@ -187,7 +187,7 @@ bool LL::Stmt() {
         generateString("opinc " + it->second);
 
         auto q = checkVar(it->second);
-        generateAtom(contextStack.top(), "ADD", q, "1", q);
+        generateAtom(contextStack.top(), "ADD", q, "'1'", q);
 
         nextToken();
 
@@ -205,7 +205,7 @@ bool LL::Stmt() {
         generateString("opdec " + it->second);
 
         auto q = checkVar(it->second);
-        generateAtom(contextStack.top(), "SUB", q, "1", q);
+        generateAtom(contextStack.top(), "SUB", q, "'1'", q);
 
         nextToken();
 
@@ -274,7 +274,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		if (it->first != "rbrace") return false;
 		nextToken();
 
-		generateAtom(contextStack.top(), "RET", "", "", "0");
+		generateAtom(contextStack.top(), "RET", "", "", "'0'");
         contextStack.pop();
 
 		nextGraphState(0);
@@ -288,7 +288,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		auto _temp = it->second;
 
 		if (it->first == "num") {
-			std::string newVar = "'" + addVar(name, contextStack.top(), type, _temp) + "'";
+			std::string newVar = addVar(name, contextStack.top(), type, _temp);
 
 			if (newVar == "'Error'") return false;
 
@@ -310,7 +310,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 			rollbackGraphNode();
 			return true;
 		} else if (it->first == "char") {
-			std::string newVar = "'" + addVar(name, contextStack.top(), type, _temp) + "'";
+			std::string newVar = addVar(name, contextStack.top(), type, _temp);
 
 			if (newVar == "'Error'") return false;
 
@@ -415,7 +415,7 @@ bool LL::AssignOrCallList(const std::string &name) {
         auto r = alloc(contextStack.top());
 
         generateAtom(contextStack.top(), "MOV", s, "", r);
-        generateAtom(contextStack.top(), "ADD", s, "1", s);
+        generateAtom(contextStack.top(), "ADD", s, "'1'", s);
 
         rollbackGraphNode();
         rollbackGraphNode();
@@ -432,7 +432,7 @@ bool LL::AssignOrCallList(const std::string &name) {
         auto r = alloc(contextStack.top());
 
         generateAtom(contextStack.top(), "MOV", s, "", r);
-        generateAtom(contextStack.top(), "SUB", s, "1", s);
+        generateAtom(contextStack.top(), "SUB", s, "'1'", s);
 
         rollbackGraphNode();
         rollbackGraphNode();
@@ -539,7 +539,7 @@ bool LL::WhileOp() {
 	auto ERes = Expr();
 	if (!ERes.first) return false;
 
-	generateAtom(contextStack.top(), "EQ", ERes.second, "0", "L" + l2);
+	generateAtom(contextStack.top(), "EQ", ERes.second, "'0'", "L" + l2);
 
 	if (it->first != "rpar") return false;
 	nextToken();
@@ -579,7 +579,7 @@ bool LL::ForOp() {
 	FT ForExpRes = ForExp();
 	if (!ForExpRes.first) return false;
 
-	generateAtom(contextStack.top(), "EQ", ForExpRes.second, "0", "L" + l4);
+	generateAtom(contextStack.top(), "EQ", ForExpRes.second, "'0'", "L" + l4);
 	generateAtom(contextStack.top(), "JMP", "", "", "L" + l3);
 	generateAtom(contextStack.top(), "LBL", "", "", "L" + l2);
 
@@ -662,7 +662,7 @@ FT LL::ForExp() {
 		nextToken();
 
 		rollbackGraphNode();
-		if (oneFlag) return {true, "1"};
+		if (oneFlag) return {true, "'1'"};
 		return {true, _temp};
 	}
 
@@ -678,7 +678,7 @@ bool LL::ForLoop() {
 		nextToken();
 
 		auto p = checkVar(_temp);
-		generateAtom(contextStack.top(), "ADD", p, "1", p);
+		generateAtom(contextStack.top(), "ADD", p, "'1'", p);
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -699,7 +699,7 @@ bool LL::ForLoop() {
 		nextToken();
 
 		auto p = checkVar(_temp);
-		generateAtom(contextStack.top(), "SUB", p, "1", p);
+		generateAtom(contextStack.top(), "SUB", p, "'1'", p);
 
 		if (it->first != "rpar") return false;
 		nextToken();
@@ -746,7 +746,7 @@ bool LL::IfOp() {
 	nextToken();
 
 	auto l1 = newLabel();
-	generateAtom(contextStack.top(), "EQ", ERes.second, "0", "L" + l1);
+	generateAtom(contextStack.top(), "EQ", ERes.second, "'0'", "L" + l1);
 
 	nextGraphState(1);
 	generateString("rpar Stmt");
@@ -1039,7 +1039,7 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 
 		if (it->first == "num" || it->first == "char") {
 
-			std::string newVar = "'" + addVar(s, contextStack.top(), r, it->second) + "'";
+			std::string newVar = addVar(s, contextStack.top(), r, it->second);
 
 			if (newVar == "'Error'") return false;
 

@@ -19,7 +19,7 @@ bool LL::_printAtoms() {
 	myStream << "\n=============================================\nName : Code : Class : Type : Init : Length : Scope \n\n";
 
 	for (const auto &i: sortedAtomsVector) {
-		myStream << i.name << " : '" << i.cnt << "' : " << i.kind << " : " << i.type << " : " << i.init << " : "
+		myStream << i.name << " : " << i.cnt << " : " << i.kind << " : " << i.type << " : '" << i.init << "' : "
                  << i.length << " : " << i.scope << std::endl;
 	}
 

@@ -8,8 +8,7 @@ int main() {
 
 	LL Translator(INPUT_PATH, GRAPH_PATH, ATOMS_PATH, ASM_PATH);
 
-	Translator.checkIfCodeSyntaxIsCorrect();
-	Translator.printOutputGraph();
-	Translator.printAtoms();
-	Translator.printASMCode();
+    Translator.printOutputGraph();
+    Translator.printAtoms();
+    Translator.printASMCode();
 }

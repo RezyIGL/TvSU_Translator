@@ -91,7 +91,7 @@ std::string LL::newLabel() {
 
 std::string LL::alloc(const std::string &scope) {
 	std::string temp = addVar("$T" + std::to_string(NewVarCnt++), scope, "kwint", "0");
-	return "'" + temp + "'";
+	return temp;
 }
 
 std::string
@@ -131,7 +131,7 @@ std::string LL::checkVar(const std::string &name) {
     while (!contextStack.empty()) {
         for (const auto &i: AtomicMap[contextStack.top()]) {
             if (i.name == name && i.kind == "var") {
-                result = "'" + std::to_string(i.cnt) + "'";
+                result = std::to_string(i.cnt);
                 goto end;
             } else if (i.name == name && i.type != "var") {
                 result = "ERROR";
@@ -159,7 +159,7 @@ std::string LL::checkVar(const std::string &name) {
 
 std::string LL::checkFunc(const std::string &name, const std::string &len) {
 	for (const auto &i: AtomicMap["-1"]) {
-		if (i.name == name && i.kind == "func" && i.length == len) return "'" + std::to_string(i.cnt) + "'";
+		if (i.name == name && i.kind == "func" && i.length == len) return std::to_string(i.cnt);
 		else if (i.name == name && i.type != "func") return "ERROR";
 	}
 
