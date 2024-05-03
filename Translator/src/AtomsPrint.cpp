@@ -5,26 +5,8 @@ bool LL::_printAtoms() {
 
 	if (!generateAtoms()) return false;
 
-	myStream.open(_atomsInput);
-	myStream << "Context: Atom\n" << std::endl;
-
-	for (const auto &i: atoms) {
-		myStream << i.context << ": ("
-		         << i.text << ","
-		         << i.first << ","
-		         << i.second << ","
-		         << i.third << ")" << std::endl;
-	}
-
-	myStream << std::endl
-             << "====================================================================================="
-             << std::endl
-             << "Name : Code : Class : Type : Init : Length : Scope"
-             << std::endl
-             << std::endl;
-
     // Max lengths
-    long mxName = 0;
+    int mxName = 0;
     int mxCnt = 0;
     int mxKind = 0;
     int mxType = 0;
@@ -32,7 +14,7 @@ bool LL::_printAtoms() {
     int mxLen = 0;
     int mxScope = 0;
 
-	for (const auto &i: sortedAtomsVector) {
+    for (const auto &i: sortedAtomsVector) {
         mxName = i.name.length() > mxName ? i.name.length() : mxName;
         mxCnt = std::to_string(i.cnt).length() > mxCnt ? std::to_string(i.cnt).length() : mxCnt;
         mxKind = i.kind.length() > mxKind ? i.kind.length() : mxKind;
@@ -40,7 +22,16 @@ bool LL::_printAtoms() {
         mxInit = i.init.length() > mxInit ? i.init.length() : mxInit;
         mxLen = i.length.length() > mxLen ? i.length.length() : mxLen;
         mxScope = i.scope.length() > mxScope ? i.scope.length() : mxScope;
-	}
+    }
+
+    int maxLineSize = mxName + mxCnt + mxKind + mxType + mxInit + mxLen + mxScope;
+
+    std::string headliner = "Name : Code : Class : Type : Init : Length : Scope";
+    std::string separator(headliner.size() + maxLineSize, '=');
+
+    myStream.open(_atomsInput);
+
+    myStream << separator << std::endl << headliner << std::endl << std::endl;
 
     for (const auto &i : sortedAtomsVector) {
 
@@ -68,6 +59,20 @@ bool LL::_printAtoms() {
         myStream << name << " : " << cnt << " : " << kind << " : " << type << " : '" << init << " : "
                  << length << " : " << scope << std::endl;
     }
+
+    myStream << std::endl << separator << std::endl << std::endl;
+
+	myStream << "Context: Atom\n" << std::endl;
+
+	for (const auto &i: atoms) {
+		myStream << i.context << ": ("
+		         << i.text << ","
+		         << i.first << ","
+		         << i.second << ","
+		         << i.third << ")" << std::endl;
+	}
+
+    myStream << std::endl << separator;
 
 	myStream.close();
 
