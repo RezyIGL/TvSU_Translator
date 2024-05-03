@@ -1,5 +1,4 @@
 #include "Translator.h"
-#include <ranges>
 
 LL::LL(std::istream &stream,
 	   const std::string &Graph = "",

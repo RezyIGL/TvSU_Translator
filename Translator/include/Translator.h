@@ -2,6 +2,7 @@
 #define TVSU_TRANSLATOR_TRANSLATOR_H
 
 #include "Lexer.h"
+
 #include <stack>
 #include <iostream>
 #include <fstream>
@@ -149,59 +150,155 @@ private:
 	                  const std::string &second, const std::string &third);
 
 	// Creation of output graph
+
+    // Here we put 1 or 0 (1 = Not last child of Node; 0 = Last child of Node)
 	void nextGraphState(const int &a);
+
+    // Simply removes last state
 	void rollbackGraphNode();
+
+    // Generates string that will be put to container
 	void generateString(const std::string &);
 
-	// Correct or not checker (everything under that)
+    /*
+     * The underlying part is checking whether your miniC code correct or not.
+     * */
+
+    // This instance of Lexer is generating lexems to recognise what rule to use
 	Lexer lexer;
+
+    // a procedure to go to the next token => (lexem, value)
 	void nextToken();
 
-	// MiniC grammar checker
-	bool StmtList();
-	bool Stmt();
-	bool DeclareStmt();
-	bool DeclareStmtList(const std::string &q, const std::string &r);
-	bool AssignOrCallOp();
-	bool AssignOrCall();
-	bool AssignOrCallList(const std::string &name);
-	bool WhileOp();
-	bool ForOp();
-	bool ForInit();
-	FT ForExp();
-	bool ForLoop();
-	bool IfOp();
-	bool ElsePart();
-	bool SwitchOp();
-	bool Cases(const std::string &p, const std::string &end);
-	bool CasesList(const std::string &p, const std::string &end, const std::string &def);
-	FT ACase(const std::string &p, const std::string &end);
-	bool InOp();
-	bool OutOp();
-	bool OutOpList();
-	FT Type();
-	bool DeclareVarList(const std::string &type);
-	bool InitVar(const std::string &r, const std::string &s);
-	FT ParamList();
+	// MiniC Grammar:
+
+	//
+    bool StmtList();
+
+    //
+    bool Stmt();
+
+    //
+    bool DeclareStmt();
+
+    //
+    bool DeclareStmtList(const std::string &q, const std::string &r);
+
+    //
+    bool AssignOrCallOp();
+
+    //
+    bool AssignOrCall();
+
+    //
+    bool AssignOrCallList(const std::string &name);
+
+    //
+    bool WhileOp();
+
+    //
+    bool ForOp();
+
+    //
+    bool ForInit();
+
+    //
+    FT ForExp();
+
+    //
+    bool ForLoop();
+
+    //
+    bool IfOp();
+
+    //
+    bool ElsePart();
+
+    //
+    bool SwitchOp();
+
+    //
+    bool Cases(const std::string &p, const std::string &end);
+
+    //
+    bool CasesList(const std::string &p, const std::string &end, const std::string &def);
+
+    //
+    FT ACase(const std::string &p, const std::string &end);
+
+    //
+    bool InOp();
+
+    //
+    bool OutOp();
+
+    //
+    bool OutOpList();
+
+    //
+    FT Type();
+
+    //
+    bool DeclareVarList(const std::string &type);
+
+    //
+    bool InitVar(const std::string &r, const std::string &s);
+
+    //
+    FT ParamList();
+
+    //
 	FT ParamListList();
 
-	// Expression checker
-	FT Expr();
-	FT Expr7();
-	FT Expr7List(const std::string &funcID);
-	FT Expr6();
-	FT Expr6List(const std::string &funcID);
-	FT Expr5();
-	FT Expr5List(const std::string &funcID);
-	FT Expr4();
-	FT Expr4List(const std::string &funcID);
-	FT Expr3();
-	FT Expr3List(const std::string &funcID);
-	FT Expr2();
-	FT Expr1();
-	FT Expr1List(const std::string &funcID);
-	FT ArgList();
-	FT ArgListList();
+    // Expressions:
+
+    // E -> E7
+    FT Expr();
+
+    // E7 -> E6 E7'
+    FT Expr7();
+
+    // E7' -> || E6 E7'  | epsilon
+    FT Expr7List(const std::string &funcID);
+
+    // E6 -> E5 E6'
+    FT Expr6();
+
+    // E6' -> && E5 E6'  | epsilon
+    FT Expr6List(const std::string &funcID);
+
+    // E5 -> E4 E5'
+    FT Expr5();
+
+    // E5' -> == E4  | != E4  | > E4  | >= E4  | < E4  | <= E4  | epsilon
+    FT Expr5List(const std::string &funcID);
+
+    // E4 -> E3 E4'
+    FT Expr4();
+
+    // E4' -> + E3 E4'  | - E3 E4'  | epsilon
+    FT Expr4List(const std::string &funcID);
+
+    // E3 -> E2 E3'
+    FT Expr3();
+
+    // E3' -> * E2 E3'  | epsilon
+    FT Expr3List(const std::string &funcID);
+
+    // E2 -> ! E1  | E1
+    FT Expr2();
+
+    // E1 -> ++ id  | ( E )  | num  | id E1'
+    FT Expr1();
+
+    // E1' -> ++  | ( ArgList )  | epsilon
+    FT Expr1List(const std::string &funcID);
+
+    // ArgList -> E ArgList'  | epsilon
+    FT ArgList();
+
+    // ArgList' -> , E ArgList'  | epsilon
+    FT ArgListList();
 };
 
 #endif //TVSU_TRANSLATOR_TRANSLATOR_H
