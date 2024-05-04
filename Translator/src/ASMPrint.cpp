@@ -114,11 +114,26 @@ void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0
         myStream << "MVI A, " << atom.substr(1, atom.size() - 2) << std::endl;
     } else {
         std::string operand;
+        int total_cnt = 0;
 
         auto iterator = sortedAtomsVector.rbegin();
+        while (iterator != sortedAtomsVector.rend()) {
+            if (iterator->scope == scope) total_cnt++;
+            iterator++;
+        }
+
+        int _cnt = 0;
+
+        iterator = sortedAtomsVector.rbegin();
         while (std::to_string(iterator->cnt) != atom) {
             if (iterator->scope == scope) {
                 shift += 2;
+                _cnt++;
+            }
+
+            if (_cnt == total_cnt - stoi((sortedAtomsVector.begin() + stoi(scope))->length)) {
+                _cnt = -1;
+                shift += stoi((sortedAtomsVector.begin() + stoi(scope))->length);
             }
 
             iterator++;
@@ -391,7 +406,7 @@ void LL::RET(const Atom &atom) {
 
     m = cnt - n;
 
-    int res = m * 2 + 2;
+    int res = cnt * 2 + 2;
 
     if (atom.third.starts_with("'")) {
         myStream << "LXI H, " << res << std::endl;
