@@ -318,6 +318,8 @@ void LL::MUL(const Atom &atom) {
 	// End
 	myStream << "L" + MUL_LABEL_END + ":" << std::endl;
 	saveOp(atom.third, atom.context);
+
+    myStream << std::endl;
 }
 
 void LL::IN(const Atom &atom) {
