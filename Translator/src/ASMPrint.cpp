@@ -16,7 +16,7 @@ bool LL::_printASMCode() {
 
 	myStream.open(_asmOut);
 
-	myStream << "ORG 8000H" << std::endl << std::endl;
+	myStream << "ORG 8000H" << std::endl;
 
 	for (const auto &i: sortedAtomsVector) {
 		if (i.kind == "var" && i.scope == "-1") {

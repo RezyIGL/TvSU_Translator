@@ -1046,8 +1046,6 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 			nextGraphState(0);
 			generateString("opassign " + it->second);
 
-			generateAtom(contextStack.top(), "MOV", it->second, "", newVar);
-
 			nextToken();
 
 			rollbackGraphNode();

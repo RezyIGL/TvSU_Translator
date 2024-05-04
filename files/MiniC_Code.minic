@@ -1,16 +1,10 @@
-int func(int x, int y) {
-    int tmp = 0;
-    tmp = (x + y) * 2;
-    if (tmp < y) tmp = y;
-    return tmp;
-}
-
-int a;
 int main() {
-    int b;
-    in a; in b;
-    int result;
-    result = func(a, b);
-    out result;
-    return 0;
+    int rb, sum = 0;
+    in rb;
+
+    for (int i = 1; i <= rb; i++) {
+        sum += i;
+    }
+
+    out sum;
 }
