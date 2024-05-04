@@ -38,7 +38,6 @@ bool LL::_printASMCode() {
     myStream << "PUSH B" << std::endl;
     myStream << "CALL main" << std::endl;
     myStream << "END" << std::endl << std::endl;
-    myStream << "@ MULT ..." << std::endl;
     myStream << "@ DIV ..." << std::endl;
     myStream << "@ PRINT ..." << std::endl << std::endl;
 
