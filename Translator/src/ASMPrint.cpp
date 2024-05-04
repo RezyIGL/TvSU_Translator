@@ -108,7 +108,7 @@ bool LL::_printASMCode() {
 }
 
 // ASM i8080 helpful functions
-void LL::loadOp(const std::string &atom, int shift = 0) {
+void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0) {
 
     if (atom.starts_with("'")) {
         myStream << "MVI A, " << atom.substr(1, atom.size() - 2) << std::endl;
@@ -117,7 +117,10 @@ void LL::loadOp(const std::string &atom, int shift = 0) {
 
         auto iterator = sortedAtomsVector.rbegin();
         while (std::to_string(iterator->cnt) != atom) {
-            shift += 2;
+            if (iterator->scope == scope) {
+                shift += 2;
+            }
+
             iterator++;
         }
 
@@ -163,7 +166,7 @@ void LL::saveOp(const std::string &atom, int shift = 0) {
 
 // ASM i8080 translation functions
 void LL::MOV(const Atom &atom) {
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	saveOp(atom.third);
 	myStream << std::endl;
 }
@@ -178,93 +181,93 @@ void LL::JMP(const Atom &atom) {
 }
 
 void LL::ADD(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "ADD B" << std::endl;
 	saveOp(atom.third);
 	myStream << std::endl;
 }
 
 void LL::SUB(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "SUB B" << std::endl;
 	saveOp(atom.third);
 	myStream << std::endl;
 }
 
 void LL::OR(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "ORA B" << std::endl;
 	saveOp(atom.third);
 	myStream << std::endl;
 }
 
 void LL::AND(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "ANA B" << std::endl;
 	saveOp(atom.third);
 	myStream << std::endl;
 }
 
 void LL::EQ(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::NE(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JNZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::GT(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JP " + atom.third << std::endl << std::endl;
 }
 
 void LL::LT(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JM " + atom.third << std::endl << std::endl;
 }
 
 void LL::GE(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JP " + atom.third << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::LE(const Atom &atom) {
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV B, A" << std::endl;
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMP B" << std::endl;
 	myStream << "JM " + atom.third << std::endl;
 	myStream << "JZ " + atom.third << std::endl << std::endl;
 }
 
 void LL::NOT(const Atom &atom) {
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "CMA" << std::endl;
 	saveOp(atom.third);
 	myStream << std::endl;
@@ -275,13 +278,13 @@ void LL::MUL(const Atom &atom) {
 	MUL_LABEL_END = std::to_string(LabelCnt++);
 
 	// Start
-	loadOp(atom.second);
+	loadOp(atom.second, atom.context);
 	myStream << "MOV C, A" << std::endl;
 
-	loadOp(atom.first);
+	loadOp(atom.first, atom.context);
 	myStream << "MOV B, A" << std::endl;
 
-	loadOp("0");
+	loadOp("0", atom.context);
 
 	myStream << "CMP C" << std::endl;
 	myStream << "JZ L" + MUL_LABEL_END << std::endl;
@@ -310,28 +313,11 @@ void LL::IN(const Atom &atom) {
 }
 
 void LL::OUT(const Atom &atom) {
-	loadOp(atom.third);
+	loadOp(atom.third, atom.context);
 	 myStream << "OUT 1" << std::endl << std::endl;
 }
 
 void LL::CALL(const Atom &atom) {
-    /* (CALL, p ,, r)
-     * а) PUSH B                  ; Выделяем место под возвращаемое значение
-     * б) PUSH B
-     *    ...                     ; n раз - выделяем место под аргументы
-     *    PUSH B
-     * в) Для i = 1 до n:
-     *      - снимаем операнд Op с программного стека (paramStack)
-     *      - loadOp(Op^(+2n + 2)) # только для локальных переменных
-     * г) CALL p
-     * д) POP B
-     *    ...                     ; n раз - очищаем стек
-     *    POP B
-     * е) POP B                   ; снимаем результат
-     * ж) MOV A, C
-     *    saveOp(r)               ; сохраняем результат в r
-     * */
-
     auto iterator = AtomicMap["-1"].begin();
     while (std::to_string(iterator->cnt) != atom.first) {
         iterator++;
@@ -351,7 +337,6 @@ void LL::CALL(const Atom &atom) {
         std::string Op = paramStack.top();
         paramStack.pop();
 
-        // TODO: Add current shift to this shift
         int shift = 2 * i + 2;
 
         auto inner_iterator = sortedAtomsVector.rbegin();
@@ -363,7 +348,7 @@ void LL::CALL(const Atom &atom) {
             inner_iterator++;
         }
 
-        loadOp(Op, shift);
+        loadOp(Op, atom.context , shift);
 
         myStream << "LXI H, " << 2 * i << std::endl;
         myStream << "DAD SP" << std::endl;
@@ -413,7 +398,7 @@ void LL::RET(const Atom &atom) {
         myStream << "DAD SP" << std::endl;
         myStream << "MVI M, " << atom.third.substr(1, atom.third.size() - 2) << std::endl;
     } else {
-        loadOp(atom.third, cnt * 2 + 2);
+        loadOp(atom.third, atom.context , cnt * 2 + 2);
         myStream << "LXI H, " << res << std::endl;
         myStream << "DAD SP" << std::endl;
         myStream << "MOV M, A" << std::endl;
