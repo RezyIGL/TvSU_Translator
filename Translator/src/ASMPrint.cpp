@@ -124,9 +124,6 @@ void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0
             iterator++;
         }
 
-        // TODO: FIX FUCKING SHIFT
-        std::cout << iterator->name << ": " << shift << std::endl;
-
         operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
 
         if (iterator->scope == "-1") {
