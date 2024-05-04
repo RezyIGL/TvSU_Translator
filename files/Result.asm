@@ -28,7 +28,7 @@ LXI H, 10
 DAD SP
 MOV A, M
 ADD B
-LXI H, 14
+LXI H, 4
 DAD SP
 MOV M, A
 
@@ -50,18 +50,18 @@ JZ L5
 JMP L4
 
 L5:
-LXI H, 12
+LXI H, 2
 DAD SP
 MOV M, A
 LXI H, 2
 DAD SP
 MOV A, M
-LXI H, 16
+LXI H, 6
 DAD SP
 MOV M, A
 
 MVI A, 1
-LXI H, 10
+LXI H, 0
 DAD SP
 MOV M, A
 
@@ -76,7 +76,7 @@ CMP B
 JM L1
 
 MVI A, 0
-LXI H, 10
+LXI H, 0
 DAD SP
 MOV M, A
 
@@ -93,7 +93,7 @@ JZ L2
 LXI H, 8
 DAD SP
 MOV A, M
-LXI H, 16
+LXI H, 6
 DAD SP
 MOV M, A
 
@@ -103,7 +103,7 @@ L2:
 
 L3:
 
-LXI H, 20
+LXI H, 6
 DAD SP
 MOV A, M
 LXI H, 10
