@@ -1,20 +1,20 @@
-=======================================================================
-Name : Code : Class : Type : Init : Length : Scope
+=============================================================
+Name   : Code : Class : Type  : Init : Length : Scope              
 
-func   : 0  : func : kwint : '-' : 2 : -1    
-x      : 1  : var  : kwint : '0' : - : 0     
-y      : 2  : var  : kwint : '0' : - : 0     
-tmp    : 3  : var  : kwint : '0' : - : 0     
-$T1    : 4  : var  : kwint : '0' : - : 0     
-$T2    : 5  : var  : kwint : '0' : - : 0     
-$T3    : 6  : var  : kwint : '0' : - : 0     
-a      : 7  : var  : kwint : '0' : - : -1    
-main   : 8  : func : kwint : '-' : 0 : -1    
-b      : 9  : var  : kwint : '0' : - : 8     
-result : 10 : var  : kwint : '0' : - : 8     
-$T4    : 11 : var  : kwint : '0' : - : 8     
+func   : 0    : func  : kwint : -    : 2      : -1    
+x      : 1    : var   : kwint : 0    : -      : 0     
+y      : 2    : var   : kwint : 0    : -      : 0     
+tmp    : 3    : var   : kwint : 0    : -      : 0     
+$T1    : 4    : var   : kwint : 0    : -      : 0     
+$T2    : 5    : var   : kwint : 0    : -      : 0     
+$T3    : 6    : var   : kwint : 0    : -      : 0     
+a      : 7    : var   : kwint : 0    : -      : -1    
+main   : 8    : func  : kwint : -    : 0      : -1    
+b      : 9    : var   : kwint : 0    : -      : 8     
+result : 10   : var   : kwint : 0    : -      : 8     
+$T4    : 11   : var   : kwint : 0    : -      : 8     
 
-=======================================================================
+=============================================================
 
 Context: Atom
 
@@ -42,4 +42,4 @@ Context: Atom
 8: (RET,,,'0')
 8: (RET,,,'0')
 
-=======================================================================
+=============================================================

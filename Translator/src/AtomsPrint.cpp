@@ -15,48 +15,81 @@ bool LL::_printAtoms() {
     int mxScope = 0;
 
     for (const auto &i: sortedAtomsVector) {
-        mxName = i.name.length() > mxName ? i.name.length() : mxName;
-        mxCnt = std::to_string(i.cnt).length() > mxCnt ? std::to_string(i.cnt).length() : mxCnt;
-        mxKind = i.kind.length() > mxKind ? i.kind.length() : mxKind;
-        mxType = i.type.length() > mxType ? i.type.length() : mxType;
-        mxInit = i.init.length() > mxInit ? i.init.length() : mxInit;
-        mxLen = i.length.length() > mxLen ? i.length.length() : mxLen;
-        mxScope = i.scope.length() > mxScope ? i.scope.length() : mxScope;
+        mxName = std::max(std::max((int) i.name.length(), mxName), 4);
+        mxCnt = std::max(std::max((int) std::to_string(i.cnt).length(), mxCnt), 4);
+        mxKind = std::max(std::max((int) i.kind.length(), mxKind), 5);
+        mxType = std::max(std::max((int) i.type.length(), mxType), 4);
+        mxInit = std::max(std::max((int) i.init.length() + 2, mxInit), 4);
+        mxLen = std::max(std::max((int) i.length.length(), mxLen), 6);
+        mxScope = std::max(std::max((int) i.scope.length(), mxScope), 5);
     }
 
     int maxLineSize = mxName + mxCnt + mxKind + mxType + mxInit + mxLen + mxScope;
 
-    std::string headliner = "Name : Code : Class : Type : Init : Length : Scope";
-    std::string separator(headliner.size() + maxLineSize, '=');
+    std::string headliner(maxLineSize * 2, ' ');
+    std::string separator(maxLineSize + 26, '=');
+
+    auto wordIter = headliner.begin();
+
+    headliner.replace(wordIter, wordIter + mxName, "Name");
+    headliner.replace(wordIter + mxName, wordIter + mxName + 2, " :");
+
+    wordIter += mxName + 3;
+
+    headliner.replace(wordIter, wordIter + mxCnt, "Code");
+    headliner.replace(wordIter + mxCnt, wordIter + mxCnt + 2, " :");
+
+    wordIter += mxCnt + 3;
+
+    headliner.replace(wordIter, wordIter + mxKind, "Class");
+    headliner.replace(wordIter + mxKind, wordIter + mxKind + 2, " :");
+
+    wordIter += mxKind + 3;
+
+    headliner.replace(wordIter, wordIter + mxType, "Type");
+    headliner.replace(wordIter + mxType, wordIter + mxType + 2, " :");
+
+    wordIter += mxType + 3;
+
+    headliner.replace(wordIter, wordIter + mxInit, "Init");
+    headliner.replace(wordIter + mxInit, wordIter + mxInit + 2, " :");
+
+    wordIter += mxInit + 3;
+
+    headliner.replace(wordIter, wordIter + mxLen, "Length");
+    headliner.replace(wordIter + mxLen, wordIter + mxLen + 2, " :");
+
+    wordIter += mxLen + 3;
+
+    headliner.replace(wordIter, wordIter + mxScope, "Scope");
 
     myStream.open(_atomsInput);
 
     myStream << separator << std::endl << headliner << std::endl << std::endl;
 
     for (const auto &i : sortedAtomsVector) {
-
         std::string name(mxName, ' ');
-        name.replace(name.begin(), name.begin() + i.name.size(), i.name);
+        name.replace(name.begin(), name.begin() + i.name.length(), i.name);
 
         std::string cnt(mxCnt, ' ');
-        cnt.replace(cnt.begin(), cnt.begin() + std::to_string(i.cnt).size(), std::to_string(i.cnt));
+        cnt.replace(cnt.begin(), cnt.begin() + (int) std::to_string(i.cnt).length(), std::to_string(i.cnt));
 
         std::string kind(mxKind, ' ');
-        kind.replace(kind.begin(), kind.begin() + i.kind.size(), i.kind);
+        kind.replace(kind.begin(), kind.begin() + i.kind.length(), i.kind);
 
         std::string type(mxType, ' ');
-        type.replace(type.begin(), type.begin() + i.type.size(), i.type);
+        type.replace(type.begin(), type.begin() + i.type.length(), i.type);
 
         std::string init(mxInit, ' ');
-        init.replace(init.begin(), init.begin() + i.init.size(), i.init + "'");
+        init.replace(init.begin(), init.begin() + i.init.length(), i.init);
 
         std::string length(mxLen, ' ');
-        length.replace(length.begin(), length.begin() + i.length.size(), i.length);
+        length.replace(length.begin(), length.begin() + i.length.length(), i.length);
 
         std::string scope(mxName, ' ');
-        scope.replace(scope.begin(), scope.begin() + i.scope.size(), i.scope);
+        scope.replace(scope.begin(), scope.begin() + i.scope.length(), i.scope);
 
-        myStream << name << " : " << cnt << " : " << kind << " : " << type << " : '" << init << " : "
+        myStream << name << " : " << cnt << " : " << kind << " : " << type << " : " << init << " : "
                  << length << " : " << scope << std::endl;
     }
 
