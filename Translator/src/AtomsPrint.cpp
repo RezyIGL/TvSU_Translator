@@ -24,6 +24,7 @@ bool LL::_printAtoms() {
         mxScope = std::max(std::max((int) i.scope.length(), mxScope), 5);
     }
 
+    mxType = mxType >= 2 ? mxType - 2 : mxType;
     int maxLineSize = mxName + mxCnt + mxKind + mxType + mxInit + mxLen + mxScope;
 
     std::string headliner(maxLineSize * 2, ' ');
@@ -78,7 +79,7 @@ bool LL::_printAtoms() {
         kind.replace(kind.begin(), kind.begin() + i.kind.length(), i.kind);
 
         std::string type(mxType, ' ');
-        type.replace(type.begin(), type.begin() + i.type.length(), i.type);
+        type.replace(type.begin(), type.begin() + i.type.length(), i.type.substr(2, i.type.length()));
 
         std::string init(mxInit, ' ');
         init.replace(init.begin(), init.begin() + i.init.length(), i.init);
