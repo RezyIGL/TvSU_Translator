@@ -290,7 +290,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		if (it->first == "num") {
 			std::string newVar = addVar(name, contextStack.top(), type, _temp);
 
-			if (newVar == "'Error'") return false;
+			if (newVar == "Error") return false;
 
 			nextToken();
 
@@ -312,7 +312,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 		} else if (it->first == "char") {
 			std::string newVar = addVar(name, contextStack.top(), type, _temp);
 
-			if (newVar == "'Error'") return false;
+			if (newVar == "Error") return false;
 
 			nextToken();
 
@@ -337,7 +337,7 @@ bool LL::DeclareStmtList(const std::string &type, const std::string &name) {
 	} else {
 		std::string _temp = addVar(name, contextStack.top(), type);
 
-		if (_temp == "'Error'") return false;
+		if (_temp == "Error") return false;
 
 		nextGraphState(1);
 		generateString("DeclareVarList");
@@ -1041,7 +1041,7 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 
 			std::string newVar = addVar(s, contextStack.top(), r, it->second);
 
-			if (newVar == "'Error'") return false;
+			if (newVar == "Error") return false;
 
 			nextGraphState(0);
 			generateString("opassign " + it->second);
@@ -1058,7 +1058,7 @@ bool LL::InitVar(const std::string &r, const std::string &s) {
 
 	std::string _temp = addVar(s, contextStack.top(), r);
 
-	if (_temp == "'Error'") return false;
+	if (_temp == "Error") return false;
 
 	rollbackGraphNode();
 	return true;
@@ -1076,7 +1076,7 @@ FT LL::ParamList() {
 		if (it->first != "id") return {false, ""};
 		std::string _temp = addVar(it->second, contextStack.top(), TypeResult.second);
 
-		if (_temp == "'Error'") return {false, ""};
+		if (_temp == "Error") return {false, ""};
 
 		nextGraphState(0);
 		generateString(it->second + " ParamList'");
@@ -1109,7 +1109,7 @@ FT LL::ParamListList() {
 			if (it->first != "id") return {false, ""};
 			std::string _temp = addVar(it->second, contextStack.top(), TypeResult.second);
 
-			if (_temp == "'Error'") return {false, ""};
+			if (_temp == "Error") return {false, ""};
 
 			nextGraphState(0);
 			generateString(it->second + " ParamList'");
