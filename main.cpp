@@ -19,13 +19,10 @@ int main() {
 
     // Says whether your miniC code contains error or not.
     Translator.checkIfCodeSyntaxIsCorrect();
-
     // Generates graph of decompose into GRAPH_PATH
     Translator.printOutputGraph();
-
     // Generates Atoms of your miniC code into ATOMS_PATH
     Translator.printAtoms();
-
     // Generates ASM i8080 code into ASM_PATH
     Translator.printASMCode();
 }
