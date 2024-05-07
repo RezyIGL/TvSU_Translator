@@ -449,10 +449,8 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(contextStack.top());
 
-		generateAtom(contextStack.top(), "MUL", r, ERes.second, s);
-		generateAtom(contextStack.top(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "MUL", r, ERes.second, r);
 
 		rollbackGraphNode();
 		return true;
@@ -468,10 +466,8 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(contextStack.top());
 
-		generateAtom(contextStack.top(), "ADD", r, ERes.second, s);
-		generateAtom(contextStack.top(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "ADD", r, ERes.second, r);
 
 		rollbackGraphNode();
 		return true;
@@ -487,10 +483,8 @@ bool LL::AssignOrCallList(const std::string &name) {
 		if (!ERes.first) return false;
 
 		auto r = checkVar(name);
-		auto s = alloc(contextStack.top());
 
-		generateAtom(contextStack.top(), "SUB", r, ERes.second, s);
-		generateAtom(contextStack.top(), "MOV", s, "", r);
+		generateAtom(contextStack.top(), "SUB", r, ERes.second, r);
 
 		rollbackGraphNode();
 		return true;
