@@ -1,4 +1,5 @@
 #include "Translator.h"
+#include "iomanip"
 
 int main() {
     // Path to file that contains miniC code.
