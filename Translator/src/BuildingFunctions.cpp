@@ -29,19 +29,19 @@ bool LL::generateAtoms() {
 		return false;
 	}
 
-	for (const auto &i: AtomicMap) {
-		for (const auto &j: i.second) {
+	for (const auto &[fst, snd]: AtomicMap) {
+		for (const auto &j: snd) {
 			sortedAtomsVector.emplace_back(j);
 		}
 	}
 
 	struct {
-		bool operator()(VarOrFunc &a, VarOrFunc &b) const { return a.cnt < b.cnt; };
+		auto operator()(const VarOrFunc &a, const VarOrFunc &b) const -> bool { return a.cnt < b.cnt; };
 	} customLess;
-	std::sort(sortedAtomsVector.begin(), sortedAtomsVector.end(), customLess);
+	std::ranges::sort(sortedAtomsVector, customLess);
 
-	for (const auto &o: sortedAtomsVector) {
-		if (o.name == "main") entryPoint = std::to_string(o.cnt);
+	for (const auto &[name, scope, type, init, kind, length, cnt]: sortedAtomsVector) {
+		if (name == "main") entryPoint = std::to_string(cnt);
 	}
 
 	AtomsGenerated = true;
@@ -95,16 +95,18 @@ std::string LL::alloc(const std::string &scope) {
 }
 
 std::string
-LL::addVar(const std::string &name, const std::string &scope, const std::string &type, const std::string &init) {
-	if (AtomicMap.count(scope)) {
-		for (const auto &i: AtomicMap[scope]) {
-			if (i.name == name) {
+LL::addVar(const std::string &_name, const std::string &scope, const std::string &type, const std::string &init) {
+	if (type == "kwint" && !init.empty() && init.starts_with("'")) return "Error";
+
+	if (AtomicMap.contains(scope)) {
+		for (const auto &[name, scope, type, init, kind, length, cnt]: AtomicMap[scope]) {
+			if (name == _name) {
 				return "Error";
 			}
 		}
 	}
 
-	VarOrFunc temp = {name, scope, type, init, "var", "-", AtomicMapCnt++};
+	VarOrFunc temp = {_name, scope, type, init, "var", "-", AtomicMapCnt++};
 	AtomicMap[scope].emplace_back(temp);
 
 	return std::to_string(temp.cnt);
@@ -188,7 +190,7 @@ void LL::nextToken() {
 		return;
 	}
 
-	it++;
+	++it;
 }
 
 // Generates next state (0 || 1) to make correct calculations
