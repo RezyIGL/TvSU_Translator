@@ -2,19 +2,19 @@
 #include "iomanip"
 
 struct mxCnts {
-    int mxName = 4;
-    int mxCnt = 2;
-    int mxKind = 5;
-    int mxType = 4;
-    int mxInit = 4;
-    int mxLen = 6;
-    int mxScope = 5;
-    int MaxSize = 0;
+    ulong mxName = 4;
+    ulong mxCnt = 2;
+    ulong mxKind = 5;
+    ulong mxType = 4;
+    ulong mxInit = 4;
+    ulong mxLen = 6;
+    ulong mxScope = 5;
+    ulong MaxSize = 0;
 };
 
 struct mxAtoms {
-    int mxScope = 7;
-    int mxAtomSize = 5;
+    ulong mxScope = 7;
+    ulong mxAtomSize = 5;
 };
 
 std::string generateBorderForTable(const mxCnts &mx, const std::string &border = "bottom") {
@@ -117,7 +117,7 @@ bool LL::_printAtoms() {
     mxAtoms mx2;
 
     for (const auto &atom : atoms) {
-        int rh = (int) atom.context.length()
+        ulong rh = atom.context.length()
                      + atom.text.length()
                      + atom.first.length()
                      + atom.second.length()
