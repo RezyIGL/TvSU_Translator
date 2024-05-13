@@ -27,7 +27,7 @@ bool LL::_printASMCode() {
 			} else {
 				myStream << "char_dev_" + i.name << ": db ";
 				if (i.init.empty()) myStream << "0" << std::endl;
-				else myStream << (int) i.init[0] << std::endl;
+				else myStream << static_cast<int>(i.init[0]) << std::endl;
 			}
 		}
 	}
@@ -110,16 +110,34 @@ void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0
         myStream << "MVI A, " << atom.substr(1, atom.size() - 2) << std::endl;
     } else {
         auto iterator = sortedAtomsVector.rbegin();
-        while (std::to_string(iterator->cnt) != atom) {
-            if (iterator->scope == scope) {
-                if (iterator->kind == "func") shift += 4;
-                else shift += 2;
-            }
-            iterator++;
-        }
+
+		int totalCnt = 0;
+    	while (iterator != sortedAtomsVector.rend()) {
+			if (iterator->scope == scope && iterator->kind == "var") ++totalCnt;
+    		++iterator;
+    	}
+
+
+        const int args = stoi((sortedAtomsVector.begin() + stoi(scope))->length);
+        int _cnt = 1;
+    	iterator = sortedAtomsVector.rbegin();
+
+    	while (std::to_string(iterator->cnt) != atom) {
+    		if (iterator->scope == scope) {
+				if (_cnt >= totalCnt - args) {
+					shift += 4;
+					_cnt = 0;
+				} else {
+					shift += 2;
+					++_cnt;
+				}
+		    }
+
+    		++iterator;
+    	}
 
         if (iterator->scope == "-1") {
-            std::string operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
+            const std::string operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
             myStream << "LDA " << operand << std::endl;
         } else {
             myStream << "LXI H, " << shift << std::endl;
@@ -134,17 +152,15 @@ void LL::saveOp(const std::string &atom, const std::string &scope ,int shift = 0
     bool OK = true;
     if (shift != 0) OK = false;
 
-    std::string operand;
-
     auto iterator = sortedAtomsVector.rbegin();
     while (std::to_string(iterator->cnt) != atom) {
         if (OK && iterator->scope == scope) shift += 2;
-        iterator++;
+        ++iterator;
     }
 
-    operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
 
     if (iterator->scope == "-1") {
+	    const std::string operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
         myStream << "STA " << operand << std::endl;
     } else {
         myStream << "LXI H, " << shift << std::endl;
@@ -311,7 +327,7 @@ void LL::OUT(const Atom &atom) {
 void LL::CALL(const Atom &atom) {
     auto iterator = AtomicMap["-1"].begin();
     while (std::to_string(iterator->cnt) != atom.first) {
-        iterator++;
+        ++iterator;
     }
 
     int n = stoi(iterator->length);
@@ -337,7 +353,7 @@ void LL::CALL(const Atom &atom) {
                     shift += 2;
                 }
 
-                inner_iterator++;
+                ++inner_iterator;
             }
         }
 
@@ -368,11 +384,9 @@ void LL::PARAM(const Atom &atom) {
 }
 
 void LL::RET(const Atom &atom) {
-    int m;
-
     auto iterator = AtomicMap["-1"].begin();
     while (std::to_string(iterator->cnt) != atom.context) {
-        iterator++;
+        ++iterator;
     }
 
     int n = stoi(iterator->length);
@@ -382,7 +396,7 @@ void LL::RET(const Atom &atom) {
         if (a.kind == "var") cnt++;
     }
 
-    m = cnt - n;
+    int m = cnt - n;
 
     int res = cnt * 2 + 2;
 

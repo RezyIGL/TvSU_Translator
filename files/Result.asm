@@ -25,7 +25,7 @@ MOV M, A
 
 MVI A, 1
 MOV B, A
-LXI H, 8
+LXI H, 10
 DAD SP
 MOV A, M
 CMP B
@@ -66,7 +66,7 @@ L3:
 
 MVI A, 1
 MOV B, A
-LXI H, 8
+LXI H, 10
 DAD SP
 MOV A, M
 SUB B
@@ -99,7 +99,7 @@ LXI H, 2
 DAD SP
 MOV A, M
 MOV C, A
-LXI H, 8
+LXI H, 10
 DAD SP
 MOV A, M
 MOV B, A
