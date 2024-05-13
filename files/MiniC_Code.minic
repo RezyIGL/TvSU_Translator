@@ -1,9 +1,16 @@
-int func(int n) {
-    if (n <= 1) return 1;
-    return n * func(n - 1);
+int func(int x, int y) {
+    int tmp = 0;
+    tmp = (x + y) * 2;
+    if (tmp < y) tmp = y;
+    return tmp;
 }
+
+int a;
 int main() {
-    int n, b;
-    n = func(7);
+    int b;
+    in a; in b;
+    int result;
+    result = func(a, b);
+    out result;
     return 0;
 }

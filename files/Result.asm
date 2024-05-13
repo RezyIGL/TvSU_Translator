@@ -1,4 +1,5 @@
 ORG 8000H
+int_dev_a: db 0
 
 ORG 0
 
@@ -18,88 +19,21 @@ PUSH B
 PUSH B
 PUSH B
 
-MVI A, 1
-LXI H, 6
-DAD SP
-MOV M, A
-
-MVI A, 1
-MOV B, A
 LXI H, 10
 DAD SP
 MOV A, M
-CMP B
-JM L1
-JZ L1
-
-MVI A, 0
-LXI H, 6
-DAD SP
-MOV M, A
-
-L1:
-
-MVI A, 0
 MOV B, A
-LXI H, 6
-DAD SP
-MOV A, M
-CMP B
-JZ L2
-
 LXI H, 12
 DAD SP
-MVI M, 1
-
-POP B
-POP B
-POP B
-POP B
-
-RET
-
-JMP L3
-
-L2:
-
-L3:
-
-MVI A, 1
-MOV B, A
-LXI H, 10
-DAD SP
 MOV A, M
-SUB B
+ADD B
 LXI H, 4
 DAD SP
 MOV M, A
 
-PUSH B
-PUSH B
-
-LXI H, 10
-DAD SP
-MOV A, M
-LXI H, 0
-DAD SP
-MOV M, A
-
-CALL func
-
-POP B
-POP B
-
-MOV A, C
-
-LXI H, 2
-DAD SP
-MOV M, A
-
-LXI H, 2
-DAD SP
-MOV A, M
+MVI A, 2
 MOV C, A
-LXI H, 10
+LXI H, 4
 DAD SP
 MOV A, M
 MOV B, A
@@ -115,14 +49,64 @@ JZ L5
 JMP L4
 
 L5:
+LXI H, 2
+DAD SP
+MOV M, A
+
+LXI H, 2
+DAD SP
+MOV A, M
+LXI H, 6
+DAD SP
+MOV M, A
+
+MVI A, 1
 LXI H, 0
 DAD SP
 MOV M, A
 
+LXI H, 10
+DAD SP
+MOV A, M
+MOV B, A
+LXI H, 6
+DAD SP
+MOV A, M
+CMP B
+JM L1
+
+MVI A, 0
+LXI H, 0
+DAD SP
+MOV M, A
+
+L1:
+
+MVI A, 0
+MOV B, A
 LXI H, 0
 DAD SP
 MOV A, M
-LXI H, 12
+CMP B
+JZ L2
+
+LXI H, 10
+DAD SP
+MOV A, M
+LXI H, 6
+DAD SP
+MOV M, A
+
+JMP L3
+
+L2:
+
+L3:
+
+LXI H, 6
+DAD SP
+MOV A, M
+LXI H, 14
 DAD SP
 MOV M, A
 
@@ -133,7 +117,7 @@ POP B
 
 RET
 
-LXI H, 12
+LXI H, 14
 DAD SP
 MVI M, 0
 
@@ -150,16 +134,33 @@ PUSH B
 PUSH B
 PUSH B
 
+IN 0
+STA int_dev_a
+
+IN 0
+LXI H, 4
+DAD SP
+MOV M, A
+
+PUSH B
 PUSH B
 PUSH B
 
-MVI A, 7
+LXI H, 10
+DAD SP
+MOV A, M
 LXI H, 0
+DAD SP
+MOV M, A
+
+LDA int_dev_a
+LXI H, 2
 DAD SP
 MOV M, A
 
 CALL func
 
+POP B
 POP B
 POP B
 
@@ -172,9 +173,14 @@ MOV M, A
 LXI H, 0
 DAD SP
 MOV A, M
-LXI H, 4
+LXI H, 2
 DAD SP
 MOV M, A
+
+LXI H, 2
+DAD SP
+MOV A, M
+OUT 1
 
 LXI H, 8
 DAD SP
