@@ -43,9 +43,6 @@ bool LL::_printASMCode() {
 
     std::string prevCont = "-1";
 
-    // TODO: Temp
-    int atomsCount = 0;
-
 	for (const auto &atom: atoms) {
 
         if (prevCont != atom.context) {
@@ -112,35 +109,17 @@ void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0
     if (atom.starts_with("'")) {
         myStream << "MVI A, " << atom.substr(1, atom.size() - 2) << std::endl;
     } else {
-        std::string operand;
-        int total_cnt = 0;
-
         auto iterator = sortedAtomsVector.rbegin();
-        while (iterator != sortedAtomsVector.rend()) {
-            if (iterator->scope == scope) total_cnt++;
-            iterator++;
-        }
-
-        int _cnt = 0;
-
-        iterator = sortedAtomsVector.rbegin();
         while (std::to_string(iterator->cnt) != atom) {
             if (iterator->scope == scope) {
-                shift += 2;
-                _cnt++;
+                if (iterator->kind == "func") shift += 4;
+                else shift += 2;
             }
-
-            if (_cnt == total_cnt - stoi((sortedAtomsVector.begin() + stoi(scope))->length)) {
-                _cnt = -1;
-                shift += stoi((sortedAtomsVector.begin() + stoi(scope))->length);
-            }
-
             iterator++;
         }
 
-        operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
-
         if (iterator->scope == "-1") {
+            std::string operand = iterator->type.substr(2, iterator->type.size()) + "_dev_" + iterator->name;
             myStream << "LDA " << operand << std::endl;
         } else {
             myStream << "LXI H, " << shift << std::endl;
@@ -148,10 +127,6 @@ void LL::loadOp(const std::string &atom, const std::string &scope, int shift = 0
             myStream << "MOV A, M" << std::endl;
         }
     }
-}
-
-void LL::saveRegm(const std::string &atom, int shift = 0) {
-    // TODO: todo
 }
 
 void LL::saveOp(const std::string &atom, const std::string &scope ,int shift = 0) {
@@ -355,13 +330,15 @@ void LL::CALL(const Atom &atom) {
 
         int shift = 2 * i + 2;
 
-        auto inner_iterator = sortedAtomsVector.rbegin();
-        while (std::to_string(inner_iterator->cnt) != Op) {
-            if (inner_iterator->scope == atom.context) {
-                shift += 2;
-            }
+        if (!Op.starts_with("'")) {
+            auto inner_iterator = sortedAtomsVector.rbegin();
+            while (std::to_string(inner_iterator->cnt) != Op) {
+                if (inner_iterator->scope == atom.context) {
+                    shift += 2;
+                }
 
-            inner_iterator++;
+                inner_iterator++;
+            }
         }
 
         loadOp(Op, atom.context , shift);
