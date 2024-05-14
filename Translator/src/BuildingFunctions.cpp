@@ -184,9 +184,9 @@ void LL::generateAtom(const std::string &context = "", const std::string &text =
 
 // Syntax analyzer and graph creating functions
 void LL::nextToken() {
-	if (lexemVector.empty() || it == lexemVector.end() - 1) {
-		lexemVector.emplace_back(lexer.getNextToken());
-		it = lexemVector.end() - 1;
+	if (lexemeVector.empty() || it == lexemeVector.end() - 1) {
+		lexemeVector.emplace_back(lexer.getNextToken());
+		it = lexemeVector.end() - 1;
 		return;
 	}
 

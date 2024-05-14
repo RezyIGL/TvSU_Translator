@@ -1,7 +1,7 @@
 #include "Translator.h"
 #include "iomanip"
 
-struct mxCnts {
+struct mxCounts {
     ulong mxName = 4;
     ulong mxCnt = 2;
     ulong mxKind = 5;
@@ -17,7 +17,7 @@ struct mxAtoms {
     ulong mxAtomSize = 5;
 };
 
-std::string generateBorderForTable(const mxCnts &mx, const std::string &border = "bottom") {
+std::string generateBorderForTable(const mxCounts &mx, const std::string &border = "bottom") {
 
     std::string toReturn;
     std::string LB = border == "top" ? "╔" : border == "mid" ? "╠" : "╚";
@@ -64,7 +64,7 @@ bool LL::_printAtoms() {
 
 	if (!generateAtoms()) return false;
 
-    mxCnts mx;
+    mxCounts mx;
 
     for (const auto &i: sortedAtomsVector) {
         mx.mxName = i.name.length() > mx.mxName ? i.name.length() : mx.mxName;
@@ -94,7 +94,7 @@ bool LL::_printAtoms() {
     // separator from name and content
     myStream << generateBorderForTable(mx, "mid") << std::endl;
 
-    // Cheking if not last line
+    // Checking if not last line
     int _cnt = 0;
 
     // All the items of table print

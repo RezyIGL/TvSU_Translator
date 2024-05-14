@@ -72,7 +72,6 @@ private:
 	// ASM i8080 helpful functions
 	void loadOp(const std::string &, const std::string &, int);
 	void saveOp(const std::string &, const std::string &, int);
-    void saveRegm(const std::string &, int);
 
 	// variables for (MUL)
 	std::string MUL_LABEL_START;
@@ -127,8 +126,8 @@ private:
 	std::vector<int> states; // states to understand which string to generate for graph
 	std::vector<int>::iterator graphIterator = states.begin(); // Iterator of my graph vector
 
-	std::vector<Token> lexemVector; // All the Tokens from Lexer we store here
-	std::vector<Token>::iterator it = lexemVector.begin(); // Iterator for that vector
+	std::vector<Token> lexemeVector; // All the Tokens from Lexer we store here
+	std::vector<Token>::iterator it = lexemeVector.begin(); // Iterator for that vector
 
 	int outVecCnt = 0; // The shift, if I remember correctly
 
@@ -164,10 +163,10 @@ private:
      * The underlying part is checking whether your miniC code correct or not.
      * */
 
-    // This instance of Lexer is generating lexems to recognise what rule to use
+    // This instance of Lexer is generating lexemes to recognise what rule to use
 	Lexer lexer;
 
-    // a procedure to go to the next token => (lexem, value)
+    // a procedure to go to the next token => (lexeme, value)
 	void nextToken();
 
 	// MiniC Grammar:
