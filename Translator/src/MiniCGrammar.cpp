@@ -956,16 +956,17 @@ bool LL::OutOp() {
 }
 
 bool LL::OutOpList() {
-	if (it->first == "str") {
-		std::string _temp = it->second;
-		nextToken();
+	// if (it->first == "str") {
+		// ! TODO: Implement strings in translator
+		// std::string _temp = it->second;
+		// nextToken();
 
-		nextGraphState(0);
-		generateString("\"" + _temp + "\"");
+		// nextGraphState(0);
+		// generateString("\"" + _temp + "\"");
 
-		generateAtom(contextStack.top(), "OUT", "", "", "\"" + _temp + "\"");
-		rollbackGraphNode();
-	} else {
+		// generateAtom(contextStack.top(), "OUT", "", "", "\"" + _temp + "\"");
+		// rollbackGraphNode();
+	// } else {
 
 		nextGraphState(0);
 		generateString("E");
@@ -974,7 +975,7 @@ bool LL::OutOpList() {
 		if (!ERes.first) return false;
 
 		generateAtom(contextStack.top(), "OUT", "", "", ERes.second);
-	}
+	// }
 
 	rollbackGraphNode();
 	return true;

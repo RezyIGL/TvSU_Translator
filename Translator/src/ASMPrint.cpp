@@ -320,13 +320,8 @@ void LL::IN(const Atom &atom) {
 }
 
 void LL::OUT(const Atom &atom) {
-	if (!atom.third.starts_with("\"")) {
 	loadOp(atom.third, atom.context);
-		myStream << "OUT 1" << std::endl << std::endl;
-	}
-	else {
-		myStream << "; Strings are not implemented here" << std::endl;
-	}
+	myStream << "OUT 1" << std::endl << std::endl;
 }
 
 void LL::CALL(const Atom &atom) {
