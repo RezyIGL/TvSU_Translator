@@ -13,7 +13,6 @@ private:
 	int state = 0;
 	void nextToken(const std::vector<E> &edges, Token &Token);
 	void bufferNext();
-
 public:
 	explicit Lexer(std::istream& stream);
 	Token getNextToken();
